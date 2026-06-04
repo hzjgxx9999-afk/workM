@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <application
+        android:name=".app.SupervisionApplication"
+        android:allowBackup="true"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="@xml/backup_rules"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:networkSecurityConfig="@xml/network_security_config"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:usesCleartextTraffic="true"
+        android:theme="@style/Theme.WorkerM">
+        <activity
+            android:name=".ui.video.VideoAnalysisActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.video.DrawingDocsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.video.VideoLiveActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.video.VideoHomeActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.material.MaterialReportActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.material.MaterialDetailActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.material.MaterialListActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.material.MaterialHomeActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.bracelet.BraceletUnboundActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.bracelet.BraceletWarningActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.bracelet.BraceletDetailActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.bracelet.BraceletMonitorActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.approval.ApprovalDetailActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.worker.WorkerScanActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.worker.TeamLeaderActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.worker.WorkerDetailActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.project.ProjectDetailActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.auth.LoginActivity"
+            android:exported="false" />
+        <activity
+            android:name=".MainActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.auth.LaunchActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+    </application>
+
+</manifest>

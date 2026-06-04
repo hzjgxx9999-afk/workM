@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_app_page"
+    android:fillViewport="true"
+    android:overScrollMode="never">
+
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="16dp">
+        <FrameLayout android:layout_width="match_parent" android:layout_height="48dp">
+            <TextView android:layout_width="wrap_content" android:layout_height="match_parent" android:layout_gravity="center" android:gravity="center" android:text="审批中心" android:textColor="@color/text_primary" android:textSize="18sp" android:textStyle="bold" />
+            <TextView android:layout_width="42dp" android:layout_height="42dp" android:layout_gravity="end|center_vertical" android:gravity="center" android:text="◎" android:textColor="@color/text_primary" android:textSize="22sp" />
+        </FrameLayout>
+
+        <LinearLayout android:layout_width="match_parent" android:layout_height="38dp" android:layout_marginTop="8dp" android:gravity="center_vertical" android:orientation="horizontal">
+            <TextView android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:background="@drawable/bg_search_pill" android:gravity="center_vertical" android:paddingStart="14dp" android:text="搜索申请人、项目、类型" android:textColor="#9AA4B2" android:textSize="12sp" />
+            <TextView android:layout_width="64dp" android:layout_height="match_parent" android:drawableStart="@drawable/ic_filter" android:gravity="center" android:text="筛选" android:textColor="@color/text_primary" android:textSize="13sp" />
+        </LinearLayout>
+
+        <LinearLayout android:layout_width="match_parent" android:layout_height="42dp" android:layout_marginTop="10dp" android:orientation="horizontal">
+            <TextView android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:gravity="center" android:text="待审批(16)" android:textColor="@color/dashboard_blue" android:textSize="14sp" android:textStyle="bold" />
+            <TextView android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:gravity="center" android:text="已通过(32)" android:textColor="@color/text_secondary" android:textSize="14sp" />
+            <TextView android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:gravity="center" android:text="已驳回(5)" android:textColor="@color/text_secondary" android:textSize="14sp" />
+            <TextView android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:gravity="center" android:text="全部(53)" android:textColor="@color/text_secondary" android:textSize="14sp" />
+        </LinearLayout>
+
+        <GridLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:columnCount="2">
+            <TextView style="@style/ApprovalStatCard" android:background="@drawable/bg_approval_blue_soft" android:text="今日待审批\n16 件\n较昨日 +5" android:textColor="@color/dashboard_blue" />
+            <TextView style="@style/ApprovalStatCard" android:background="@drawable/bg_approval_orange_soft" android:text="请假申请\n6 件\n较昨日 +2" android:textColor="#E87900" />
+            <TextView style="@style/ApprovalStatCard" android:background="@drawable/bg_approval_green_soft" android:text="补卡申请\n7 件\n较昨日 +1" android:textColor="#0BA260" />
+            <TextView style="@style/ApprovalStatCard" android:background="@drawable/bg_approval_purple_soft" android:text="借支申请\n3 件\n较昨日 +2" android:textColor="#7C3AED" />
+        </GridLayout>
+
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="14dp" android:text="待审批申请列表" android:textColor="@color/text_primary" android:textSize="16sp" android:textStyle="bold" />
+        <include layout="@layout/item_approval_reissue" />
+        <include layout="@layout/item_approval_leave" />
+        <include layout="@layout/item_approval_loan" />
+    </LinearLayout>
+</androidx.core.widget.NestedScrollView>

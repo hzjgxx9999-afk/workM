@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/project_city_card"
+    android:layout_width="match_parent"
+    android:layout_height="96dp"
+    android:layout_marginTop="9dp"
+    android:background="@drawable/bg_card_stroke"
+    android:clickable="true"
+    android:foreground="?attr/selectableItemBackground"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:padding="8dp">
+
+    <ImageView android:layout_width="76dp" android:layout_height="62dp" android:scaleType="centerCrop" android:src="@drawable/project_city_light" />
+    <LinearLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_marginStart="10dp" android:layout_weight="1" android:orientation="vertical">
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center_vertical" android:orientation="horizontal">
+            <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:singleLine="true" android:text="城市之光商业综合体" android:textColor="@color/text_primary" android:textSize="13sp" android:textStyle="bold" />
+            <TextView android:layout_width="44dp" android:layout_height="22dp" android:background="@drawable/bg_chip_blue" android:gravity="center" android:text="施工中" android:textColor="@color/dashboard_blue" android:textSize="11sp" />
+        </LinearLayout>
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="5dp" android:text="杭州市余杭区文二西路969号" android:textColor="@color/text_secondary" android:textSize="10sp" />
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:gravity="center_vertical" android:orientation="horizontal">
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="进度" android:textColor="@color/text_secondary" android:textSize="10sp" />
+            <ProgressBar style="?android:attr/progressBarStyleHorizontal" android:layout_width="0dp" android:layout_height="5dp" android:layout_marginStart="8dp" android:layout_weight="1" android:max="100" android:progress="30" android:progressDrawable="@drawable/bg_progress_layer" />
+            <TextView android:layout_width="42dp" android:layout_height="wrap_content" android:gravity="end" android:text="30%" android:textColor="@color/text_primary" android:textSize="11sp" android:textStyle="bold" />
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>

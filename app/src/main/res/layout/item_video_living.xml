@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" android:id="@+id/video_living_card" android:layout_width="match_parent" android:layout_height="104dp" android:layout_marginTop="10dp" android:background="@drawable/bg_card_stroke" android:clickable="true" android:foreground="?attr/selectableItemBackground" android:gravity="center_vertical" android:orientation="horizontal" android:padding="10dp">
+    <ImageView android:layout_width="100dp" android:layout_height="70dp" android:scaleType="centerCrop" android:src="@drawable/video_living" />
+    <TextView android:layout_width="0dp" android:layout_height="match_parent" android:layout_marginStart="12dp" android:layout_weight="1" android:gravity="center_vertical" android:text="生活区\n生活区域 | SH-004\n\n实时查看" android:textColor="@color/text_primary" android:textSize="13sp" android:lineSpacingExtra="5dp" />
+</LinearLayout>

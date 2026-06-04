@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/material_list_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_app_page"
+    android:fillViewport="true"
+    android:overScrollMode="never">
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="16dp">
+        <FrameLayout android:layout_width="match_parent" android:layout_height="48dp">
+            <ImageButton android:id="@+id/back_button" android:layout_width="42dp" android:layout_height="42dp" android:layout_gravity="start|center_vertical" android:background="?attr/selectableItemBackgroundBorderless" android:padding="9dp" android:src="@drawable/ic_back" />
+            <TextView android:layout_width="wrap_content" android:layout_height="match_parent" android:layout_gravity="center" android:gravity="center" android:text="材料列表" android:textColor="@color/text_primary" android:textSize="18sp" android:textStyle="bold" />
+        </FrameLayout>
+        <LinearLayout android:layout_width="match_parent" android:layout_height="38dp" android:layout_marginTop="8dp" android:gravity="center_vertical" android:orientation="horizontal">
+            <TextView android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:background="@drawable/bg_search_pill" android:gravity="center_vertical" android:paddingStart="12dp" android:text="搜索材料名称 / 规格型号 / 负责人" android:textColor="#9AA4B2" android:textSize="12sp" />
+            <TextView android:layout_width="64dp" android:layout_height="match_parent" android:drawableStart="@drawable/ic_filter" android:gravity="center" android:text="筛选" android:textColor="@color/text_primary" android:textSize="13sp" />
+        </LinearLayout>
+        <LinearLayout android:layout_width="match_parent" android:layout_height="42dp" android:layout_marginTop="10dp" android:orientation="horizontal">
+            <TextView android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:background="@drawable/bg_search_pill" android:gravity="center" android:text="全部" android:textColor="@color/text_primary" />
+            <TextView android:layout_width="0dp" android:layout_height="match_parent" android:layout_marginStart="8dp" android:layout_weight="1" android:background="@drawable/bg_round_blue" android:gravity="center" android:text="材料" android:textColor="@color/white" />
+            <TextView android:layout_width="0dp" android:layout_height="match_parent" android:layout_marginStart="8dp" android:layout_weight="1" android:background="@drawable/bg_search_pill" android:gravity="center" android:text="设备" android:textColor="@color/text_primary" />
+            <TextView android:layout_width="0dp" android:layout_height="match_parent" android:layout_marginStart="8dp" android:layout_weight="1" android:background="@drawable/bg_search_pill" android:gravity="center" android:text="低库存" android:textColor="@color/text_primary" />
+        </LinearLayout>
+        <LinearLayout android:layout_width="match_parent" android:layout_height="34dp" android:layout_marginTop="8dp" android:gravity="center_vertical" android:orientation="horizontal">
+            <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="共 128 条" android:textColor="@color/text_secondary" android:textSize="12sp" />
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="默认排序 ˅" android:textColor="@color/text_secondary" android:textSize="12sp" />
+        </LinearLayout>
+        <include layout="@layout/item_material_steel" />
+        <include layout="@layout/item_material_cement" />
+        <include layout="@layout/item_material_wood" />
+        <include layout="@layout/item_material_helmet" />
+        <include layout="@layout/item_material_scaffold" />
+        <include layout="@layout/item_material_excavator" />
+    </LinearLayout>
+</androidx.core.widget.NestedScrollView>

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/material_home_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_app_page">
+    <androidx.core.widget.NestedScrollView android:layout_width="match_parent" android:layout_height="match_parent" android:fillViewport="true" android:overScrollMode="never" android:paddingBottom="68dp">
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical">
+            <LinearLayout android:layout_width="match_parent" android:layout_height="124dp" android:background="@drawable/bg_bracelet_top" android:orientation="vertical" android:padding="16dp">
+                <LinearLayout android:layout_width="match_parent" android:layout_height="48dp" android:gravity="center_vertical" android:orientation="horizontal">
+                    <TextView android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:gravity="center_vertical" android:text="材料资源" android:textColor="@color/white" android:textSize="20sp" android:textStyle="bold" />
+                    <ImageButton android:layout_width="40dp" android:layout_height="40dp" android:background="?attr/selectableItemBackgroundBorderless" android:padding="8dp" android:src="@drawable/ic_search" />
+                    <ImageButton android:layout_width="40dp" android:layout_height="40dp" android:background="?attr/selectableItemBackgroundBorderless" android:padding="8dp" android:src="@drawable/ic_bell" />
+                </LinearLayout>
+                <TextView android:layout_width="match_parent" android:layout_height="38dp" android:layout_marginTop="4dp" android:background="@color/white" android:gravity="center_vertical" android:paddingStart="12dp" android:text="中建 · 未来城二期项目  ˅" android:textColor="@color/text_primary" android:textSize="13sp" />
+            </LinearLayout>
+            <LinearLayout android:layout_width="match_parent" android:layout_height="238dp" android:layout_margin="16dp" android:background="@drawable/bg_blue_panel" android:orientation="vertical" android:padding="14dp">
+                <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="材料资源概览                                      2024-05-20 星期一" android:textColor="@color/white" android:textSize="15sp" android:textStyle="bold" />
+                <GridLayout android:layout_width="match_parent" android:layout_height="0dp" android:layout_marginTop="12dp" android:layout_weight="1" android:columnCount="2">
+                    <TextView style="@style/BraceletOverviewValue" android:text="材料种类\n128种" />
+                    <TextView style="@style/BraceletOverviewValue" android:text="库存总量\n28,456吨" />
+                    <TextView style="@style/BraceletOverviewValue" android:text="今日入库\n356吨" />
+                    <TextView style="@style/BraceletOverviewValue" android:text="今日出库\n287吨" />
+                </GridLayout>
+                <TextView android:layout_width="match_parent" android:layout_height="44dp" android:background="@drawable/bg_chip_blue" android:gravity="center_vertical" android:paddingHorizontal="12dp" android:text="低库存预警                                      8种" android:textColor="@color/white" android:textSize="16sp" android:textStyle="bold" />
+            </LinearLayout>
+            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:paddingHorizontal="16dp" android:text="材料分类" android:textColor="@color/text_primary" android:textSize="17sp" android:textStyle="bold" />
+            <GridLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginHorizontal="16dp" android:layout_marginTop="8dp" android:columnCount="2">
+                <TextView android:id="@+id/material_list_entry" style="@style/ResourceCategoryCard" android:drawableTop="@drawable/ic_material" android:text="钢筋\n12,456 吨" />
+                <TextView style="@style/ResourceCategoryCard" android:drawableTop="@drawable/ic_doc" android:text="水泥\n5,326 吨" />
+                <TextView style="@style/ResourceCategoryCard" android:drawableTop="@drawable/ic_export" android:text="模板\n2,180 张" />
+                <TextView style="@style/ResourceCategoryCard" android:drawableTop="@drawable/ic_alert" android:text="安全帽\n1,856 顶" />
+                <TextView style="@style/ResourceCategoryCard" android:drawableTop="@drawable/ic_workbench" android:text="脚手架\n3,218 套" />
+                <TextView style="@style/ResourceCategoryCard" android:drawableTop="@drawable/ic_project" android:text="机械设备\n86 台" />
+            </GridLayout>
+            <TextView
+                android:id="@+id/material_report_entry"
+                android:layout_width="match_parent"
+                android:layout_height="46dp"
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/bg_outline_blue"
+                android:gravity="center"
+                android:text="查看资源报表与导出"
+                android:textColor="@color/dashboard_blue"
+                android:textSize="15sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+    <com.google.android.material.bottomnavigation.BottomNavigationView android:layout_width="match_parent" android:layout_height="64dp" android:layout_gravity="bottom" android:background="@color/white" app:itemIconTint="@color/nav_item_color" app:itemTextColor="@color/nav_item_color" app:labelVisibilityMode="labeled" app:menu="@menu/menu_main_navigation" />
+</FrameLayout>

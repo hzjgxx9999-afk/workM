@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" android:id="@+id/material_wood_card" android:layout_width="match_parent" android:layout_height="104dp" android:layout_marginTop="8dp" android:background="@drawable/bg_card_stroke" android:gravity="center_vertical" android:orientation="horizontal" android:padding="10dp">
+    <ImageView android:layout_width="76dp" android:layout_height="76dp" android:scaleType="centerCrop" android:src="@drawable/material_wood" />
+    <LinearLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_marginStart="10dp" android:layout_weight="1" android:orientation="vertical">
+        <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="模板  木模板" android:textColor="@color/text_primary" android:textSize="15sp" android:textStyle="bold" />
+        <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="5dp" android:text="规格：1220×2440×18mm\n当前数量：2,180 张\n存放位置：3# 堆放区\n负责人：王工" android:textColor="@color/text_primary" android:textSize="11sp" android:lineSpacingExtra="3dp" />
+    </LinearLayout>
+    <TextView android:layout_width="42dp" android:layout_height="22dp" android:background="@drawable/bg_chip_orange_soft" android:gravity="center" android:text="预警" android:textColor="#E87900" android:textSize="11sp" />
+</LinearLayout>

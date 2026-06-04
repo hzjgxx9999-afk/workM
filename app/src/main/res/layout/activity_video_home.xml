@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/video_home_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_app_page">
+    <androidx.core.widget.NestedScrollView android:layout_width="match_parent" android:layout_height="match_parent" android:fillViewport="true" android:overScrollMode="never" android:paddingBottom="68dp">
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical">
+            <LinearLayout android:layout_width="match_parent" android:layout_height="112dp" android:background="@drawable/bg_bracelet_top" android:orientation="vertical" android:padding="16dp">
+                <LinearLayout android:layout_width="match_parent" android:layout_height="48dp" android:gravity="center_vertical" android:orientation="horizontal">
+                    <TextView android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:gravity="center_vertical" android:text="视频监控" android:textColor="@color/white" android:textSize="20sp" android:textStyle="bold" />
+                    <ImageButton android:layout_width="40dp" android:layout_height="40dp" android:background="?attr/selectableItemBackgroundBorderless" android:padding="8dp" android:src="@drawable/ic_search" />
+                    <ImageButton android:layout_width="40dp" android:layout_height="40dp" android:background="?attr/selectableItemBackgroundBorderless" android:padding="8dp" android:src="@drawable/ic_bell" />
+                </LinearLayout>
+                <TextView android:layout_width="match_parent" android:layout_height="34dp" android:gravity="center_vertical" android:text="中建 · 未来城二期项目  ˅" android:textColor="@color/white" android:textSize="14sp" android:textStyle="bold" />
+            </LinearLayout>
+            <GridLayout android:layout_width="match_parent" android:layout_height="118dp" android:layout_margin="16dp" android:columnCount="3">
+                <TextView style="@style/BraceletStatCard" android:text="128\n在线摄像头" android:textColor="@color/dashboard_blue" />
+                <TextView style="@style/BraceletStatCard" android:text="12\n离线摄像头" android:textColor="@color/text_primary" />
+                <TextView style="@style/BraceletStatCard" android:text="23\n今日异常识别" android:textColor="#F05A24" />
+            </GridLayout>
+            <LinearLayout android:layout_width="match_parent" android:layout_height="40dp" android:layout_marginHorizontal="16dp" android:orientation="horizontal">
+                <TextView android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:gravity="center" android:text="全部(140)" android:textColor="@color/dashboard_blue" android:textStyle="bold" />
+                <TextView android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:gravity="center" android:text="塔吊(28)" android:textColor="@color/text_primary" />
+                <TextView android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:gravity="center" android:text="出入口(16)" android:textColor="@color/text_primary" />
+                <TextView android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:gravity="center" android:text="仓库(12)" android:textColor="@color/text_primary" />
+            </LinearLayout>
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:paddingHorizontal="16dp">
+                <include layout="@layout/item_video_tower" />
+                <include layout="@layout/item_video_gate" />
+                <include layout="@layout/item_video_warehouse" />
+                <include layout="@layout/item_video_living" />
+                <TextView
+                    android:id="@+id/video_analysis_entry"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:layout_marginTop="10dp"
+                    android:background="@drawable/bg_round_blue"
+                    android:gravity="center"
+                    android:text="智能分析"
+                    android:textColor="@color/white"
+                    android:textStyle="bold" />
+            </LinearLayout>
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+    <com.google.android.material.bottomnavigation.BottomNavigationView android:layout_width="match_parent" android:layout_height="64dp" android:layout_gravity="bottom" android:background="@color/white" app:itemIconTint="@color/nav_item_color" app:itemTextColor="@color/nav_item_color" app:labelVisibilityMode="labeled" app:menu="@menu/menu_main_navigation" />
+</FrameLayout>

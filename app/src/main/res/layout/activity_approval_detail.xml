@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/approval_detail_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_app_page">
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true"
+        android:overScrollMode="never"
+        android:paddingBottom="82dp">
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="16dp">
+            <FrameLayout android:layout_width="match_parent" android:layout_height="48dp">
+                <ImageButton android:id="@+id/back_button" android:layout_width="42dp" android:layout_height="42dp" android:layout_gravity="start|center_vertical" android:background="?attr/selectableItemBackgroundBorderless" android:padding="9dp" android:src="@drawable/ic_back" />
+                <TextView android:id="@+id/title_text" android:layout_width="wrap_content" android:layout_height="match_parent" android:layout_gravity="center" android:gravity="center" android:text="补卡申请详情" android:textColor="@color/text_primary" android:textSize="18sp" android:textStyle="bold" />
+            </FrameLayout>
+
+            <TextView android:id="@+id/tip_text" android:layout_width="match_parent" android:layout_height="40dp" android:layout_marginTop="4dp" android:background="@drawable/bg_status_soft_orange" android:gravity="center_vertical" android:paddingHorizontal="12dp" android:text="审批完成后，将自动通知工人端APP" android:textColor="#D97900" android:textSize="12sp" android:visibility="gone" />
+
+            <LinearLayout android:layout_width="match_parent" android:layout_height="92dp" android:layout_marginTop="10dp" android:background="@drawable/bg_card_stroke" android:gravity="center_vertical" android:orientation="horizontal" android:padding="12dp">
+                <TextView android:id="@+id/applicant_icon" android:layout_width="46dp" android:layout_height="46dp" android:background="@drawable/bg_chip_blue" android:gravity="center" android:text="人" android:textColor="@color/dashboard_blue" android:textSize="20sp" android:textStyle="bold" />
+                <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginStart="12dp" android:layout_weight="1" android:orientation="vertical">
+                    <TextView android:id="@+id/applicant_name" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="张伟    钢筋工" android:textColor="@color/text_primary" android:textSize="15sp" android:textStyle="bold" />
+                    <TextView android:id="@+id/applicant_phone" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="5dp" android:text="手机号：138****5678" android:textColor="@color/text_secondary" android:textSize="12sp" />
+                    <TextView android:id="@+id/applicant_no" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:text="工号：GJ20240520045" android:textColor="@color/text_secondary" android:textSize="12sp" />
+                </LinearLayout>
+                <TextView android:layout_width="54dp" android:layout_height="24dp" android:background="@drawable/bg_status_soft_orange" android:gravity="center" android:text="待审批" android:textColor="#E87900" android:textSize="12sp" />
+            </LinearLayout>
+
+            <LinearLayout android:id="@+id/main_info_card" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="10dp" android:background="@drawable/bg_card_stroke" android:orientation="vertical" android:padding="14dp">
+                <TextView android:id="@+id/main_info_title" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="补卡信息" android:textColor="@color/text_primary" android:textSize="15sp" android:textStyle="bold" />
+                <TextView android:id="@+id/main_info_text" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="10dp" android:text="补卡类型                                      下班补卡\n缺卡日期                          2024-05-19（周日）\n缺卡时间                                      18:05（下班）" android:textColor="@color/text_primary" android:textSize="13sp" android:lineSpacingExtra="10dp" />
+            </LinearLayout>
+
+            <LinearLayout android:id="@+id/reason_card" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="10dp" android:background="@drawable/bg_card_stroke" android:orientation="vertical" android:padding="14dp">
+                <TextView android:id="@+id/reason_title" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="申请原因" android:textColor="@color/text_primary" android:textSize="15sp" android:textStyle="bold" />
+                <TextView android:id="@+id/reason_text" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:text="当天下午在 18:00 之后加班绑扎钢筋，忘记打卡，请批准补卡。" android:textColor="@color/text_primary" android:textSize="13sp" android:lineSpacingExtra="4dp" />
+            </LinearLayout>
+
+            <LinearLayout android:id="@+id/attachment_card" android:layout_width="match_parent" android:layout_height="92dp" android:layout_marginTop="10dp" android:background="@drawable/bg_card_stroke" android:gravity="center_vertical" android:orientation="horizontal" android:padding="12dp">
+                <ImageView android:layout_width="92dp" android:layout_height="62dp" android:scaleType="centerCrop" android:src="@drawable/approval_attachment" />
+                <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginStart="12dp" android:layout_weight="1" android:orientation="vertical">
+                    <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="加班现场照片.jpg" android:textColor="@color/text_primary" android:textSize="13sp" />
+                    <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="5dp" android:text="1.2MB" android:textColor="@color/text_secondary" android:textSize="12sp" />
+                </LinearLayout>
+                <TextView android:layout_width="44dp" android:layout_height="wrap_content" android:gravity="center" android:text="预览" android:textColor="@color/dashboard_blue" android:textSize="13sp" />
+            </LinearLayout>
+
+            <LinearLayout android:layout_width="match_parent" android:layout_height="78dp" android:layout_marginTop="10dp" android:background="@drawable/bg_card_stroke" android:gravity="center_vertical" android:orientation="horizontal" android:padding="10dp">
+                <ImageView android:layout_width="76dp" android:layout_height="58dp" android:scaleType="centerCrop" android:src="@drawable/project_crane" />
+                <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginStart="10dp" android:layout_weight="1" android:orientation="vertical">
+                    <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="中建 · 未来城二期项目" android:textColor="@color/text_primary" android:textSize="13sp" android:textStyle="bold" />
+                    <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:text="广州市天河区珠江新城中建路888号" android:textColor="@color/text_secondary" android:textSize="11sp" />
+                    <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="3dp" android:text="总包单位：中建五局" android:textColor="@color/text_secondary" android:textSize="11sp" />
+                </LinearLayout>
+                <TextView android:layout_width="46dp" android:layout_height="22dp" android:background="@drawable/bg_status_soft_green" android:gravity="center" android:text="施工中" android:textColor="#0BA260" android:textSize="11sp" />
+            </LinearLayout>
+
+            <LinearLayout android:layout_width="match_parent" android:layout_height="58dp" android:layout_marginTop="10dp" android:background="@drawable/bg_card_stroke" android:gravity="center_vertical" android:orientation="horizontal" android:paddingHorizontal="14dp">
+                <TextView android:id="@+id/team_text" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="钢筋班    组长：刘师傅" android:textColor="@color/text_primary" android:textSize="13sp" />
+                <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@drawable/ic_phone" />
+            </LinearLayout>
+
+            <LinearLayout android:layout_width="match_parent" android:layout_height="110dp" android:layout_marginTop="10dp" android:background="@drawable/bg_card_stroke" android:orientation="vertical" android:padding="14dp">
+                <LinearLayout android:layout_width="match_parent" android:layout_height="24dp" android:gravity="center_vertical" android:orientation="horizontal">
+                    <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="审批结果" android:textColor="@color/text_primary" android:textSize="15sp" android:textStyle="bold" />
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="待审批" android:textColor="#E87900" android:textSize="13sp" android:textStyle="bold" />
+                </LinearLayout>
+                <TextView android:layout_width="match_parent" android:layout_height="0dp" android:layout_marginTop="10dp" android:layout_weight="1" android:background="@drawable/bg_search_pill" android:gravity="top" android:padding="10dp" android:text="请输入审批意见（选填）" android:textColor="#A0A8B4" android:textSize="12sp" />
+            </LinearLayout>
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+    <LinearLayout android:layout_width="match_parent" android:layout_height="70dp" android:layout_gravity="bottom" android:background="@color/white" android:elevation="6dp" android:gravity="center" android:orientation="horizontal" android:paddingHorizontal="16dp">
+        <TextView android:layout_width="0dp" android:layout_height="42dp" android:layout_marginEnd="8dp" android:layout_weight="1" android:background="@drawable/bg_outline_red" android:gravity="center" android:text="驳回" android:textColor="#F04438" android:textSize="15sp" android:textStyle="bold" />
+        <TextView android:layout_width="0dp" android:layout_height="42dp" android:layout_marginStart="8dp" android:layout_weight="1" android:background="@drawable/bg_round_blue" android:gravity="center" android:text="同意" android:textColor="@color/white" android:textSize="15sp" android:textStyle="bold" />
+    </LinearLayout>
+</FrameLayout>

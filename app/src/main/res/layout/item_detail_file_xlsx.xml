@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent" android:layout_height="54dp" android:gravity="center_vertical" android:orientation="horizontal">
+    <TextView android:layout_width="24dp" android:layout_height="28dp" android:background="@drawable/bg_file_green" android:gravity="center" android:text="X" android:textColor="@color/white" android:textSize="12sp" />
+    <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginStart="10dp" android:layout_weight="1" android:orientation="vertical">
+        <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="主体结构施工进度计划.xlsx" android:textColor="@color/text_primary" android:textSize="13sp" />
+        <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="3dp" android:text="XLSX   56KB" android:textColor="@color/text_secondary" android:textSize="10sp" />
+    </LinearLayout>
+    <TextView android:layout_width="88dp" android:layout_height="wrap_content" android:gravity="end" android:text="2024-05-17  09:15" android:textColor="@color/text_secondary" android:textSize="10sp" />
+</LinearLayout>

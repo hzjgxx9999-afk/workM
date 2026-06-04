@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/material_steel_card"
+    android:layout_width="match_parent"
+    android:layout_height="104dp"
+    android:layout_marginTop="8dp"
+    android:background="@drawable/bg_card_stroke"
+    android:clickable="true"
+    android:foreground="?attr/selectableItemBackground"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:padding="10dp">
+    <ImageView android:layout_width="76dp" android:layout_height="76dp" android:scaleType="centerCrop" android:src="@drawable/material_steel" />
+    <LinearLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_marginStart="10dp" android:layout_weight="1" android:orientation="vertical">
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal">
+            <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="钢筋  HRB400E" android:textColor="@color/text_primary" android:textSize="15sp" android:textStyle="bold" />
+            <TextView android:layout_width="42dp" android:layout_height="22dp" android:background="@drawable/bg_status_soft_green" android:gravity="center" android:text="正常" android:textColor="#0BA260" android:textSize="11sp" />
+        </LinearLayout>
+        <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="5dp" android:text="规格：Φ12mm\n当前数量：4,856 吨\n存放位置：1#材料堆场A区\n负责人：张师傅" android:textColor="@color/text_primary" android:textSize="11sp" android:lineSpacingExtra="3dp" />
+    </LinearLayout>
+</LinearLayout>

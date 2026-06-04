@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/bracelet_unbound_wang_card"
+    android:layout_width="match_parent"
+    android:layout_height="148dp"
+    android:layout_marginTop="10dp"
+    android:background="@drawable/bg_card_stroke"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:padding="12dp">
+    <ImageView android:layout_width="58dp" android:layout_height="58dp" android:scaleType="centerCrop" android:src="@drawable/bracelet_avatar_li" />
+    <LinearLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_marginStart="12dp" android:layout_weight="1" android:orientation="vertical">
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal">
+            <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="王建国    砌筑工" android:textColor="@color/text_primary" android:textSize="15sp" android:textStyle="bold" />
+            <TextView android:layout_width="54dp" android:layout_height="22dp" android:gravity="center" android:text="未佩戴" android:textColor="#FF3045" android:textSize="12sp" android:textStyle="bold" />
+        </LinearLayout>
+        <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="7dp" android:text="班组：砌筑班组\n最后检测：08:45\n异常原因：入场后未检测到手环信号" android:textColor="@color/text_primary" android:textSize="13sp" android:lineSpacingExtra="5dp" />
+        <LinearLayout android:layout_width="match_parent" android:layout_height="32dp" android:layout_marginTop="8dp" android:orientation="horizontal">
+            <TextView android:layout_width="0dp" android:layout_height="match_parent" android:layout_marginEnd="5dp" android:layout_weight="1" android:background="@drawable/bg_outline_blue" android:gravity="center" android:text="通知班组长" android:textColor="@color/dashboard_blue" android:textSize="12sp" />
+            <TextView android:layout_width="0dp" android:layout_height="match_parent" android:layout_marginHorizontal="5dp" android:layout_weight="1" android:background="@drawable/bg_outline_blue" android:gravity="center" android:text="查看工人" android:textColor="@color/dashboard_blue" android:textSize="12sp" />
+            <TextView android:layout_width="0dp" android:layout_height="match_parent" android:layout_marginStart="5dp" android:layout_weight="1" android:background="@drawable/bg_outline_blue" android:gravity="center" android:text="标记已核实" android:textColor="@color/dashboard_blue" android:textSize="12sp" />
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>

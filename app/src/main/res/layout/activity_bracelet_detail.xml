@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/bracelet_detail_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_app_page">
+    <androidx.core.widget.NestedScrollView android:layout_width="match_parent" android:layout_height="match_parent" android:fillViewport="true" android:overScrollMode="never" android:paddingBottom="74dp">
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical">
+            <FrameLayout android:layout_width="match_parent" android:layout_height="58dp" android:background="@drawable/bg_bracelet_top" android:paddingHorizontal="12dp">
+                <ImageButton android:id="@+id/back_button" android:layout_width="42dp" android:layout_height="42dp" android:layout_gravity="start|center_vertical" android:background="?attr/selectableItemBackgroundBorderless" android:padding="9dp" android:src="@drawable/ic_back" android:tint="@color/white" />
+                <TextView android:layout_width="wrap_content" android:layout_height="match_parent" android:layout_gravity="center" android:gravity="center" android:text="手环详情" android:textColor="@color/white" android:textSize="18sp" android:textStyle="bold" />
+                <TextView android:layout_width="42dp" android:layout_height="match_parent" android:layout_gravity="end" android:gravity="center" android:text="..." android:textColor="@color/white" android:textSize="22sp" />
+            </FrameLayout>
+
+            <LinearLayout android:layout_width="match_parent" android:layout_height="136dp" android:layout_margin="12dp" android:background="@drawable/bg_card_round" android:elevation="2dp" android:gravity="center_vertical" android:orientation="horizontal" android:padding="16dp">
+                <ImageView android:layout_width="72dp" android:layout_height="72dp" android:scaleType="centerCrop" android:src="@drawable/bracelet_avatar_detail" />
+                <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginStart="16dp" android:layout_weight="1" android:orientation="vertical">
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center_vertical" android:orientation="horizontal">
+                        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="张三" android:textColor="@color/text_primary" android:textSize="20sp" android:textStyle="bold" />
+                        <TextView android:layout_width="48dp" android:layout_height="24dp" android:background="@drawable/bg_status_soft_green" android:gravity="center" android:text="在线" android:textColor="#0BA260" android:textSize="12sp" />
+                    </LinearLayout>
+                    <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:text="工种：钢筋工\n所属班组：钢筋班组\n班组长：李师傅\n项目：中建 · 未来城二期项目\n手机号：138****5678" android:textColor="@color/text_primary" android:textSize="12sp" android:lineSpacingExtra="4dp" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginHorizontal="16dp" android:text="手环设备信息" android:textColor="@color/text_primary" android:textSize="16sp" android:textStyle="bold" />
+            <TextView android:layout_width="match_parent" android:layout_height="136dp" android:layout_marginHorizontal="16dp" android:layout_marginTop="8dp" android:background="@drawable/bg_card_stroke" android:gravity="center_vertical" android:padding="14dp" android:text="设备编号                                      BR202405001\n绑定状态                                      已绑定\n佩戴状态                                      已佩戴\n在线状态                                      在线\n当前电量                                      82%\n最后上报                          2024-05-20 09:41" android:textColor="@color/text_primary" android:textSize="13sp" android:lineSpacingExtra="7dp" />
+
+            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginHorizontal="16dp" android:layout_marginTop="14dp" android:text="健康数据（实时）" android:textColor="@color/text_primary" android:textSize="16sp" android:textStyle="bold" />
+            <GridLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginHorizontal="16dp" android:layout_marginTop="8dp" android:columnCount="4">
+                <TextView style="@style/BraceletHealthCard" android:drawableTop="@drawable/ic_thermo" android:text="体温\n36.6℃" />
+                <TextView style="@style/BraceletHealthCard" android:drawableTop="@drawable/ic_heart" android:text="心率\n78次/分" />
+                <TextView style="@style/BraceletHealthCard" android:drawableTop="@drawable/ic_blood" android:text="血氧\n98%" />
+                <TextView style="@style/BraceletHealthCard" android:drawableTop="@drawable/ic_steps" android:text="步数\n4320步" />
+            </GridLayout>
+
+            <LinearLayout android:layout_width="match_parent" android:layout_height="132dp" android:layout_marginHorizontal="16dp" android:layout_marginTop="10dp" android:orientation="horizontal">
+                <LinearLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_marginEnd="5dp" android:layout_weight="1" android:background="@drawable/bg_card_stroke" android:orientation="vertical" android:padding="10dp">
+                    <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="今日体温趋势（℃）" android:textColor="@color/text_primary" android:textSize="12sp" />
+                    <ImageView android:layout_width="match_parent" android:layout_height="0dp" android:layout_marginTop="6dp" android:layout_weight="1" android:src="@drawable/bg_chart_blue" />
+                </LinearLayout>
+                <LinearLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_marginStart="5dp" android:layout_weight="1" android:background="@drawable/bg_card_stroke" android:orientation="vertical" android:padding="10dp">
+                    <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="今日心率趋势（次/分）" android:textColor="@color/text_primary" android:textSize="12sp" />
+                    <ImageView android:layout_width="match_parent" android:layout_height="0dp" android:layout_marginTop="6dp" android:layout_weight="1" android:src="@drawable/bg_chart_red" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <TextView android:layout_width="match_parent" android:layout_height="86dp" android:layout_margin="16dp" android:background="@drawable/bg_card_stroke" android:gravity="center_vertical" android:padding="14dp" android:text="异常记录\n2024-05-18 14:20        手环离线                         已处理\n2024-05-16 10:12        低电量                           已处理" android:textColor="@color/text_primary" android:textSize="13sp" android:lineSpacingExtra="7dp" />
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+    <LinearLayout android:layout_width="match_parent" android:layout_height="66dp" android:layout_gravity="bottom" android:background="@color/white" android:elevation="6dp" android:gravity="center" android:orientation="horizontal" android:paddingHorizontal="12dp">
+        <TextView android:layout_width="0dp" android:layout_height="42dp" android:layout_marginEnd="5dp" android:layout_weight="1" android:background="@drawable/bg_round_blue" android:gravity="center" android:text="通知班组长" android:textColor="@color/white" android:textSize="14sp" />
+        <TextView android:layout_width="0dp" android:layout_height="42dp" android:layout_marginHorizontal="5dp" android:layout_weight="1" android:background="@drawable/bg_round_blue" android:gravity="center" android:text="查看工人详情" android:textColor="@color/white" android:textSize="14sp" />
+        <TextView android:layout_width="0dp" android:layout_height="42dp" android:layout_marginStart="5dp" android:layout_weight="1" android:background="@drawable/bg_circle_red" android:gravity="center" android:text="解除绑定" android:textColor="@color/white" android:textSize="14sp" />
+    </LinearLayout>
+</FrameLayout>

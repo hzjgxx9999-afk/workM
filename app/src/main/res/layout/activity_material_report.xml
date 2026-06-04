@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/material_report_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_app_page"
+    android:fillViewport="true"
+    android:overScrollMode="never">
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="16dp">
+        <FrameLayout android:layout_width="match_parent" android:layout_height="48dp">
+            <ImageButton android:id="@+id/back_button" android:layout_width="42dp" android:layout_height="42dp" android:layout_gravity="start|center_vertical" android:background="?attr/selectableItemBackgroundBorderless" android:padding="9dp" android:src="@drawable/ic_back" />
+            <TextView android:layout_width="wrap_content" android:layout_height="match_parent" android:layout_gravity="center" android:gravity="center" android:text="资源报表" android:textColor="@color/text_primary" android:textSize="18sp" android:textStyle="bold" />
+            <ImageButton android:layout_width="42dp" android:layout_height="42dp" android:layout_gravity="end|center_vertical" android:background="?attr/selectableItemBackgroundBorderless" android:padding="9dp" android:src="@drawable/ic_calendar" />
+        </FrameLayout>
+        <LinearLayout android:layout_width="match_parent" android:layout_height="42dp" android:orientation="horizontal">
+            <TextView android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:gravity="center" android:text="材料统计" android:textColor="@color/dashboard_blue" android:textStyle="bold" />
+            <TextView android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:gravity="center" android:text="使用趋势" android:textColor="@color/text_secondary" />
+            <TextView android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:gravity="center" android:text="出入库明细" android:textColor="@color/text_secondary" />
+            <TextView android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:gravity="center" android:text="设备台账" android:textColor="@color/text_secondary" />
+        </LinearLayout>
+        <TextView android:layout_width="match_parent" android:layout_height="40dp" android:layout_marginTop="8dp" android:background="@drawable/bg_card_stroke" android:gravity="center_vertical" android:paddingHorizontal="12dp" android:text="2024年05月                         本月     上月     本年" android:textColor="@color/text_primary" android:textSize="13sp" />
+        <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="14dp" android:text="关键指标" android:textColor="@color/text_primary" android:textSize="16sp" android:textStyle="bold" />
+        <GridLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:columnCount="3">
+            <TextView style="@style/ReportMetricCard" android:text="期初库存\n25,860 吨" />
+            <TextView style="@style/ReportMetricCard" android:text="期末库存\n28,456 吨" />
+            <TextView style="@style/ReportMetricCard" android:text="本月入库\n6,856 吨" />
+            <TextView style="@style/ReportMetricCard" android:text="本月出库\n4,260 吨" />
+            <TextView style="@style/ReportMetricCard" android:text="库存周转率\n1.32" />
+            <TextView style="@style/ReportMetricCard" android:text="低库存材料\n8 种" />
+        </GridLayout>
+        <LinearLayout android:layout_width="match_parent" android:layout_height="250dp" android:layout_marginTop="10dp" android:background="@drawable/bg_card_stroke" android:gravity="center_vertical" android:orientation="horizontal" android:padding="14dp">
+            <FrameLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1">
+                <ImageView android:layout_width="match_parent" android:layout_height="match_parent" android:src="@drawable/bg_pie_material" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_gravity="center" android:gravity="center" android:text="总量\n28,456 吨" android:textColor="@color/text_primary" android:textSize="13sp" android:textStyle="bold" />
+            </FrameLayout>
+            <TextView android:layout_width="120dp" android:layout_height="wrap_content" android:text="钢筋      43%\n水泥      19%\n模板      11%\n脚手架    13%\n安全帽     7%\n其他       7%" android:textColor="@color/text_primary" android:textSize="13sp" android:lineSpacingExtra="10dp" />
+        </LinearLayout>
+        <LinearLayout android:layout_width="match_parent" android:layout_height="230dp" android:layout_marginTop="12dp" android:background="@drawable/bg_card_stroke" android:orientation="vertical" android:padding="12dp">
+            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="入库与出库趋势（吨）" android:textColor="@color/text_primary" android:textSize="15sp" android:textStyle="bold" />
+            <ImageView android:layout_width="match_parent" android:layout_height="0dp" android:layout_marginTop="8dp" android:layout_weight="1" android:src="@drawable/bg_bar_line_chart" />
+        </LinearLayout>
+        <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="14dp" android:text="报表导出" android:textColor="@color/text_primary" android:textSize="16sp" android:textStyle="bold" />
+        <GridLayout android:layout_width="match_parent" android:layout_height="76dp" android:layout_marginTop="8dp" android:columnCount="3">
+            <TextView style="@style/ReportMetricCard" android:background="@drawable/bg_approval_green_soft" android:text="导出库存报表\nExcel" />
+            <TextView style="@style/ReportMetricCard" android:background="@drawable/bg_chip_red_soft" android:text="导出出入库明细\nPDF" />
+            <TextView style="@style/ReportMetricCard" android:background="@drawable/bg_approval_blue_soft" android:text="导出设备台账\nExcel" />
+        </GridLayout>
+    </LinearLayout>
+</androidx.core.widget.NestedScrollView>

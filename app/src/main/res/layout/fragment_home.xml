@@ -1,0 +1,356 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_app_page"
+    android:fillViewport="true"
+    android:overScrollMode="never">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="296dp"
+            android:background="@drawable/bg_home_top"
+            android:orientation="vertical"
+            android:paddingStart="20dp"
+            android:paddingTop="20dp"
+            android:paddingEnd="20dp"
+            android:paddingBottom="18dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:includeFontPadding="false"
+                        android:text="上午好，张项目经理"
+                        android:textColor="@color/white"
+                        android:textSize="18sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="7dp"
+                        android:text="中建 · 未来城二期项目"
+                        android:textColor="#EAF3FF"
+                        android:textSize="13sp" />
+                </LinearLayout>
+
+                <ImageButton
+                    android:id="@+id/search_button"
+                    android:layout_width="42dp"
+                    android:layout_height="42dp"
+                    android:background="@drawable/bg_home_icon_button"
+                    android:contentDescription="搜索"
+                    android:foreground="?attr/selectableItemBackgroundBorderless"
+                    android:padding="9dp"
+                    android:src="@drawable/ic_search" />
+
+                <FrameLayout
+                    android:layout_width="42dp"
+                    android:layout_height="42dp"
+                    android:layout_marginStart="10dp">
+
+                    <ImageButton
+                        android:id="@+id/notification_button"
+                        android:layout_width="42dp"
+                        android:layout_height="42dp"
+                        android:background="@drawable/bg_home_icon_button"
+                        android:contentDescription="消息"
+                        android:foreground="?attr/selectableItemBackgroundBorderless"
+                        android:padding="9dp"
+                        android:src="@drawable/ic_bell" />
+
+                    <TextView
+                        android:layout_width="18dp"
+                        android:layout_height="18dp"
+                        android:layout_gravity="top|end"
+                        android:background="@drawable/bg_circle_red"
+                        android:gravity="center"
+                        android:text="12"
+                        android:textColor="@color/white"
+                        android:textSize="9sp" />
+                </FrameLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/ai_warning_card"
+                android:layout_width="match_parent"
+                android:layout_height="190dp"
+                android:layout_marginTop="18dp"
+                android:background="@drawable/bg_blue_panel"
+                android:clickable="true"
+                android:clipToOutline="true"
+                android:elevation="5dp"
+                android:foreground="?attr/selectableItemBackground"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:includeFontPadding="false"
+                        android:text="AI预警中心"
+                        android:textColor="@color/white"
+                        android:textSize="17sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="38dp"
+                        android:layout_height="32dp"
+                        android:background="@drawable/bg_chip_blue"
+                        android:gravity="center"
+                        android:text="AI"
+                        android:textColor="@color/dashboard_blue"
+                        android:textSize="17sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="90dp"
+                        android:layout_height="96dp"
+                        android:background="@drawable/bg_circle_gauge"
+                        android:gravity="center"
+                        android:includeFontPadding="false"
+                        android:text="72"
+                        android:textColor="@color/white"
+                        android:textSize="36sp"
+                        android:textStyle="bold" />
+
+                    <View
+                        android:layout_width="1dp"
+                        android:layout_height="92dp"
+                        android:layout_marginStart="18dp"
+                        android:background="#3AFFFFFF" />
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="18dp"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="今日异常事件"
+                            android:textColor="#CFE3FF"
+                            android:textSize="12sp" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:text="8 条"
+                            android:textColor="@color/white"
+                            android:textSize="25sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="7dp"
+                            android:text="较昨日 +2"
+                            android:textColor="#FFCFD2"
+                            android:textSize="12sp" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="32dp"
+                    android:gravity="center"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginEnd="5dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/bg_home_warning_chip"
+                        android:ellipsize="end"
+                        android:gravity="center"
+                        android:maxLines="1"
+                        android:text="安全帽未佩戴 3"
+                        android:textColor="#EF2D2D"
+                        android:textSize="10sp" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginHorizontal="5dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/bg_home_warning_chip"
+                        android:ellipsize="end"
+                        android:gravity="center"
+                        android:maxLines="1"
+                        android:text="考勤异常 2"
+                        android:textColor="#EF2D2D"
+                        android:textSize="10sp" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginStart="5dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/bg_home_warning_chip"
+                        android:ellipsize="end"
+                        android:gravity="center"
+                        android:maxLines="1"
+                        android:text="材料库存不足 1"
+                        android:textColor="#EF2D2D"
+                        android:textSize="10sp" />
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingHorizontal="16dp"
+            android:paddingTop="16dp"
+            android:paddingBottom="20dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:includeFontPadding="false"
+                    android:text="项目概览"
+                    android:textColor="@color/text_primary"
+                    android:textSize="17sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="2024-05-20  星期一"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="11sp" />
+            </LinearLayout>
+
+            <GridLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:columnCount="4"
+                android:rowCount="1">
+
+                <TextView style="@style/HomeMetricCard" android:drawableTop="@drawable/ic_project" android:text="在建项目\n12个" />
+                <TextView style="@style/HomeMetricCard" android:drawableTop="@drawable/ic_people" android:text="在场工人\n328人" />
+                <TextView style="@style/HomeMetricCard" android:drawableTop="@drawable/ic_approval" android:text="今日审批\n15项" />
+                <TextView style="@style/HomeMetricCard" android:drawableTop="@drawable/ic_alert" android:text="风险预警\n8条" />
+            </GridLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="18dp"
+                android:includeFontPadding="false"
+                android:text="快捷入口"
+                android:textColor="@color/text_primary"
+                android:textSize="17sp"
+                android:textStyle="bold" />
+
+            <GridLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:columnCount="4">
+
+                <TextView style="@style/HomeActionCard" android:drawableTop="@drawable/ic_doc" android:text="项目管理" />
+                <TextView style="@style/HomeActionCard" android:drawableTop="@drawable/ic_people" android:text="工人管理" />
+                <TextView
+                    android:id="@+id/approval_center_action"
+                    style="@style/HomeActionCard"
+                    android:drawableTop="@drawable/ic_approval"
+                    android:text="审批中心" />
+                <TextView
+                    android:id="@+id/material_action"
+                    style="@style/HomeActionCard"
+                    android:drawableTop="@drawable/ic_material"
+                    android:text="材料资源" />
+                <TextView
+                    android:id="@+id/video_action"
+                    style="@style/HomeActionCard"
+                    android:drawableTop="@drawable/ic_scan"
+                    android:text="视频监控" />
+                <TextView style="@style/HomeActionCard" android:drawableTop="@drawable/ic_ai" android:text="AI预警" />
+                <TextView
+                    android:id="@+id/bracelet_action"
+                    style="@style/HomeActionCard"
+                    android:drawableTop="@drawable/ic_bracelet"
+                    android:text="智能手环" />
+            </GridLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="18dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:includeFontPadding="false"
+                    android:text="项目动态"
+                    android:textColor="@color/text_primary"
+                    android:textSize="17sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/all_todo_bar"
+                    android:layout_width="wrap_content"
+                    android:layout_height="32dp"
+                    android:gravity="center_vertical"
+                    android:text="全部项目  >"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="12sp" />
+            </LinearLayout>
+
+            <include layout="@layout/item_static_project_crane" />
+            <include layout="@layout/item_static_project_finance" />
+            <include layout="@layout/item_static_project_industry" />
+        </LinearLayout>
+    </LinearLayout>
+</androidx.core.widget.NestedScrollView>

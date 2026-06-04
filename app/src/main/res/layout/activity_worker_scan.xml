@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/scan_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#111827">
+    <ImageView android:layout_width="match_parent" android:layout_height="match_parent" android:scaleType="centerCrop" android:src="@drawable/scan_worker_bg" />
+    <View android:layout_width="match_parent" android:layout_height="match_parent" android:background="#A0000000" />
+    <LinearLayout android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="vertical" android:padding="16dp">
+        <FrameLayout android:layout_width="match_parent" android:layout_height="48dp">
+            <ImageButton android:id="@+id/back_button" android:layout_width="42dp" android:layout_height="42dp" android:layout_gravity="start|center_vertical" android:background="?attr/selectableItemBackgroundBorderless" android:padding="9dp" android:src="@drawable/ic_back" android:tint="@color/white" />
+            <TextView android:layout_width="wrap_content" android:layout_height="match_parent" android:layout_gravity="center" android:gravity="center" android:text="扫码查看工人信息" android:textColor="@color/white" android:textSize="18sp" android:textStyle="bold" />
+        </FrameLayout>
+        <TextView android:id="@+id/scan_status_text" android:layout_width="180dp" android:layout_height="58dp" android:layout_gravity="center_horizontal" android:layout_marginTop="58dp" android:background="@drawable/bg_success_pill" android:drawableStart="@drawable/ic_check_circle" android:drawablePadding="8dp" android:gravity="center" android:text="扫描成功" android:textColor="@color/white" android:textSize="18sp" android:textStyle="bold" />
+        <Space android:layout_width="match_parent" android:layout_height="90dp" />
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:background="@drawable/bg_card_round" android:orientation="vertical" android:padding="18dp">
+            <LinearLayout android:layout_width="match_parent" android:layout_height="96dp" android:gravity="center_vertical" android:orientation="horizontal">
+                <ImageView android:layout_width="82dp" android:layout_height="82dp" android:scaleType="centerCrop" android:src="@drawable/worker_avatar_zhang" />
+                <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginStart="16dp" android:layout_weight="1" android:orientation="vertical">
+                    <TextView android:id="@+id/worker_name_text" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="张三" android:textColor="@color/text_primary" android:textSize="24sp" android:textStyle="bold" />
+                    <TextView android:id="@+id/worker_type_text" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="6dp" android:text="钢筋工（高级工）" android:textColor="@color/text_primary" android:textSize="15sp" />
+                    <TextView android:id="@+id/worker_leader_text" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:text="所属班组：钢筋班组" android:textColor="@color/text_secondary" android:textSize="13sp" />
+                </LinearLayout>
+                <TextView android:layout_width="48dp" android:layout_height="24dp" android:background="@drawable/bg_success_pill" android:gravity="center" android:text="在场" android:textColor="@color/white" android:textSize="12sp" />
+            </LinearLayout>
+            <TextView android:id="@+id/worker_detail_text" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="入场时间：2024-05-10\n身份证号：440************1234" android:textColor="@color/text_primary" android:textSize="13sp" android:lineSpacingExtra="8dp" />
+            <GridLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="12dp" android:columnCount="2">
+                <TextView style="@style/WorkerDetailCard" android:text="当前状态\n在场作业\n现场施工中" />
+                <TextView style="@style/WorkerDetailCard" android:text="最后考勤\n今天 08:18\n项目：中建 · 未来城二期" />
+                <TextView style="@style/WorkerDetailCard" android:text="安全培训\n已完成\n2024-05-08" />
+                <TextView style="@style/WorkerDetailCard" android:text="健康检查\n合格\n有效期至 2025-05-10" />
+            </GridLayout>
+        </LinearLayout>
+        <TextView android:id="@+id/scan_time_text" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="24dp" android:gravity="center" android:text="扫描时间：2024-05-20 09:41        继续扫码 >" android:textColor="#DDEBFF" android:textSize="13sp" />
+    </LinearLayout>
+</FrameLayout>

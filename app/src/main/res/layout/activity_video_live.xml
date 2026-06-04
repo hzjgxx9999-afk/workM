@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/video_live_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:fillViewport="true"
+    android:overScrollMode="never">
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical">
+        <FrameLayout android:layout_width="match_parent" android:layout_height="58dp" android:background="@color/white" android:paddingHorizontal="12dp">
+            <ImageButton android:id="@+id/back_button" android:layout_width="42dp" android:layout_height="42dp" android:layout_gravity="start|center_vertical" android:background="?attr/selectableItemBackgroundBorderless" android:padding="9dp" android:src="@drawable/ic_back" />
+            <TextView android:layout_width="wrap_content" android:layout_height="match_parent" android:layout_gravity="center" android:gravity="center" android:text="1号塔吊区" android:textColor="@color/text_primary" android:textSize="18sp" android:textStyle="bold" />
+            <ImageButton android:layout_width="42dp" android:layout_height="42dp" android:layout_gravity="end|center_vertical" android:background="?attr/selectableItemBackgroundBorderless" android:padding="9dp" android:src="@drawable/ic_video_full" android:tint="@color/text_primary" />
+        </FrameLayout>
+        <FrameLayout android:layout_width="match_parent" android:layout_height="370dp">
+            <ImageView android:layout_width="match_parent" android:layout_height="match_parent" android:scaleType="centerCrop" android:src="@drawable/video_live_crane" />
+            <View android:layout_width="match_parent" android:layout_height="48dp" android:layout_gravity="top" android:background="#CC111827" />
+            <TextView android:layout_width="match_parent" android:layout_height="48dp" android:gravity="center_vertical" android:paddingHorizontal="16dp" android:text="实时    2024-05-20 10:30:45                                      高清 ˅" android:textColor="@color/white" android:textSize="13sp" />
+            <TextView android:layout_width="132dp" android:layout_height="34dp" android:layout_gravity="center|end" android:layout_marginEnd="26dp" android:background="@drawable/bg_chip_red_soft" android:gravity="center" android:text="未佩戴安全帽" android:textColor="#F04438" android:textSize="13sp" android:textStyle="bold" />
+            <TextView android:layout_width="132dp" android:layout_height="34dp" android:layout_gravity="bottom|end" android:layout_marginEnd="20dp" android:layout_marginBottom="112dp" android:background="@drawable/bg_chip_red_soft" android:gravity="center" android:text="高危区域聚集" android:textColor="#F04438" android:textSize="13sp" android:textStyle="bold" />
+            <LinearLayout android:layout_width="match_parent" android:layout_height="64dp" android:layout_gravity="bottom" android:background="#DD111827" android:gravity="center" android:orientation="horizontal">
+                <TextView android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:gravity="center" android:text="Ⅱ" android:textColor="@color/white" android:textSize="24sp" />
+                <TextView android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:gravity="center" android:text="📷" android:textColor="@color/white" android:textSize="22sp" />
+                <TextView android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:gravity="center" android:text="▣" android:textColor="@color/white" android:textSize="22sp" />
+                <TextView android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:gravity="center" android:text="🔊" android:textColor="@color/white" android:textSize="20sp" />
+            </LinearLayout>
+        </FrameLayout>
+        <LinearLayout android:layout_width="match_parent" android:layout_height="58dp" android:orientation="horizontal" android:paddingHorizontal="16dp">
+            <TextView android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:gravity="center_vertical" android:text="事件列表" android:textColor="@color/dashboard_blue" android:textSize="15sp" android:textStyle="bold" />
+            <TextView android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:gravity="center_vertical" android:text="AI识别统计" android:textColor="@color/text_secondary" android:textSize="15sp" />
+            <TextView android:layout_width="wrap_content" android:layout_height="match_parent" android:gravity="center_vertical" android:text="全部事件 ˅" android:textColor="@color/text_secondary" android:textSize="12sp" />
+        </LinearLayout>
+        <LinearLayout android:layout_width="match_parent" android:layout_height="92dp" android:paddingHorizontal="16dp" android:gravity="center_vertical" android:orientation="horizontal">
+            <ImageView android:layout_width="70dp" android:layout_height="56dp" android:scaleType="centerCrop" android:src="@drawable/video_live_crane" />
+            <TextView android:layout_width="0dp" android:layout_height="match_parent" android:layout_marginStart="12dp" android:layout_weight="1" android:gravity="center_vertical" android:text="未佩戴安全帽\n1号塔吊区                         10:29:58" android:textColor="@color/text_primary" android:textSize="13sp" android:lineSpacingExtra="6dp" />
+            <TextView android:layout_width="54dp" android:layout_height="26dp" android:background="@drawable/bg_chip_red_soft" android:gravity="center" android:text="未处理" android:textColor="#F04438" android:textSize="12sp" />
+        </LinearLayout>
+        <LinearLayout android:layout_width="match_parent" android:layout_height="92dp" android:paddingHorizontal="16dp" android:gravity="center_vertical" android:orientation="horizontal">
+            <ImageView android:layout_width="70dp" android:layout_height="56dp" android:scaleType="centerCrop" android:src="@drawable/video_live_crane" />
+            <TextView android:layout_width="0dp" android:layout_height="match_parent" android:layout_marginStart="12dp" android:layout_weight="1" android:gravity="center_vertical" android:text="高危区域聚集\n1号塔吊区                         10:28:31" android:textColor="@color/text_primary" android:textSize="13sp" android:lineSpacingExtra="6dp" />
+            <TextView android:layout_width="54dp" android:layout_height="26dp" android:background="@drawable/bg_chip_red_soft" android:gravity="center" android:text="未处理" android:textColor="#F04438" android:textSize="12sp" />
+        </LinearLayout>
+    </LinearLayout>
+</androidx.core.widget.NestedScrollView>

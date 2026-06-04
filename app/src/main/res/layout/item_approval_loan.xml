@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/approval_loan_card"
+    android:layout_width="match_parent"
+    android:layout_height="94dp"
+    android:layout_marginTop="10dp"
+    android:background="@drawable/bg_card_stroke"
+    android:clickable="true"
+    android:foreground="?attr/selectableItemBackground"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:padding="12dp">
+    <TextView android:layout_width="38dp" android:layout_height="38dp" android:background="@drawable/bg_status_soft_green" android:gravity="center" android:text="借" android:textColor="#0BA260" android:textSize="16sp" android:textStyle="bold" />
+    <LinearLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_marginStart="12dp" android:layout_weight="1" android:orientation="vertical">
+        <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="王建国" android:textColor="@color/text_primary" android:textSize="15sp" android:textStyle="bold" />
+        <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:text="项目：中建 · 未来城二期项目" android:textColor="@color/text_secondary" android:textSize="11sp" />
+        <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="3dp" android:text="班组：架子班" android:textColor="@color/text_secondary" android:textSize="11sp" />
+        <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="5dp" android:text="申请时间：2024-05-20 08:20" android:textColor="@color/text_secondary" android:textSize="11sp" />
+    </LinearLayout>
+    <LinearLayout android:layout_width="68dp" android:layout_height="match_parent" android:gravity="center_vertical|end" android:orientation="vertical">
+        <TextView android:layout_width="56dp" android:layout_height="24dp" android:background="@drawable/bg_status_soft_green" android:gravity="center" android:text="借支申请" android:textColor="#0BA260" android:textSize="11sp" />
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="22dp" android:text="待审批" android:textColor="#F04438" android:textSize="12sp" android:textStyle="bold" />
+    </LinearLayout>
+</LinearLayout>

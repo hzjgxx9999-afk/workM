@@ -1,0 +1,93 @@
+<resources>
+    <string name="app_name">工人管理监管端</string>
+    <string name="nav_home">首页</string>
+    <string name="nav_supervision">项目</string>
+    <string name="nav_todo">成员</string>
+    <string name="nav_message">消息</string>
+    <string name="nav_profile">审批</string>
+
+    <string name="home_header_title">监管看板</string>
+    <string name="home_header_subtitle">聚焦项目风险、定位态势与审批闭环</string>
+    <string name="current_project">华东片区 · 一号工地</string>
+    <string name="switch_project">切换项目</string>
+    <string name="section_core_metrics">核心统计</string>
+    <string name="section_risk_warning">风险预警</string>
+    <string name="section_pending_tasks">待办事项</string>
+    <string name="section_quick_actions">快捷入口</string>
+    <string name="section_trends">趋势概览</string>
+    <string name="trend_attendance">出勤趋势</string>
+    <string name="trend_hazard">隐患整改</string>
+    <string name="trend_workorder">工单时效</string>
+    <string name="trend_ranking">项目排名</string>
+    <string name="trend_attendance_value">连续 7 天 &gt; 90%</string>
+    <string name="trend_hazard_value">整改率 84%</string>
+    <string name="trend_workorder_value">超时率 3.2%</string>
+    <string name="trend_ranking_value">华东片区排名第 1</string>
+    <string name="home_project_badge">当前项目</string>
+
+    <string name="supervision_title">监管总览</string>
+    <string name="supervision_subtitle">当前聚焦驾驶舱、视频监控、巡检隐患、工单与审批闭环</string>
+
+    <string name="todo_title">审批中心</string>
+    <string name="todo_subtitle">监管端统一处理工人端发起的补卡、入场、请假等申请，并保留完整审批记录</string>
+    <string name="today_focus">今日重点</string>
+    <string name="approval_focus_text">优先处理补卡、入场与请假申请，避免一线作业受阻。</string>
+    <string name="approval_pending_stat">待审批</string>
+    <string name="approval_processed_stat">今日已处理</string>
+    <string name="approval_rejected_stat">已驳回</string>
+    <string name="approval_tab_pending">待我审批</string>
+    <string name="approval_tab_processed">我已审批</string>
+    <string name="approval_empty">当前筛选条件下暂无审批单</string>
+    <string name="approval_dialog_approve_title">同意申请</string>
+    <string name="approval_dialog_reject_title">驳回申请</string>
+    <string name="approval_dialog_hint">请输入审批意见，可留空</string>
+    <string name="approval_action_approve">同意</string>
+    <string name="approval_action_reject">驳回</string>
+    <string name="approval_action_confirm">确认</string>
+    <string name="approval_action_cancel">取消</string>
+    <string name="approval_result_label">审批结果</string>
+    <string name="approval_reject_reason_label">驳回原因</string>
+    <string name="approval_toast_approved">审批已通过</string>
+    <string name="approval_toast_rejected">审批已驳回</string>
+    <string name="approval_toast_cockpit">驾驶舱将接项目定位与地图接口</string>
+    <string name="approval_toast_video">视频监控将接入视频平台通道</string>
+    <string name="approval_toast_scan">扫码验证页面待接扫码 SDK</string>
+    <string name="approval_toast_hazard">隐患页面待补详情</string>
+    <string name="approval_toast_workorder">工单监管页面待补详情</string>
+    <string name="approval_toast_report">报表页面待补详情</string>
+    <string name="approval_field_form_no">单号：%1$s</string>
+    <string name="approval_field_applicant">申请人：%1$s</string>
+    <string name="approval_field_project">所属项目：%1$s</string>
+    <string name="approval_field_submitted_at">提交时间：%1$s</string>
+    <string name="approval_field_node">当前节点：%1$s</string>
+    <string name="approval_field_reviewer">审批人：%1$s</string>
+    <string name="approval_field_reviewed_at">处理时间：%1$s</string>
+    <string name="approval_default_remark_approve">同意，按流程执行。</string>
+    <string name="approval_default_remark_reject">资料不完整，请补充后重新提交。</string>
+
+    <string name="message_title">消息与预警</string>
+    <string name="message_subtitle">系统通知、审批消息和风险预警按优先级分发</string>
+    <string name="message_unread">未读消息</string>
+    <string name="message_priority_warning">高优预警</string>
+
+    <string name="profile_title">监管身份</string>
+    <string name="profile_subtitle">项目经理 · 华东片区 · 数据范围已同步</string>
+    <string name="profile_name">李建国</string>
+    <string name="profile_data_scope">数据范围：华东片区全部项目 + 所属班组</string>
+    <string name="logout">退出登录</string>
+
+    <string name="launch_loading">正在检查登录状态...</string>
+    <string name="login_title">监管端登录</string>
+    <string name="login_subtitle">使用项目经理账号进入监管端，系统会校验账号身份和项目绑定关系。</string>
+    <string name="login_account_scope_tip">仅允许 PROJECT_MANAGER 登录。审批数据以当前绑定项目为准，未绑定项目时后端会拒绝访问。</string>
+    <string name="login_account_label">手机号</string>
+    <string name="login_account_hint">请输入手机号</string>
+    <string name="login_password_label">密码</string>
+    <string name="login_password_hint">请输入登录密码</string>
+    <string name="login_submit">登录并进入监管端</string>
+    <string name="login_loading">正在登录...</string>
+    <string name="login_required_account">请输入手机号</string>
+    <string name="login_required_password">请输入密码</string>
+    <string name="login_success">登录成功</string>
+    <string name="logout_success">已退出登录</string>
+</resources>

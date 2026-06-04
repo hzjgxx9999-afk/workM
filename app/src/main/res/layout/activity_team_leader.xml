@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/team_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_app_page"
+    android:fillViewport="true"
+    android:overScrollMode="never">
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="16dp">
+        <FrameLayout android:layout_width="match_parent" android:layout_height="46dp">
+            <ImageButton android:id="@+id/back_button" android:layout_width="42dp" android:layout_height="42dp" android:layout_gravity="start|center_vertical" android:background="?attr/selectableItemBackgroundBorderless" android:padding="9dp" android:src="@drawable/ic_back" />
+            <TextView android:layout_width="wrap_content" android:layout_height="match_parent" android:layout_gravity="center" android:gravity="center" android:text="班组长管理" android:textColor="@color/text_primary" android:textSize="18sp" android:textStyle="bold" />
+            <TextView android:layout_width="42dp" android:layout_height="42dp" android:layout_gravity="end|center_vertical" android:gravity="center" android:text="+" android:textColor="@color/text_primary" android:textSize="24sp" />
+        </FrameLayout>
+        <LinearLayout android:layout_width="match_parent" android:layout_height="38dp" android:layout_marginTop="10dp" android:gravity="center_vertical" android:orientation="horizontal">
+            <TextView android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:background="@drawable/bg_search_pill" android:gravity="center_vertical" android:paddingStart="14dp" android:text="搜索班组长姓名、手机号" android:textColor="#9AA4B2" android:textSize="12sp" />
+            <TextView android:layout_width="64dp" android:layout_height="match_parent" android:drawableStart="@drawable/ic_filter" android:gravity="center" android:text="筛选" android:textColor="@color/text_primary" android:textSize="13sp" />
+        </LinearLayout>
+        <LinearLayout android:layout_width="match_parent" android:layout_height="36dp" android:layout_marginTop="10dp" android:gravity="center_vertical" android:orientation="horizontal">
+            <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="共 28 人" android:textColor="@color/text_primary" android:textSize="13sp" />
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="按异常数排序  >" android:textColor="@color/text_primary" android:textSize="13sp" />
+        </LinearLayout>
+        <include layout="@layout/item_team_leader_li" />
+        <include layout="@layout/item_team_leader_wang" />
+        <include layout="@layout/item_team_leader_zhao" />
+        <include layout="@layout/item_team_leader_sun" />
+    </LinearLayout>
+</androidx.core.widget.NestedScrollView>

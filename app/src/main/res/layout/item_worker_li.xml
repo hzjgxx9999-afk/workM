@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" android:id="@+id/worker_li_card" android:layout_width="match_parent" android:layout_height="110dp" android:layout_marginTop="10dp" android:background="@drawable/bg_card_stroke" android:clickable="true" android:foreground="?attr/selectableItemBackground" android:gravity="center_vertical" android:orientation="horizontal" android:padding="12dp">
+    <ImageView android:layout_width="58dp" android:layout_height="58dp" android:scaleType="centerCrop" android:src="@drawable/worker_avatar_li" />
+    <LinearLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_marginStart="12dp" android:layout_weight="1" android:orientation="vertical">
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center_vertical" android:orientation="horizontal">
+            <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="李四" android:textColor="@color/text_primary" android:textSize="17sp" android:textStyle="bold" />
+            <TextView android:layout_width="50dp" android:layout_height="22dp" android:background="@drawable/bg_status_soft_orange" android:gravity="center" android:text="培训中" android:textColor="#E87900" android:textSize="11sp" android:textStyle="bold" />
+        </LinearLayout>
+        <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="5dp" android:text="工种：模板工        所属班组：模板班组" android:textColor="@color/text_primary" android:textSize="12sp" />
+        <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="5dp" android:text="班组长：王师傅     项目：中建 · 未来城二期" android:textColor="@color/text_primary" android:textSize="12sp" />
+        <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="5dp" android:text="入场时间：2024-05-12" android:textColor="@color/text_secondary" android:textSize="11sp" />
+    </LinearLayout>
+</LinearLayout>

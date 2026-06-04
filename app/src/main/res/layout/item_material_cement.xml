@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" android:id="@+id/material_cement_card" android:layout_width="match_parent" android:layout_height="104dp" android:layout_marginTop="8dp" android:background="@drawable/bg_card_stroke" android:clickable="true" android:foreground="?attr/selectableItemBackground" android:gravity="center_vertical" android:orientation="horizontal" android:padding="10dp">
+    <ImageView android:layout_width="76dp" android:layout_height="76dp" android:scaleType="centerCrop" android:src="@drawable/material_cement" />
+    <LinearLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_marginStart="10dp" android:layout_weight="1" android:orientation="vertical">
+        <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="水泥  P.O 42.5" android:textColor="@color/text_primary" android:textSize="15sp" android:textStyle="bold" />
+        <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="5dp" android:text="规格：袋装 50kg\n当前数量：5,326 吨\n存放位置：2#仓库\n负责人：李工" android:textColor="@color/text_primary" android:textSize="11sp" android:lineSpacingExtra="3dp" />
+    </LinearLayout>
+</LinearLayout>

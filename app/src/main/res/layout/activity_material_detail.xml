@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/material_detail_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_app_page">
+    <androidx.core.widget.NestedScrollView android:layout_width="match_parent" android:layout_height="match_parent" android:fillViewport="true" android:overScrollMode="never" android:paddingBottom="78dp">
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="16dp">
+            <FrameLayout android:layout_width="match_parent" android:layout_height="48dp">
+                <ImageButton android:id="@+id/back_button" android:layout_width="42dp" android:layout_height="42dp" android:layout_gravity="start|center_vertical" android:background="?attr/selectableItemBackgroundBorderless" android:padding="9dp" android:src="@drawable/ic_back" />
+                <TextView android:layout_width="wrap_content" android:layout_height="match_parent" android:layout_gravity="center" android:gravity="center" android:text="材料详情" android:textColor="@color/text_primary" android:textSize="18sp" android:textStyle="bold" />
+                <ImageButton android:layout_width="42dp" android:layout_height="42dp" android:layout_gravity="end|center_vertical" android:background="?attr/selectableItemBackgroundBorderless" android:padding="9dp" android:src="@drawable/ic_share" />
+            </FrameLayout>
+            <LinearLayout android:layout_width="match_parent" android:layout_height="110dp" android:layout_marginTop="8dp" android:gravity="center_vertical" android:orientation="horizontal">
+                <ImageView android:layout_width="90dp" android:layout_height="90dp" android:scaleType="centerCrop" android:src="@drawable/material_steel" />
+                <TextView android:layout_width="0dp" android:layout_height="match_parent" android:layout_marginStart="14dp" android:layout_weight="1" android:gravity="center_vertical" android:text="钢筋  HRB400E\n规格型号    Φ12mm\n计量单位    吨\n材料编码    MAT-STEEL-0012" android:textColor="@color/text_primary" android:textSize="14sp" android:lineSpacingExtra="6dp" />
+                <TextView android:layout_width="42dp" android:layout_height="24dp" android:background="@drawable/bg_status_soft_green" android:gravity="center" android:text="正常" android:textColor="#0BA260" android:textSize="12sp" />
+            </LinearLayout>
+            <LinearLayout android:layout_width="match_parent" android:layout_height="142dp" android:layout_marginTop="8dp" android:background="@drawable/bg_blue_panel" android:orientation="vertical" android:padding="16dp">
+                <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="当前库存" android:textColor="@color/white" android:textSize="14sp" />
+                <TextView android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" android:gravity="center_vertical" android:text="4,856 吨" android:textColor="@color/white" android:textSize="32sp" android:textStyle="bold" />
+                <LinearLayout android:layout_width="match_parent" android:layout_height="42dp" android:orientation="horizontal">
+                    <TextView style="@style/BraceletOverviewValue" android:text="安全库存\n1,000吨" />
+                    <TextView style="@style/BraceletOverviewValue" android:text="最高库存\n6,200吨" />
+                    <TextView style="@style/BraceletOverviewValue" android:text="最低库存\n600吨" />
+                </LinearLayout>
+            </LinearLayout>
+            <TextView android:layout_width="match_parent" android:layout_height="112dp" android:layout_marginTop="12dp" android:background="@drawable/bg_card_stroke" android:gravity="center_vertical" android:padding="14dp" android:text="存放信息\n存放位置                                      1#材料堆场A区\n堆放面积                                      320㎡\n负责人                                        张师傅\n联系电话                                      138 **** 5678" android:textColor="@color/text_primary" android:textSize="13sp" android:lineSpacingExtra="6dp" />
+            <TextView android:layout_width="match_parent" android:layout_height="220dp" android:layout_marginTop="12dp" android:background="@drawable/bg_card_stroke" android:gravity="center_vertical" android:padding="14dp" android:text="近期出入库记录\n入库       +320 吨      2024-05-20 09:15       李工\n出库       -180 吨      2024-05-19 16:30       王工\n入库       +500 吨      2024-05-18 10:20       李工\n出库       -260 吨      2024-05-17 14:25       王工\n入库       +420 吨      2024-05-16 09:40       李工\n\n查看更多 >" android:textColor="@color/text_primary" android:textSize="13sp" android:lineSpacingExtra="8dp" />
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+    <LinearLayout android:layout_width="match_parent" android:layout_height="70dp" android:layout_gravity="bottom" android:background="@color/white" android:elevation="6dp" android:gravity="center" android:orientation="horizontal" android:paddingHorizontal="16dp">
+        <TextView android:layout_width="0dp" android:layout_height="46dp" android:layout_marginEnd="8dp" android:layout_weight="1" android:background="@drawable/bg_round_blue" android:gravity="center" android:text="入库登记" android:textColor="@color/white" android:textSize="16sp" android:textStyle="bold" />
+        <TextView android:layout_width="0dp" android:layout_height="46dp" android:layout_marginStart="8dp" android:layout_weight="1" android:background="@drawable/bg_badge_red" android:backgroundTint="#FF8A1E" android:gravity="center" android:text="出库登记" android:textColor="@color/white" android:textSize="16sp" android:textStyle="bold" />
+    </LinearLayout>
+</FrameLayout>

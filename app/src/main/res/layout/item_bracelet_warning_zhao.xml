@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" android:id="@+id/bracelet_warning_zhao_card" android:layout_width="match_parent" android:layout_height="158dp" android:layout_marginTop="10dp" android:background="@drawable/bg_card_stroke" android:clickable="true" android:foreground="?attr/selectableItemBackground" android:gravity="center_vertical" android:orientation="horizontal" android:padding="12dp">
+    <ImageView android:layout_width="58dp" android:layout_height="58dp" android:scaleType="centerCrop" android:src="@drawable/worker_avatar_zhao" />
+    <LinearLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_marginStart="12dp" android:layout_weight="1" android:orientation="vertical">
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center_vertical" android:orientation="horizontal">
+            <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="赵六    长时间离线" android:textColor="@color/text_primary" android:textSize="16sp" android:textStyle="bold" />
+            <TextView android:layout_width="54dp" android:layout_height="22dp" android:gravity="center" android:text="待处理" android:textColor="#F05A24" android:textSize="12sp" android:textStyle="bold" />
+        </LinearLayout>
+        <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="7dp" android:text="异常值：离线48分钟\n班组：架子班组\n上报时间：2024-05-20 09:05\nAI建议：建议立即核实佩戴状态" android:textColor="@color/text_primary" android:textSize="13sp" android:lineSpacingExtra="4dp" />
+        <LinearLayout android:layout_width="match_parent" android:layout_height="32dp" android:layout_marginTop="8dp" android:orientation="horizontal">
+            <TextView android:layout_width="0dp" android:layout_height="match_parent" android:layout_marginEnd="5dp" android:layout_weight="1" android:background="@drawable/bg_card_stroke" android:gravity="center" android:text="联系班组长" android:textColor="@color/text_primary" android:textSize="12sp" />
+            <TextView android:layout_width="0dp" android:layout_height="match_parent" android:layout_marginHorizontal="5dp" android:layout_weight="1" android:background="@drawable/bg_outline_blue" android:gravity="center" android:text="查看详情" android:textColor="@color/dashboard_blue" android:textSize="12sp" />
+            <TextView android:layout_width="0dp" android:layout_height="match_parent" android:layout_marginStart="5dp" android:layout_weight="1" android:background="@drawable/bg_chip_orange_soft" android:gravity="center" android:text="标记已处理" android:textColor="#F05A24" android:textSize="12sp" />
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>

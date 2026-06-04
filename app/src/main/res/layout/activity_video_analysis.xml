@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/video_analysis_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:fillViewport="true"
+    android:overScrollMode="never">
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="16dp">
+        <FrameLayout android:layout_width="match_parent" android:layout_height="48dp">
+            <ImageButton android:id="@+id/back_button" android:layout_width="42dp" android:layout_height="42dp" android:layout_gravity="start|center_vertical" android:background="?attr/selectableItemBackgroundBorderless" android:padding="9dp" android:src="@drawable/ic_back" />
+            <TextView android:layout_width="wrap_content" android:layout_height="match_parent" android:layout_gravity="center" android:gravity="center" android:text="智能分析" android:textColor="@color/text_primary" android:textSize="18sp" android:textStyle="bold" />
+            <TextView android:layout_width="76dp" android:layout_height="34dp" android:layout_gravity="end|center_vertical" android:background="@drawable/bg_round_blue" android:gravity="center" android:text="导出报表" android:textColor="@color/white" android:textSize="12sp" />
+        </FrameLayout>
+        <TextView android:layout_width="match_parent" android:layout_height="42dp" android:gravity="center_vertical" android:text="中建 · 未来城二期项目  ˅" android:textColor="@color/text_primary" android:textSize="14sp" />
+        <LinearLayout android:layout_width="match_parent" android:layout_height="40dp" android:background="@drawable/bg_card_stroke" android:orientation="horizontal">
+            <TextView android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:gravity="center" android:text="日" android:textColor="@color/dashboard_blue" android:textStyle="bold" />
+            <TextView android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:gravity="center" android:text="周" android:textColor="@color/text_secondary" />
+            <TextView android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:gravity="center" android:text="月" android:textColor="@color/text_secondary" />
+            <TextView android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:gravity="center" android:text="自定义" android:textColor="@color/text_secondary" />
+        </LinearLayout>
+        <TextView android:layout_width="match_parent" android:layout_height="42dp" android:gravity="center_vertical" android:text="今日概览（2024-05-20）" android:textColor="@color/text_primary" android:textSize="15sp" android:textStyle="bold" />
+        <GridLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:columnCount="2">
+            <TextView style="@style/ApprovalStatCard" android:background="@drawable/bg_chip_red_soft" android:text="安全事件\n23 起\n较昨日 +5" android:textColor="@color/dashboard_blue" />
+            <TextView style="@style/ApprovalStatCard" android:background="@drawable/bg_approval_orange_soft" android:text="考勤异常\n18 人次\n较昨日 +3" />
+            <TextView style="@style/ApprovalStatCard" android:background="@drawable/bg_approval_blue_soft" android:text="进度预警\n4 项\n较昨日 -1" />
+            <TextView style="@style/ApprovalStatCard" android:background="@drawable/bg_approval_green_soft" android:text="隐患整改率\n82%\n较昨日 +6%" />
+        </GridLayout>
+        <LinearLayout android:layout_width="match_parent" android:layout_height="228dp" android:layout_marginTop="12dp" android:background="@drawable/bg_card_stroke" android:orientation="vertical" android:padding="12dp">
+            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="安全事件趋势" android:textColor="@color/text_primary" android:textSize="15sp" android:textStyle="bold" />
+            <ImageView android:layout_width="match_parent" android:layout_height="0dp" android:layout_marginTop="8dp" android:layout_weight="1" android:src="@drawable/bg_ai_line_chart" />
+        </LinearLayout>
+        <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="14dp" android:text="AI整改建议                                      更多建议 >" android:textColor="@color/text_primary" android:textSize="15sp" android:textStyle="bold" />
+        <TextView android:layout_width="match_parent" android:layout_height="138dp" android:layout_marginTop="8dp" android:text="1. 塔吊区域未佩戴安全帽事件较多，建议加强安全教育……        高优先级\n\n2. 东门出入口车辆间隔不足，建议增加冲洗频次……              中优先级\n\n3. 临边防护缺失问题上升，建议增加巡检频次……                中优先级\n\n4. 部分模板进度滞后，建议优化施工计划与资源配置。            低优先级" android:textColor="@color/text_primary" android:textSize="12sp" android:lineSpacingExtra="5dp" />
+    </LinearLayout>
+</androidx.core.widget.NestedScrollView>

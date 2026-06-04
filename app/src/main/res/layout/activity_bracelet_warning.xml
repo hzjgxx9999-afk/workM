@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/bracelet_warning_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_app_page"
+    android:fillViewport="true"
+    android:overScrollMode="never">
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical">
+        <FrameLayout android:layout_width="match_parent" android:layout_height="58dp" android:background="@drawable/bg_bracelet_top" android:paddingHorizontal="12dp">
+            <ImageButton android:id="@+id/back_button" android:layout_width="42dp" android:layout_height="42dp" android:layout_gravity="start|center_vertical" android:background="?attr/selectableItemBackgroundBorderless" android:padding="9dp" android:src="@drawable/ic_back" android:tint="@color/white" />
+            <TextView android:layout_width="wrap_content" android:layout_height="match_parent" android:layout_gravity="center" android:gravity="center" android:text="手环异常预警" android:textColor="@color/white" android:textSize="18sp" android:textStyle="bold" />
+        </FrameLayout>
+        <GridLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_margin="12dp" android:columnCount="4">
+            <TextView style="@style/BraceletStatCard" android:text="今日异常\n21条" android:textColor="#F05A24" />
+            <TextView style="@style/BraceletStatCard" android:text="待处理\n8条" android:textColor="#FF8A1E" />
+            <TextView style="@style/BraceletStatCard" android:text="已处理\n13条" android:textColor="#0BA260" />
+            <TextView style="@style/BraceletStatCard" android:text="严重异常\n2条" android:textColor="#FF3045" />
+        </GridLayout>
+        <LinearLayout android:layout_width="match_parent" android:layout_height="38dp" android:layout_marginHorizontal="12dp" android:orientation="horizontal">
+            <TextView android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:background="@drawable/bg_round_blue" android:gravity="center" android:text="体温异常" android:textColor="@color/white" android:textSize="12sp" />
+            <TextView android:layout_width="0dp" android:layout_height="match_parent" android:layout_marginStart="6dp" android:layout_weight="1" android:background="@drawable/bg_search_pill" android:gravity="center" android:text="心率异常" android:textColor="@color/text_primary" android:textSize="12sp" />
+            <TextView android:layout_width="0dp" android:layout_height="match_parent" android:layout_marginStart="6dp" android:layout_weight="1" android:background="@drawable/bg_search_pill" android:gravity="center" android:text="长时间离线" android:textColor="@color/text_primary" android:textSize="12sp" />
+            <TextView android:layout_width="0dp" android:layout_height="match_parent" android:layout_marginStart="6dp" android:layout_weight="1" android:background="@drawable/bg_search_pill" android:gravity="center" android:text="低电量" android:textColor="@color/text_primary" android:textSize="12sp" />
+        </LinearLayout>
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:paddingHorizontal="12dp">
+            <include layout="@layout/item_bracelet_warning_li" />
+            <include layout="@layout/item_bracelet_warning_zhao" />
+            <include layout="@layout/item_bracelet_worker_wang" />
+        </LinearLayout>
+    </LinearLayout>
+</androidx.core.widget.NestedScrollView>
