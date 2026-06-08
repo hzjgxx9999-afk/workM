@@ -227,7 +227,7 @@ class AuthRepositoryRestoreSessionTest {
 
         override suspend fun manageAiWarningUnreadCount(
             token: String,
-            body: Map<String, String>,
+            body: AiWarningListReq,
         ): AjaxResp<Int> = error("unused")
     }
 }

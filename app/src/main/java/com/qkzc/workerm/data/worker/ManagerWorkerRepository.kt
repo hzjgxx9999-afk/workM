@@ -44,6 +44,16 @@ class ManagerWorkerRepository(
         return response.data?.toDomain() ?: ManagerWorker(workerUserId = workerUserId, projectId = projectId)
     }
 
+    suspend fun scanQrTicket(token: String, projectId: Long, ticket: String): ManagerWorker {
+        require(ticket.isNotBlank()) { "二维码ticket不能为空" }
+        val response = api.manageWorkerScanTicket(
+            token = bearerToken(token),
+            body = ManagerWorkerScanReq(projectId = projectId, ticket = ticket),
+        )
+        requireSuccess(response.code, response.msg)
+        return response.data?.toDomain() ?: ManagerWorker(workerUserId = 0L, projectId = projectId)
+    }
+
     private fun ManagerWorkerVo.toDomain(): ManagerWorker {
         return ManagerWorker(
             relationId = relationId ?: 0L,
@@ -58,6 +68,18 @@ class ManagerWorkerRepository(
             projectName = projectName.orEmpty(),
             leaderId = leaderId ?: 0L,
             leaderName = leaderName.orEmpty(),
+            teamId = teamId ?: 0L,
+            teamName = teamName.orEmpty(),
+            bindStatus = bindStatus.orEmpty(),
+            bindTime = bindTime.orEmpty(),
+            enterTime = enterTime.orEmpty(),
+            exitTime = exitTime.orEmpty(),
+            entryStatus = entryStatus.orEmpty(),
+            identityStatus = identityStatus.orEmpty(),
+            safetyTrainingStatus = safetyTrainingStatus.orEmpty(),
+            healthCheckStatus = healthCheckStatus.orEmpty(),
+            entryContractStatus = entryContractStatus.orEmpty(),
+            insuranceStatus = insuranceStatus.orEmpty(),
             signed = signed,
             signedTime = signedTime.orEmpty(),
             contractStatus = contractStatus.orEmpty(),
@@ -84,6 +106,18 @@ data class ManagerWorker(
     val projectName: String = "",
     val leaderId: Long = 0L,
     val leaderName: String = "",
+    val teamId: Long = 0L,
+    val teamName: String = "",
+    val bindStatus: String = "",
+    val bindTime: String = "",
+    val enterTime: String = "",
+    val exitTime: String = "",
+    val entryStatus: String = "",
+    val identityStatus: String = "",
+    val safetyTrainingStatus: String = "",
+    val healthCheckStatus: String = "",
+    val entryContractStatus: String = "",
+    val insuranceStatus: String = "",
     val signed: Long? = null,
     val signedTime: String = "",
     val contractStatus: String = "",

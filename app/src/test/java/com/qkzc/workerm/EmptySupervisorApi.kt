@@ -17,9 +17,17 @@ import com.qkzc.workerm.data.network.AuditListReq
 import com.qkzc.workerm.data.network.ExceptionAuditReq
 import com.qkzc.workerm.data.network.ExceptionDetailReq
 import com.qkzc.workerm.data.network.LoginReq
+import com.qkzc.workerm.data.network.ManageInviteCodeCreateReq
+import com.qkzc.workerm.data.network.ManageInviteCodeStatusReq
+import com.qkzc.workerm.data.network.ManageInviteCodeVo
+import com.qkzc.workerm.data.network.ManagerLeaderOptionVo
 import com.qkzc.workerm.data.network.ManagerHomeOverviewVo
+import com.qkzc.workerm.data.network.ManagerProjectTeamSaveReq
+import com.qkzc.workerm.data.network.ManagerProjectTeamStatusReq
+import com.qkzc.workerm.data.network.ManagerProjectTeamVo
 import com.qkzc.workerm.data.network.ManagerProjectVo
 import com.qkzc.workerm.data.network.ManagerTeamLeaderVo
+import com.qkzc.workerm.data.network.ManagerWorkTypeOptionVo
 import com.qkzc.workerm.data.network.ManagerWorkerScanReq
 import com.qkzc.workerm.data.network.ManagerWorkerVo
 import com.qkzc.workerm.data.network.MaterialAuditReq
@@ -34,6 +42,15 @@ open class EmptySupervisorApi : SupervisorApi {
     override suspend fun manageProjects(token: String): AjaxResp<List<ManagerProjectVo>> = error("unused")
     override suspend fun manageProjectDetail(token: String, projectId: Long): AjaxResp<ManagerProjectVo> = error("unused")
     override suspend fun manageProjectTeamLeaders(token: String, projectId: Long): AjaxResp<List<ManagerTeamLeaderVo>> = error("unused")
+    override suspend fun manageProjectTeams(token: String, projectId: Long): AjaxResp<List<ManagerProjectTeamVo>> = error("unused")
+    override suspend fun manageProjectLeaderOptions(token: String, projectId: Long, keyword: String?): AjaxResp<List<ManagerLeaderOptionVo>> = error("unused")
+    override suspend fun manageProjectWorkTypes(token: String, projectId: Long, keyword: String?): AjaxResp<List<ManagerWorkTypeOptionVo>> = error("unused")
+    override suspend fun createManageProjectTeam(token: String, projectId: Long, body: ManagerProjectTeamSaveReq): AjaxResp<ManagerProjectTeamVo> = error("unused")
+    override suspend fun updateManageProjectTeam(token: String, projectId: Long, teamId: Long, body: ManagerProjectTeamSaveReq): AjaxResp<ManagerProjectTeamVo> = error("unused")
+    override suspend fun updateManageProjectTeamStatus(token: String, projectId: Long, teamId: Long, body: ManagerProjectTeamStatusReq): AjaxResp<Any> = error("unused")
+    override suspend fun manageInviteCodeList(token: String, projectId: Long?, status: String?, inviteCode: String?): AjaxResp<List<ManageInviteCodeVo>> = error("unused")
+    override suspend fun createManageInviteCode(token: String, body: ManageInviteCodeCreateReq): AjaxResp<ManageInviteCodeVo> = error("unused")
+    override suspend fun updateManageInviteCodeStatus(token: String, id: Long, body: ManageInviteCodeStatusReq): AjaxResp<Any> = error("unused")
     override suspend fun manageHomeOverview(token: String, projectId: Long?): AjaxResp<ManagerHomeOverviewVo> = error("unused")
     override suspend fun manageWorkers(token: String, projectId: Long?, status: String?, keyword: String?): AjaxResp<List<ManagerWorkerVo>> = error("unused")
     override suspend fun manageWorkerDetail(token: String, workerId: Long, projectId: Long): AjaxResp<ManagerWorkerVo> = error("unused")
@@ -51,5 +68,5 @@ open class EmptySupervisorApi : SupervisorApi {
     override suspend fun manageAiWarningDetail(token: String, body: AiWarningDetailReq): AjaxResp<AiWarningVo> = error("unused")
     override suspend fun manageAiWarningRead(token: String, body: AiWarningReadReq): AjaxResp<Any> = error("unused")
     override suspend fun manageAiWarningHandle(token: String, body: AiWarningHandleReq): AjaxResp<Any> = error("unused")
-    override suspend fun manageAiWarningUnreadCount(token: String, body: Map<String, String>): AjaxResp<Int> = error("unused")
+    override suspend fun manageAiWarningUnreadCount(token: String, body: AiWarningListReq): AjaxResp<Int> = error("unused")
 }

@@ -6,6 +6,7 @@ import retrofit2.http.Header
 import retrofit2.http.Path
 import retrofit2.http.POST
 import retrofit2.http.Query
+import retrofit2.http.PUT
 
 interface SupervisorApi {
 
@@ -31,6 +32,70 @@ interface SupervisorApi {
         @Header("Authorization") token: String,
         @Path("projectId") projectId: Long,
     ): AjaxResp<List<ManagerTeamLeaderVo>>
+
+    @GET("/app/manage/projects/{projectId}/teams")
+    suspend fun manageProjectTeams(
+        @Header("Authorization") token: String,
+        @Path("projectId") projectId: Long,
+    ): AjaxResp<List<ManagerProjectTeamVo>>
+
+    @GET("/app/manage/projects/{projectId}/leader-options")
+    suspend fun manageProjectLeaderOptions(
+        @Header("Authorization") token: String,
+        @Path("projectId") projectId: Long,
+        @Query("keyword") keyword: String? = null,
+    ): AjaxResp<List<ManagerLeaderOptionVo>>
+
+    @GET("/app/manage/projects/{projectId}/work-types")
+    suspend fun manageProjectWorkTypes(
+        @Header("Authorization") token: String,
+        @Path("projectId") projectId: Long,
+        @Query("keyword") keyword: String? = null,
+    ): AjaxResp<List<ManagerWorkTypeOptionVo>>
+
+    @POST("/app/manage/projects/{projectId}/teams")
+    suspend fun createManageProjectTeam(
+        @Header("Authorization") token: String,
+        @Path("projectId") projectId: Long,
+        @Body body: ManagerProjectTeamSaveReq,
+    ): AjaxResp<ManagerProjectTeamVo>
+
+    @PUT("/app/manage/projects/{projectId}/teams/{teamId}")
+    suspend fun updateManageProjectTeam(
+        @Header("Authorization") token: String,
+        @Path("projectId") projectId: Long,
+        @Path("teamId") teamId: Long,
+        @Body body: ManagerProjectTeamSaveReq,
+    ): AjaxResp<ManagerProjectTeamVo>
+
+    @PUT("/app/manage/projects/{projectId}/teams/{teamId}/status")
+    suspend fun updateManageProjectTeamStatus(
+        @Header("Authorization") token: String,
+        @Path("projectId") projectId: Long,
+        @Path("teamId") teamId: Long,
+        @Body body: ManagerProjectTeamStatusReq,
+    ): AjaxResp<Any>
+
+    @GET("/app/manage/invite-code/list")
+    suspend fun manageInviteCodeList(
+        @Header("Authorization") token: String,
+        @Query("projectId") projectId: Long? = null,
+        @Query("status") status: String? = null,
+        @Query("inviteCode") inviteCode: String? = null,
+    ): AjaxResp<List<ManageInviteCodeVo>>
+
+    @POST("/app/manage/invite-code")
+    suspend fun createManageInviteCode(
+        @Header("Authorization") token: String,
+        @Body body: ManageInviteCodeCreateReq,
+    ): AjaxResp<ManageInviteCodeVo>
+
+    @PUT("/app/manage/invite-code/{id}/status")
+    suspend fun updateManageInviteCodeStatus(
+        @Header("Authorization") token: String,
+        @Path("id") id: Long,
+        @Body body: ManageInviteCodeStatusReq,
+    ): AjaxResp<Any>
 
     @GET("/app/manage/home/overview")
     suspend fun manageHomeOverview(

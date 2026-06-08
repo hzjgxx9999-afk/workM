@@ -7,14 +7,18 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.qkzc.workerm.MainActivity
 import com.qkzc.workerm.R
+import com.qkzc.workerm.data.project.ManagerProject
 import com.qkzc.workerm.data.project.ManagerProjectRepository
 import com.qkzc.workerm.data.session.SessionStore
 import com.qkzc.workerm.databinding.FragmentHomeBinding
 import com.qkzc.workerm.ui.bracelet.BraceletMonitorActivity
 import com.qkzc.workerm.ui.material.MaterialHomeActivity
+import com.qkzc.workerm.ui.project.ManagerProjectAdapter
 import com.qkzc.workerm.ui.project.ProjectDetailActivity
 import com.qkzc.workerm.ui.video.VideoHomeActivity
 import kotlinx.coroutines.flow.first
@@ -26,7 +30,7 @@ class HomeFragment : Fragment() {
     private val binding: FragmentHomeBinding
         get() = checkNotNull(_binding)
     private val projectRepository = ManagerProjectRepository()
-    private var currentProjectId: Long? = null
+    private val projectAdapter = ManagerProjectAdapter { project -> openProject(project) }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -39,6 +43,8 @@ class HomeFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        binding.homeProjectRecycler.layoutManager = LinearLayoutManager(requireContext())
+        binding.homeProjectRecycler.adapter = projectAdapter
         binding.searchButton.setOnClickListener { toast("搜索功能静态占位") }
         binding.notificationButton.setOnClickListener {
             (activity as? MainActivity)?.navigateToTab(R.id.nav_message)
@@ -58,15 +64,12 @@ class HomeFragment : Fragment() {
         binding.braceletAction.setOnClickListener {
             startActivity(Intent(requireContext(), BraceletMonitorActivity::class.java))
         }
+//        binding.inviteCodeAction.setOnClickListener {
+//            (activity as? MainActivity)?.openInviteCodeManage()
+//        }
         binding.allTodoBar.setOnClickListener {
             (activity as? MainActivity)?.navigateToTab(R.id.nav_supervision)
         }
-        val openDetail = View.OnClickListener {
-            openCurrentProject()
-        }
-        binding.root.findViewById<View>(R.id.project_crane_card).setOnClickListener(openDetail)
-        binding.root.findViewById<View>(R.id.project_finance_card).setOnClickListener(openDetail)
-        binding.root.findViewById<View>(R.id.project_industry_card).setOnClickListener(openDetail)
         loadHomeProject()
     }
 
@@ -75,15 +78,21 @@ class HomeFragment : Fragment() {
             runCatching {
                 val session = SessionStore(requireContext().applicationContext).sessionFlow.first()
                 val token = session.accessToken.takeIf { it.isNotBlank() } ?: return@launch
-                projectRepository.loadProjects(token).firstOrNull()
-            }.onSuccess { project ->
-                currentProjectId = project?.projectId
+                projectRepository.loadProjects(token)
+            }.onSuccess { projects ->
+                projectAdapter.submitList(projects.take(3))
+                binding.homeProjectRecycler.isVisible = projects.isNotEmpty()
+                binding.homeProjectEmptyText.isVisible = projects.isEmpty()
+            }.onFailure {
+                projectAdapter.submitList(emptyList())
+                binding.homeProjectRecycler.isVisible = false
+                binding.homeProjectEmptyText.isVisible = true
             }
         }
     }
 
-    private fun openCurrentProject() {
-        val projectId = currentProjectId
+    private fun openProject(project: ManagerProject) {
+        val projectId = project.projectId.takeIf { it > 0L }
         if (projectId == null || projectId <= 0L) {
             toast("暂无可管理项目")
             return
@@ -100,6 +109,7 @@ class HomeFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
+        binding.homeProjectRecycler.adapter = null
         _binding = null
     }
 }

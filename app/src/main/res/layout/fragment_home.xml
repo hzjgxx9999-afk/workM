@@ -296,8 +296,8 @@
                 android:layout_marginTop="12dp"
                 android:columnCount="4">
 
-                <TextView style="@style/HomeActionCard" android:drawableTop="@drawable/ic_doc" android:text="项目管理" />
-                <TextView style="@style/HomeActionCard" android:drawableTop="@drawable/ic_people" android:text="工人管理" />
+<!--                <TextView style="@style/HomeActionCard" android:drawableTop="@drawable/ic_doc" android:text="项目管理" />-->
+<!--                <TextView style="@style/HomeActionCard" android:drawableTop="@drawable/ic_people" android:text="工人管理" />-->
                 <TextView
                     android:id="@+id/approval_center_action"
                     style="@style/HomeActionCard"
@@ -313,12 +313,17 @@
                     style="@style/HomeActionCard"
                     android:drawableTop="@drawable/ic_scan"
                     android:text="视频监控" />
-                <TextView style="@style/HomeActionCard" android:drawableTop="@drawable/ic_ai" android:text="AI预警" />
+<!--                <TextView style="@style/HomeActionCard" android:drawableTop="@drawable/ic_ai" android:text="AI预警" />-->
                 <TextView
                     android:id="@+id/bracelet_action"
                     style="@style/HomeActionCard"
                     android:drawableTop="@drawable/ic_bracelet"
                     android:text="智能手环" />
+<!--                <TextView-->
+<!--                    android:id="@+id/invite_code_action"-->
+<!--                    style="@style/HomeActionCard"-->
+<!--                    android:drawableTop="@drawable/ic_scan"-->
+<!--                    android:text="邀请码" />-->
             </GridLayout>
 
             <LinearLayout
@@ -348,9 +353,23 @@
                     android:textSize="12sp" />
             </LinearLayout>
 
-            <include layout="@layout/item_static_project_crane" />
-            <include layout="@layout/item_static_project_finance" />
-            <include layout="@layout/item_static_project_industry" />
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/home_project_recycler"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:nestedScrollingEnabled="false"
+                android:overScrollMode="never" />
+
+            <TextView
+                android:id="@+id/home_project_empty_text"
+                android:layout_width="match_parent"
+                android:layout_height="96dp"
+                android:gravity="center"
+                android:text="暂无可管理项目"
+                android:textColor="@color/text_secondary"
+                android:textSize="14sp"
+                android:visibility="gone" />
         </LinearLayout>
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>

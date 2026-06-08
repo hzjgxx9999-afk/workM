@@ -18,6 +18,7 @@
             android:layout_height="276dp">
 
             <ImageView
+                android:id="@+id/project_cover_image"
                 android:layout_width="match_parent"
                 android:layout_height="228dp"
                 android:scaleType="centerCrop"
@@ -189,16 +190,41 @@
             android:layout_marginTop="12dp"
             android:columnCount="3">
 
-            <TextView style="@style/DetailActionCard" android:drawableTop="@drawable/ic_doc" android:text="项目资料\n基本信息/合同" />
+            <TextView
+                android:id="@+id/project_materials_action"
+                style="@style/DetailActionCard"
+                android:drawableTop="@drawable/ic_doc"
+                android:text="项目资料\n基本信息/合同" />
             <TextView
                 android:id="@+id/drawing_docs_action"
                 style="@style/DetailActionCard"
                 android:drawableTop="@drawable/ic_project"
                 android:text="图纸文档\n图纸查看/管理" />
-            <TextView style="@style/DetailActionCard" android:drawableTop="@drawable/ic_people" android:text="项目成员\n成员管理/权限" />
-            <TextView style="@style/DetailActionCard" android:drawableTop="@drawable/ic_doc" android:text="施工日志\n日志记录/查看" />
-            <TextView style="@style/DetailActionCard" android:drawableTop="@drawable/ic_export" android:text="导出报表\n数据统计/导出" />
-            <TextView style="@style/DetailActionCard" android:drawableTop="@drawable/ic_scan" android:text="二维码扫码\n现场扫码/巡检" />
+            <TextView
+                android:id="@+id/project_members_action"
+                style="@style/DetailActionCard"
+                android:drawableTop="@drawable/ic_people"
+                android:text="项目成员\n班组管理/权限" />
+            <TextView
+                android:id="@+id/construction_log_action"
+                style="@style/DetailActionCard"
+                android:drawableTop="@drawable/ic_doc"
+                android:text="施工日志\n日志记录/查看" />
+            <TextView
+                android:id="@+id/project_report_action"
+                style="@style/DetailActionCard"
+                android:drawableTop="@drawable/ic_export"
+                android:text="导出报表\n数据统计/导出" />
+            <TextView
+                android:id="@+id/qr_scan_action"
+                style="@style/DetailActionCard"
+                android:drawableTop="@drawable/ic_scan"
+                android:text="二维码扫码\n现场扫码/巡检" />
+            <TextView
+                android:id="@+id/invite_code_action"
+                style="@style/DetailActionCard"
+                android:drawableTop="@drawable/ic_add"
+                android:text="邀请码\n班组注册邀请" />
         </GridLayout>
 
         <LinearLayout
@@ -221,9 +247,20 @@
                 <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="全部文件  >" android:textColor="@color/text_secondary" android:textSize="12sp" />
             </LinearLayout>
 
-            <include layout="@layout/item_detail_file_pdf1" />
-            <include layout="@layout/item_detail_file_pdf2" />
-            <include layout="@layout/item_detail_file_xlsx" />
+            <LinearLayout
+                android:id="@+id/recent_files_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" />
+
+            <TextView
+                android:id="@+id/recent_files_empty_text"
+                android:layout_width="match_parent"
+                android:layout_height="64dp"
+                android:gravity="center"
+                android:text="暂无最近文件"
+                android:textColor="@color/text_secondary"
+                android:textSize="13sp" />
 
             <TextView
                 android:layout_width="match_parent"

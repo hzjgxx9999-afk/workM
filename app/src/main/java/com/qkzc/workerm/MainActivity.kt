@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.isVisible
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
@@ -15,6 +16,7 @@ import com.qkzc.workerm.data.session.SessionStore
 import com.qkzc.workerm.databinding.ActivityMainBinding
 import com.qkzc.workerm.ui.auth.LoginActivity
 import com.qkzc.workerm.ui.home.HomeFragment
+import com.qkzc.workerm.ui.invite.InviteCodeManageFragment
 import com.qkzc.workerm.ui.message.MessageFragment
 import com.qkzc.workerm.ui.profile.ProfileFragment
 import com.qkzc.workerm.ui.supervision.SupervisionFragment
@@ -72,6 +74,9 @@ class MainActivity : AppCompatActivity() {
             switchTab(item.itemId)
             true
         }
+        supportFragmentManager.addOnBackStackChangedListener {
+            binding.bottomNavigation.isVisible = supportFragmentManager.backStackEntryCount == 0
+        }
         if (savedInstanceState == null) {
             binding.bottomNavigation.selectedItemId = R.id.nav_home
         }
@@ -79,6 +84,14 @@ class MainActivity : AppCompatActivity() {
 
     fun navigateToTab(itemId: Int) {
         binding.bottomNavigation.selectedItemId = itemId
+    }
+
+    fun openInviteCodeManage(projectId: Long? = null) {
+        supportFragmentManager.commit {
+            setReorderingAllowed(true)
+            replace(R.id.fragment_container, InviteCodeManageFragment.newInstance(projectId), "invite_code_manage")
+            addToBackStack("invite_code_manage")
+        }
     }
 
     private fun switchTab(itemId: Int) {

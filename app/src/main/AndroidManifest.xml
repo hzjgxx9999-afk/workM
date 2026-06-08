@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.CAMERA" />
 
     <application
         android:name=".app.SupervisionApplication"
@@ -16,6 +17,21 @@
         android:supportsRtl="true"
         android:usesCleartextTraffic="true"
         android:theme="@style/Theme.WorkerM">
+        <activity
+            android:name=".ui.invite.InviteCodeManageActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.project.ProjectReportActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.project.ConstructionLogActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.project.ProjectMaterialsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.project.ProjectTeamManageActivity"
+            android:exported="false" />
         <activity
             android:name=".ui.video.VideoAnalysisActivity"
             android:exported="false" />

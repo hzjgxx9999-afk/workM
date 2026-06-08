@@ -141,7 +141,7 @@ class AiWarningRepositoryTest {
 
         override suspend fun manageAiWarningUnreadCount(
             token: String,
-            body: Map<String, String>,
+            body: AiWarningListReq,
         ): AjaxResp<Int> {
             unreadToken = token
             return AjaxResp(200, "ok", 5)

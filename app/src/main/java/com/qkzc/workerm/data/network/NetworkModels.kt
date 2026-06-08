@@ -43,6 +43,10 @@ data class ManagerProjectVo(
     val progressPercent: Int? = null,
     val startDate: String? = null,
     val plannedFinishDate: String? = null,
+    @SerializedName(
+        value = "coverImageUrl",
+        alternate = ["cover_image_url", "coverUrl", "coverImgUrl", "imageUrl"],
+    )
     val coverImageUrl: String? = null,
     val daysToFinish: Long? = null,
     val workerCount: Int? = null,
@@ -67,6 +71,71 @@ data class ManagerTeamLeaderVo(
     val projectName: String? = null,
     val leaderId: Long? = null,
     val leaderName: String? = null,
+)
+
+data class ManagerProjectTeamVo(
+    val teamId: Long? = null,
+    val relationId: Long? = null,
+    val teamName: String? = null,
+    val leaderId: Long? = null,
+    val leaderName: String? = null,
+    val workTypeId: Long? = null,
+    val workTypeName: String? = null,
+    val status: String? = null,
+    val remark: String? = null,
+)
+
+data class ManagerLeaderOptionVo(
+    val leaderId: Long? = null,
+    val leaderName: String? = null,
+    val mobile: String? = null,
+)
+
+data class ManagerWorkTypeOptionVo(
+    val workTypeId: Long? = null,
+    val workTypeName: String? = null,
+)
+
+data class ManagerProjectTeamSaveReq(
+    val teamName: String,
+    val leaderId: Long,
+    val workTypeId: Long? = null,
+    val remark: String? = null,
+)
+
+data class ManagerProjectTeamStatusReq(
+    val status: String,
+)
+
+data class ManageInviteCodeVo(
+    val id: Long? = null,
+    val inviteCode: String? = null,
+    val projectId: Long? = null,
+    val projectName: String? = null,
+    val leaderId: Long? = null,
+    val leaderName: String? = null,
+    val teamId: Long? = null,
+    val teamName: String? = null,
+    val expireTime: String? = null,
+    val maxUseCount: Int? = null,
+    val usedCount: Int? = null,
+    val status: String? = null,
+    val remark: String? = null,
+    val registerDeepLink: String? = null,
+    val qrContent: String? = null,
+)
+
+data class ManageInviteCodeCreateReq(
+    val projectId: Long,
+    val leaderId: Long,
+    val teamId: Long,
+    val expireTime: String? = null,
+    val maxUseCount: Int? = null,
+    val remark: String? = null,
+)
+
+data class ManageInviteCodeStatusReq(
+    val status: String,
 )
 
 data class ManagerHomeOverviewVo(
@@ -97,6 +166,18 @@ data class ManagerWorkerVo(
     val projectName: String? = null,
     val leaderId: Long? = null,
     val leaderName: String? = null,
+    val teamId: Long? = null,
+    val teamName: String? = null,
+    val bindStatus: String? = null,
+    val bindTime: String? = null,
+    val enterTime: String? = null,
+    val exitTime: String? = null,
+    val entryStatus: String? = null,
+    val identityStatus: String? = null,
+    val safetyTrainingStatus: String? = null,
+    val healthCheckStatus: String? = null,
+    val entryContractStatus: String? = null,
+    val insuranceStatus: String? = null,
     val signed: Long? = null,
     val signedTime: String? = null,
     val contractStatus: String? = null,
@@ -107,7 +188,8 @@ data class ManagerWorkerVo(
 data class ManagerWorkerScanReq(
     val projectId: Long,
     @SerializedName("workerId")
-    val workerUserId: Long,
+    val workerUserId: Long? = null,
+    val ticket: String? = null,
 )
 
 data class AuditListReq(
