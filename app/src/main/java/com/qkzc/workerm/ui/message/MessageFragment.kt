@@ -1,10 +1,17 @@
 package com.qkzc.workerm.ui.message
 
+import android.graphics.BitmapFactory
+import android.graphics.Color
 import android.graphics.Typeface
+import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
+import android.widget.LinearLayout
+import android.widget.ScrollView
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
@@ -22,8 +29,11 @@ import com.qkzc.workerm.data.aiwarning.model.AiWarningDetail
 import com.qkzc.workerm.data.aiwarning.model.AiWarningHandleStatus
 import com.qkzc.workerm.data.session.SessionStore
 import com.qkzc.workerm.databinding.FragmentMessageBinding
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.net.URL
 
 class MessageFragment : Fragment() {
 
@@ -131,7 +141,7 @@ class MessageFragment : Fragment() {
         val pending = detail.item.handleStatus == AiWarningHandleStatus.PENDING
         val builder = AlertDialog.Builder(requireContext())
             .setTitle(detail.item.title)
-            .setMessage(detail.toDialogMessage())
+            .setView(buildDetailView(detail))
             .setNegativeButton("关闭", null)
         if (pending) {
             builder
@@ -145,39 +155,143 @@ class MessageFragment : Fragment() {
         builder.show()
     }
 
-    private fun AiWarningDetail.toDialogMessage(): String {
-        val hazardsText = hazards.takeIf { it.isNotEmpty() }?.joinToString(separator = "\n\n") { hazard ->
-            buildString {
-                append(hazard.name.ifBlank { hazard.code.ifBlank { "未命名隐患" } })
-                if (hazard.level.isNotBlank()) append("（${hazard.level}）")
-                hazard.confidence?.let { append("  置信度 ${"%.0f".format(it * 100)}%") }
-                if (hazard.evidence.isNotBlank()) append("\n证据：${hazard.evidence}")
-                if (hazard.advice.isNotBlank()) append("\n建议：${hazard.advice}")
-            }
-        } ?: "暂无隐患明细"
+    private fun buildDetailView(detail: AiWarningDetail): View {
+        val context = requireContext()
+        val content = LinearLayout(context).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(4.dp(), 6.dp(), 4.dp(), 2.dp())
+        }
 
-        return buildString {
-            appendLine(detailLine("项目", item.projectName))
-            appendLine(detailLine("工人", item.workerName))
-            appendLine(detailLine("位置", item.inspectionPoint.ifBlank { item.sceneName }))
-            appendLine(detailLine("风险", "${item.riskLevelText} ${item.riskScore?.let { "$it 分" } ?: ""}".trim()))
-            appendLine(detailLine("时间", captureTime.ifBlank { item.createTime }))
-            if (summaryOrContent().isNotBlank()) {
-                appendLine()
-                appendLine(summaryOrContent())
+        val photoUrl = detail.item.photoUrl?.trim().orEmpty()
+        if (photoUrl.isNotBlank()) {
+            val image = ImageView(context).apply {
+                layoutParams = LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    168.dp(),
+                ).apply {
+                    bottomMargin = 12.dp()
+                }
+                scaleType = ImageView.ScaleType.CENTER_CROP
+                setBackgroundColor(Color.parseColor("#E8EDF5"))
             }
-            appendLine()
-            appendLine(hazardsText)
-            if (needManualReview || manualReviewReason.isNotBlank()) {
-                appendLine()
-                append("人工复核：")
-                append(if (needManualReview) "需要" else "不需要")
-                if (manualReviewReason.isNotBlank()) append("，$manualReviewReason")
+            content.addView(image)
+            loadWarningPhoto(photoUrl, image)
+        }
+
+        content.addView(sectionCard {
+            addView(sectionTitle("巡查结论"))
+            addView(bodyText(detail.summaryOrContent().ifBlank { "暂无AI结论" }))
+            addView(bodyText("状态：${detail.item.handleStatusText}    风险：${detail.item.riskLevelText}    分值：${detail.item.riskScore ?: "-"}"))
+        })
+
+        content.addView(sectionCard {
+            addView(sectionTitle("现场信息"))
+            addView(bodyText(detailLine("项目", detail.item.projectName)))
+            addView(bodyText(detailLine("工人", detail.item.workerName)))
+            addView(bodyText(detailLine("区域", detail.item.sceneName)))
+            addView(bodyText(detailLine("点位", detail.item.inspectionPoint)))
+            addView(bodyText(detailLine("工种", detail.item.workType)))
+            addView(bodyText(detailLine("拍摄", detail.captureTime.ifBlank { detail.item.createTime })))
+        })
+
+        if (detail.needManualReview || detail.manualReviewReason.isNotBlank()) {
+            content.addView(sectionCard {
+                addView(sectionTitle("人工复核"))
+                addView(bodyText(if (detail.needManualReview) "需要人工复核" else "不需要人工复核"))
+                if (detail.manualReviewReason.isNotBlank()) {
+                    addView(bodyText(detail.manualReviewReason))
+                }
+            })
+        }
+
+        content.addView(sectionCard {
+            addView(sectionTitle("隐患明细"))
+            if (detail.hazards.isEmpty()) {
+                addView(bodyText("暂无隐患明细"))
+            } else {
+                detail.hazards.forEachIndexed { index, hazard ->
+                    addView(bodyText("${index + 1}. ${hazard.name.ifBlank { hazard.code.ifBlank { "未命名隐患" } }} · ${hazard.level.ifBlank { "未分级" }}"))
+                    hazard.confidence?.let { addView(bodyText("置信度：${"%.0f".format(it * 100)}%")) }
+                    if (hazard.evidence.isNotBlank()) addView(bodyText("证据：${hazard.evidence}"))
+                    if (hazard.advice.isNotBlank()) addView(bodyText("建议：${hazard.advice}"))
+                    if (index != detail.hazards.lastIndex) addView(space(8))
+                }
             }
-            if (!errorMsg.isNullOrBlank()) {
-                appendLine()
-                append("分析异常：$errorMsg")
+        })
+
+        if (!detail.errorMsg.isNullOrBlank()) {
+            content.addView(sectionCard {
+                addView(sectionTitle("分析异常"))
+                addView(bodyText(detail.errorMsg))
+            })
+        }
+
+        return ScrollView(context).apply {
+            addView(content)
+        }
+    }
+
+    private fun loadWarningPhoto(photoUrl: String, target: ImageView) {
+        viewLifecycleOwner.lifecycleScope.launch {
+            val bitmap = withContext(Dispatchers.IO) {
+                runCatching {
+                    URL(photoUrl).openStream().use { input ->
+                        BitmapFactory.decodeStream(input)
+                    }
+                }.getOrNull()
             }
+            if (bitmap != null && isAdded) {
+                target.setImageBitmap(bitmap)
+            } else {
+                target.setImageDrawable(null)
+            }
+        }
+    }
+
+    private fun sectionCard(build: LinearLayout.() -> Unit): View {
+        return LinearLayout(requireContext()).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(12.dp(), 12.dp(), 12.dp(), 12.dp())
+            background = GradientDrawable().apply {
+                setColor(Color.WHITE)
+                cornerRadius = 12.dp().toFloat()
+            }
+            layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+            ).apply {
+                bottomMargin = 10.dp()
+            }
+            build()
+        }
+    }
+
+    private fun sectionTitle(text: String): TextView {
+        return TextView(requireContext()).apply {
+            this.text = text
+            setTextColor(ContextCompat.getColor(context, R.color.text_primary))
+            textSize = 15f
+            setTypeface(null, Typeface.BOLD)
+            setPadding(0, 0, 0, 6.dp())
+        }
+    }
+
+    private fun bodyText(text: String): TextView {
+        return TextView(requireContext()).apply {
+            this.text = text
+            setTextColor(ContextCompat.getColor(context, R.color.text_secondary))
+            textSize = 13f
+            setLineSpacing(2.dp().toFloat(), 1.0f)
+            setPadding(0, 2.dp(), 0, 2.dp())
+        }
+    }
+
+    private fun space(height: Int): View {
+        return View(requireContext()).apply {
+            layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                height.dp(),
+            )
         }
     }
 
@@ -188,6 +302,8 @@ class MessageFragment : Fragment() {
     private fun detailLine(label: String, value: String): String {
         return "$label：${value.ifBlank { "-" }}"
     }
+
+    private fun Int.dp(): Int = (this * resources.displayMetrics.density).toInt()
 
     override fun onDestroyView() {
         super.onDestroyView()

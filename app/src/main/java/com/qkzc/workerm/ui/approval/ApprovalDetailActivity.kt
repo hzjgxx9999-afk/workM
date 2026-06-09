@@ -1,22 +1,38 @@
 package com.qkzc.workerm.ui.approval
 
+import android.app.AlertDialog
 import android.os.Bundle
+import android.widget.EditText
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
 import androidx.core.view.updatePadding
+import androidx.lifecycle.lifecycleScope
+import com.qkzc.workerm.R
+import com.qkzc.workerm.data.approval.ApprovalRepository
+import com.qkzc.workerm.data.approval.model.ApprovalCategory
+import com.qkzc.workerm.data.approval.model.ApprovalItem
+import com.qkzc.workerm.data.approval.model.ApprovalStatus
+import com.qkzc.workerm.data.session.SessionStore
 import com.qkzc.workerm.databinding.ActivityApprovalDetailBinding
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 
 class ApprovalDetailActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityApprovalDetailBinding
+    private val repository = ApprovalRepository()
+    private lateinit var sessionStore: SessionStore
+    private var currentItem: ApprovalItem? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         binding = ActivityApprovalDetailBinding.inflate(layoutInflater)
+        sessionStore = SessionStore(applicationContext)
         setContentView(binding.root)
         ViewCompat.setOnApplyWindowInsetsListener(binding.approvalDetailRoot) { view, insets ->
             val bars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
@@ -24,56 +40,135 @@ class ApprovalDetailActivity : AppCompatActivity() {
             insets
         }
         binding.backButton.setOnClickListener { finish() }
-        render(intent.getStringExtra(EXTRA_TYPE).orEmpty())
+        binding.approveButton.setOnClickListener {
+            currentItem?.let { showAuditDialog(it, approve = true) }
+        }
+        binding.rejectButton.setOnClickListener {
+            currentItem?.let { showAuditDialog(it, approve = false) }
+        }
+        loadDetail()
     }
 
-    private fun render(type: String) {
-        binding.attachmentCard.isVisible = type == TYPE_REISSUE
-        binding.tipText.isVisible = type == TYPE_LOAN
-        when (type) {
-            TYPE_LEAVE -> {
-                binding.titleText.text = "请假申请详情"
-                binding.applicantIcon.text = "假"
-                binding.applicantName.text = "李强    木工"
-                binding.applicantPhone.text = "手机号：139****2468"
-                binding.applicantNo.text = "工号：MG20240519032"
-                binding.mainInfoTitle.text = "请假信息"
-                binding.mainInfoText.text = "请假类型                                      事假\n开始时间              2024-05-22（周三）08:00\n结束时间              2024-05-22（周三）18:00\n请假时长                                      1天\n请假天数                                      1天"
-                binding.reasonTitle.text = "请假原因"
-                binding.reasonText.text = "家中孩子生病，需要带孩子去医院就诊。"
-                binding.teamText.text = "木工班    组长：陈师傅"
-            }
-            TYPE_LOAN -> {
-                binding.titleText.text = "借支申请详情"
-                binding.applicantIcon.text = "借"
-                binding.applicantName.text = "王建国    架子工"
-                binding.applicantPhone.text = "手机号：137****9988"
-                binding.applicantNo.text = "工号：QZ20240518027"
-                binding.mainInfoTitle.text = "借支信息"
-                binding.mainInfoText.text = "本月出勤天数                              18天\n申请借支金额                        ¥1,500.00\n大写金额                              壹仟伍佰元整\n借支用途                                  生活费用\n计划还款时间           2024-06-15（预发薪日）\n还款方式                            从下次工资中抵扣"
-                binding.reasonTitle.text = "历史借支记录"
-                binding.reasonText.text = "2024-04-15          ¥2,000.00          已还款\n2024-03-10          ¥1,000.00          已还款"
-                binding.teamText.text = "架子班    组长：孙师傅"
-            }
-            else -> {
-                binding.titleText.text = "补卡申请详情"
-                binding.applicantIcon.text = "人"
-                binding.applicantName.text = "张伟    钢筋工"
-                binding.applicantPhone.text = "手机号：138****5678"
-                binding.applicantNo.text = "工号：GJ20240520045"
-                binding.mainInfoTitle.text = "补卡信息"
-                binding.mainInfoText.text = "补卡类型                                      下班补卡\n缺卡日期                          2024-05-19（周日）\n缺卡时间                                      18:05（下班）"
-                binding.reasonTitle.text = "申请原因"
-                binding.reasonText.text = "当天下午在 18:00 之后加班绑扎钢筋，忘记打卡，请批准补卡。"
-                binding.teamText.text = "钢筋班    组长：刘师傅"
+    private fun loadDetail() {
+        val id = intent.getLongExtra(EXTRA_ID, 0L)
+        val category = runCatching {
+            ApprovalCategory.valueOf(intent.getStringExtra(EXTRA_CATEGORY).orEmpty())
+        }.getOrNull()
+        if (id <= 0L || category == null) {
+            Toast.makeText(this, "审批参数错误", Toast.LENGTH_SHORT).show()
+            finish()
+            return
+        }
+        lifecycleScope.launch {
+            runCatching {
+                val session = sessionStore.sessionFlow.first()
+                repository.detail(session.accessToken, category, id)
+            }.onSuccess { item ->
+                currentItem = item
+                render(item)
+            }.onFailure { throwable ->
+                Toast.makeText(
+                    this@ApprovalDetailActivity,
+                    throwable.message ?: "审批详情加载失败",
+                    Toast.LENGTH_SHORT,
+                ).show()
             }
         }
     }
 
+    private fun render(item: ApprovalItem) {
+        val pending = item.status == ApprovalStatus.PENDING
+        binding.titleText.text = "${item.typeName}详情"
+        binding.tipText.isVisible = pending
+        binding.attachmentCard.isVisible = item.category == ApprovalCategory.EXCEPTION
+        binding.approveButton.isVisible = pending
+        binding.rejectButton.isVisible = pending
+        binding.applicantIcon.text = item.typeName.take(1)
+        binding.applicantName.text = item.applicantName.ifBlank { "未知申请人" }
+        binding.applicantPhone.text = if (item.applicantMobile.isBlank()) {
+            "申请单：${item.formNo}"
+        } else {
+            "手机号：${item.applicantMobile}"
+        }
+        binding.applicantNo.text = "提交时间：${item.submittedAt.ifBlank { "-" }}"
+        binding.mainInfoTitle.text = item.typeName
+        binding.mainInfoText.text = item.title.ifBlank { item.typeName }
+        binding.reasonTitle.text = "申请说明"
+        binding.reasonText.text = item.reason.ifBlank { "无" }
+        binding.projectNameText.text = item.projectName.ifBlank { "未知项目" }
+        binding.projectAddressText.text = item.projectAddress.ifBlank { "项目地址：-" }
+        binding.contractorUnitText.text = "总包单位：${item.contractorUnit.ifBlank { "-" }}"
+        binding.projectStatusText.text = item.projectStatusName.ifBlank { "施工中" }
+        binding.teamText.text = buildString {
+            append(item.teamName.ifBlank { "未分配班组" })
+            append("    负责人：")
+            append(item.leaderName.ifBlank { "-" })
+        }
+        binding.statusText.text = item.statusName ?: item.status.toDisplayName()
+        binding.resultStatusText.text = item.reviewResultName ?: item.statusName ?: item.status.toDisplayName()
+    }
+
+    private fun showAuditDialog(item: ApprovalItem, approve: Boolean) {
+        val input = EditText(this).apply {
+            hint = getString(R.string.approval_dialog_hint)
+            minLines = 3
+            setSingleLine(false)
+            setText(
+                if (approve) {
+                    R.string.approval_default_remark_approve
+                } else {
+                    R.string.approval_default_remark_reject
+                },
+            )
+        }
+        AlertDialog.Builder(this)
+            .setTitle(
+                if (approve) {
+                    R.string.approval_dialog_approve_title
+                } else {
+                    R.string.approval_dialog_reject_title
+                },
+            )
+            .setView(input)
+            .setNegativeButton(R.string.approval_action_cancel, null)
+            .setPositiveButton(R.string.approval_action_confirm) { _, _ ->
+                audit(item, approve, input.text?.toString().orEmpty())
+            }
+            .show()
+    }
+
+    private fun audit(item: ApprovalItem, approve: Boolean, remark: String) {
+        lifecycleScope.launch {
+            runCatching {
+                val session = sessionStore.sessionFlow.first()
+                repository.audit(session.accessToken, item, approve, remark)
+            }.onSuccess {
+                Toast.makeText(
+                    this@ApprovalDetailActivity,
+                    if (approve) R.string.approval_toast_approved else R.string.approval_toast_rejected,
+                    Toast.LENGTH_SHORT,
+                ).show()
+                loadDetail()
+            }.onFailure { throwable ->
+                Toast.makeText(
+                    this@ApprovalDetailActivity,
+                    throwable.message ?: "审批操作失败",
+                    Toast.LENGTH_SHORT,
+                ).show()
+            }
+        }
+    }
+
+    private fun ApprovalStatus.toDisplayName(): String {
+        return when (this) {
+            ApprovalStatus.PENDING -> "待审批"
+            ApprovalStatus.APPROVED -> "同意"
+            ApprovalStatus.REJECTED -> "驳回"
+        }
+    }
+
     companion object {
-        const val EXTRA_TYPE = "approval_type"
-        const val TYPE_REISSUE = "reissue"
-        const val TYPE_LEAVE = "leave"
-        const val TYPE_LOAN = "loan"
+        const val EXTRA_CATEGORY = "approval_category"
+        const val EXTRA_ID = "approval_id"
     }
 }

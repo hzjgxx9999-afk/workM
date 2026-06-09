@@ -33,6 +33,9 @@
             android:name=".ui.project.ProjectTeamManageActivity"
             android:exported="false" />
         <activity
+            android:name=".ui.worker.ProjectMemberManageActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.video.VideoAnalysisActivity"
             android:exported="false" />
         <activity

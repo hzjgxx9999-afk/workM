@@ -13,6 +13,13 @@ import com.qkzc.workerm.data.network.ApprovalApiConstants
 import com.qkzc.workerm.data.network.AttendanceExceptionVo
 import com.qkzc.workerm.data.network.AuditListReq
 import com.qkzc.workerm.data.network.ExceptionAuditReq
+import com.qkzc.workerm.data.network.ExceptionDetailReq
+import com.qkzc.workerm.data.network.ExitAuditReq
+import com.qkzc.workerm.data.network.ExitDetailReq
+import com.qkzc.workerm.data.network.ExitListReq
+import com.qkzc.workerm.data.network.ExitRequestVo
+import com.qkzc.workerm.data.network.AdvanceDetailReq
+import com.qkzc.workerm.data.network.MaterialDetailReq
 import com.qkzc.workerm.data.network.MaterialAuditReq
 import com.qkzc.workerm.data.network.MaterialListReq
 import com.qkzc.workerm.data.network.MaterialRequestVo
@@ -82,8 +89,12 @@ class ApprovalRepository(
             token = auth,
             body = AuditListReq(projectId = projectId, status = status),
         ).requireList().map { it.toApprovalItem() }
+        val exits = api.exitList(
+            token = auth,
+            body = ExitListReq(projectId = projectId, status = status),
+        ).requireList().map { it.toApprovalItem() }
 
-        return advances + materials + exceptions
+        return advances + materials + exceptions + exits
     }
 
     suspend fun summary(token: String, projectId: Long?): ApprovalSummary {
@@ -136,6 +147,48 @@ class ApprovalRepository(
                     auditRemark = remark,
                 ),
             ).requireOk()
+
+            ApprovalCategory.EXIT -> api.auditExit(
+                token = auth,
+                body = ExitAuditReq(
+                    requestId = item.id,
+                    action = action,
+                    auditRemark = remark,
+                ),
+            ).requireOk()
+
+            ApprovalCategory.LEAVE -> error("请假审批接口尚未接入")
+        }
+    }
+
+    suspend fun detail(
+        token: String,
+        category: ApprovalCategory,
+        id: Long,
+    ): ApprovalItem {
+        val auth = bearerToken(token)
+        return when (category) {
+            ApprovalCategory.ADVANCE -> api.advanceDetail(
+                token = auth,
+                body = AdvanceDetailReq(id),
+            ).requireData().toApprovalItem()
+
+            ApprovalCategory.MATERIAL -> api.materialDetail(
+                token = auth,
+                body = MaterialDetailReq(id),
+            ).requireData().toApprovalItem()
+
+            ApprovalCategory.EXCEPTION -> api.exceptionDetail(
+                token = auth,
+                body = ExceptionDetailReq(id),
+            ).requireData().toApprovalItem()
+
+            ApprovalCategory.EXIT -> api.exitDetail(
+                token = auth,
+                body = ExitDetailReq(id),
+            ).requireData().toApprovalItem()
+
+            ApprovalCategory.LEAVE -> error("请假审批接口尚未接入")
         }
     }
 
@@ -154,8 +207,14 @@ class ApprovalRepository(
             formNo = "ADV-$id",
             typeName = "借支审批",
             title = "借支金额 ${amount?.toPlainText().orEmpty()} 元",
-            applicantName = userId?.let { "工人 $it" }.orEmpty(),
-            projectName = projectId?.let { "项目 $it" }.orEmpty(),
+            applicantName = realName.displayText() ?: userId?.let { "工人 $it" }.orEmpty(),
+            applicantMobile = mobile.displayText().orEmpty(),
+            projectName = projectName.displayText() ?: projectId?.let { "项目 $it" }.orEmpty(),
+            projectAddress = projectAddress.displayText().orEmpty(),
+            contractorUnit = contractorUnit.displayText().orEmpty(),
+            projectStatusName = projectStatus.toProjectStatusName(),
+            teamName = teamName.displayText().orEmpty(),
+            leaderName = leaderName.displayText().orEmpty(),
             submittedAt = leaderAuditTime.orEmpty(),
             currentNodeName = currentNodeLabel.displayText() ?: "项目经理终审",
             reason = reason.orEmpty(),
@@ -165,7 +224,7 @@ class ApprovalRepository(
                 ?: leaderAuditStatusLabel.displayText()
                 ?: statusLabel.displayText()
                 ?: approvalStatus.toDisplayName(),
-            reviewerName = leaderAuditUserId?.let { "班组长 $it" },
+            reviewerName = leaderName.displayText() ?: leaderAuditUserId?.let { "班组长 $it" },
             reviewedAt = leaderAuditTime,
             reviewRemark = leaderAuditRemark,
         )
@@ -182,8 +241,14 @@ class ApprovalRepository(
             typeName = "物资审批",
             title = listOfNotNull(itemName, quantityText.takeIf { it.isNotBlank() })
                 .joinToString(separator = " · "),
-            applicantName = userId?.let { "工人 $it" }.orEmpty(),
-            projectName = projectId?.let { "项目 $it" }.orEmpty(),
+            applicantName = realName.displayText() ?: userId?.let { "工人 $it" }.orEmpty(),
+            applicantMobile = mobile.displayText().orEmpty(),
+            projectName = projectName.displayText() ?: projectId?.let { "项目 $it" }.orEmpty(),
+            projectAddress = projectAddress.displayText().orEmpty(),
+            contractorUnit = contractorUnit.displayText().orEmpty(),
+            projectStatusName = projectStatus.toProjectStatusName(),
+            teamName = teamName.displayText().orEmpty(),
+            leaderName = leaderName.displayText().orEmpty(),
             submittedAt = "",
             currentNodeName = currentNodeLabel.displayText() ?: "项目经理终审",
             reason = reason.orEmpty(),
@@ -206,8 +271,14 @@ class ApprovalRepository(
             formNo = "EXC-$id",
             typeName = "补卡审批",
             title = listOfNotNull(exceptionTypeName, workDate).joinToString(separator = " · "),
-            applicantName = userId?.let { "工人 $it" }.orEmpty(),
-            projectName = projectId?.let { "项目 $it" }.orEmpty(),
+            applicantName = realName.displayText() ?: userId?.let { "工人 $it" }.orEmpty(),
+            applicantMobile = mobile.displayText().orEmpty(),
+            projectName = projectName.displayText() ?: projectId?.let { "项目 $it" }.orEmpty(),
+            projectAddress = projectAddress.displayText().orEmpty(),
+            contractorUnit = contractorUnit.displayText().orEmpty(),
+            projectStatusName = projectStatus.toProjectStatusName(),
+            teamName = teamName.displayText().orEmpty(),
+            leaderName = leaderName.displayText().orEmpty(),
             submittedAt = workDate.orEmpty(),
             currentNodeName = currentNodeLabel.displayText() ?: "项目经理终审",
             reason = reason.orEmpty(),
@@ -217,6 +288,37 @@ class ApprovalRepository(
                 ?: leaderAuditStatusLabel.displayText()
                 ?: statusLabel.displayText()
                 ?: approvalStatus.toDisplayName(),
+        )
+    }
+
+    private fun ExitRequestVo.toApprovalItem(): ApprovalItem {
+        val approvalStatus = requestStatus.toApprovalStatus()
+        val typeDisplay = requestTypeLabel.displayText() ?: requestType.toExitRequestTypeName()
+        return ApprovalItem(
+            id = id,
+            category = ApprovalCategory.EXIT,
+            formNo = "EXT-$id",
+            typeName = "离场审批",
+            title = listOfNotNull(typeDisplay, exitProcessId?.let { "流程 $it" })
+                .joinToString(separator = " · "),
+            applicantName = realName.displayText() ?: applicantId?.let { "工人 $it" }.orEmpty(),
+            applicantMobile = mobile.displayText().orEmpty(),
+            projectName = projectName.displayText() ?: projectId?.let { "项目 $it" }.orEmpty(),
+            projectAddress = projectAddress.displayText().orEmpty(),
+            contractorUnit = contractorUnit.displayText().orEmpty(),
+            projectStatusName = projectStatus.toProjectStatusName(),
+            teamName = teamName.displayText().orEmpty(),
+            leaderName = leaderName.displayText().orEmpty(),
+            submittedAt = applyTime.orEmpty(),
+            currentNodeName = "项目经理终审",
+            reason = payloadJson.displayText() ?: "离场流程申请",
+            status = approvalStatus,
+            statusName = statusLabel.displayText() ?: approvalStatus.toDisplayName(),
+            reviewResultName = managerAuditStatus.toApprovalStatus().toDisplayName(),
+            reviewerName = managerAuditUserId?.let { "项目经理 $it" }
+                ?: leaderName.displayText(),
+            reviewedAt = managerAuditTime ?: approveTime,
+            reviewRemark = managerAuditRemark ?: approveRemark,
         )
     }
 
@@ -247,6 +349,25 @@ class ApprovalRepository(
         }
     }
 
+    private fun String?.toExitRequestTypeName(): String {
+        return when (this) {
+            "TASK_DONE" -> "完工确认"
+            "MATERIAL_CHECK" -> "物资清点"
+            "SALARY_SETTLEMENT" -> "工资结算"
+            "EXIT_FORMALITIES" -> "离场手续"
+            else -> displayText() ?: "离场申请"
+        }
+    }
+
+    private fun String?.toProjectStatusName(): String {
+        return when (this?.trim()) {
+            "CONSTRUCTION", "IN_PROGRESS", "ACTIVE" -> "施工中"
+            "PAUSED" -> "暂停"
+            "COMPLETED", "FINISHED" -> "已完工"
+            else -> displayText().orEmpty()
+        }
+    }
+
     private fun String?.displayText(): String? {
         return this?.trim()?.takeIf { it.isNotEmpty() }
     }
@@ -266,5 +387,10 @@ class ApprovalRepository(
 
     private fun AjaxResp<*>.requireOk() {
         requireSuccess(code, msg)
+    }
+
+    private fun <T> AjaxResp<T>.requireData(): T {
+        requireSuccess(code, msg)
+        return checkNotNull(data) { msg ?: "接口未返回数据" }
     }
 }

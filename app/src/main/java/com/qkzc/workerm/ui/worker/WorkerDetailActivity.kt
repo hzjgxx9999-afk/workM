@@ -10,6 +10,8 @@ import androidx.lifecycle.lifecycleScope
 import com.qkzc.workerm.data.session.SessionStore
 import com.qkzc.workerm.data.worker.ManagerWorker
 import com.qkzc.workerm.data.worker.ManagerWorkerRepository
+import com.qkzc.workerm.data.worker.entryProgressText
+import com.qkzc.workerm.data.worker.entrySteps
 import com.qkzc.workerm.databinding.ActivityWorkerDetailBinding
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -65,6 +67,7 @@ class WorkerDetailActivity : AppCompatActivity() {
         binding.workerMobileText.text = "手机号\n--"
         binding.workerIdCardText.text = "身份证号\n--"
         binding.entryProgressTitleText.text = "入场流程"
+        setFlowSteps(null)
     }
 
     private fun bindError(message: String) {
@@ -90,48 +93,32 @@ class WorkerDetailActivity : AppCompatActivity() {
         binding.workerProjectText.text = "项目名称\n${worker.projectName.ifBlank { "暂无" }}"
         binding.workerMobileText.text = "手机号\n${maskMobile(worker.mobile)}"
         binding.workerIdCardText.text = "身份证号\n${maskIdCard(worker.idCardNo)}"
-        binding.entryProgressTitleText.text = "入场流程（${completedStepCount(worker)}/5）"
+        binding.entryProgressTitleText.text = worker.entryProgressText()
         setFlowSteps(worker)
     }
 
     private fun setFlowSteps(worker: ManagerWorker?) {
-        binding.identityStatusText.text = flowStep("身份认证", worker?.identityStatus)
-        binding.safetyStatusText.text = flowStep("安全培训", worker?.safetyTrainingStatus)
-        binding.healthStatusText.text = flowStep("健康检查", worker?.healthCheckStatus)
-        binding.contractStatusText.text = flowStep("合同签署", worker?.entryContractStatus ?: worker?.contractStatus)
-        binding.insuranceStatusText.text = flowStep("保险签署", worker?.insuranceStatus)
+        val steps = worker?.entrySteps().orEmpty()
+        binding.identityStatusText.text = steps.getOrNull(0)?.displayText ?: defaultFlowStep("身份认证")
+        binding.safetyStatusText.text = steps.getOrNull(1)?.displayText ?: defaultFlowStep("安全培训")
+        binding.healthStatusText.text = steps.getOrNull(2)?.displayText ?: defaultFlowStep("健康检查")
+        binding.contractStatusText.text = steps.getOrNull(3)?.displayText ?: defaultFlowStep("合同签署")
+        binding.insuranceStatusText.text = steps.getOrNull(4)?.displayText ?: defaultFlowStep("保险签署")
     }
 
-    private fun completedStepCount(worker: ManagerWorker): Int {
-        return listOf(
-            worker.identityStatus,
-            worker.safetyTrainingStatus,
-            worker.healthCheckStatus,
-            worker.entryContractStatus.ifBlank { worker.contractStatus },
-            worker.insuranceStatus,
-        ).count { isCompleted(it) }
-    }
-
-    private fun flowStep(label: String, status: String?): String {
-        val completed = isCompleted(status)
-        val marker = if (completed) "✓" else "·"
-        return "$marker\n$label"
-    }
-
-    private fun isCompleted(status: String?): Boolean {
-        return when (status.orEmpty().uppercase(Locale.getDefault())) {
-            "COMPLETED", "PASS", "PASSED", "SIGNED", "DONE", "1", "TRUE" -> true
-            else -> false
-        }
+    private fun defaultFlowStep(label: String): String {
+        return "·\n$label\n未开始"
     }
 
     private fun statusLabel(status: String): String {
-        return when (status.uppercase(Locale.getDefault())) {
+        return when (status.uppercase(Locale.ROOT)) {
             "ACTIVE" -> "在场"
             "BOUND" -> "已绑定"
             "ENTERING" -> "入场中"
-            "EXITED" -> "已退场"
+            "EXITED", "LEFT" -> "已退场"
             "CANCELLED" -> "已取消"
+            "REJECTED" -> "已驳回"
+            "ABNORMAL" -> "异常"
             "COMPLETED" -> "完成"
             else -> status.ifBlank { "--" }
         }

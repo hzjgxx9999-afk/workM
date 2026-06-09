@@ -178,6 +178,24 @@ interface SupervisorApi {
         @Body body: ExceptionAuditReq,
     ): AjaxResp<AttendanceExceptionVo>
 
+    @POST("/app/manage/exit/list")
+    suspend fun exitList(
+        @Header("Authorization") token: String,
+        @Body body: ExitListReq,
+    ): AjaxResp<List<ExitRequestVo>>
+
+    @POST("/app/manage/exit/detail")
+    suspend fun exitDetail(
+        @Header("Authorization") token: String,
+        @Body body: ExitDetailReq,
+    ): AjaxResp<ExitRequestVo>
+
+    @POST("/app/manage/exit/audit")
+    suspend fun auditExit(
+        @Header("Authorization") token: String,
+        @Body body: ExitAuditReq,
+    ): AjaxResp<ExitRequestVo>
+
     @POST("/app/manage/ai-warning/list")
     suspend fun manageAiWarningList(
         @Header("Authorization") token: String,

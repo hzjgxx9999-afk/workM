@@ -18,9 +18,9 @@ import com.qkzc.workerm.ui.auth.LoginActivity
 import com.qkzc.workerm.ui.home.HomeFragment
 import com.qkzc.workerm.ui.invite.InviteCodeManageFragment
 import com.qkzc.workerm.ui.message.MessageFragment
-import com.qkzc.workerm.ui.profile.ProfileFragment
 import com.qkzc.workerm.ui.supervision.SupervisionFragment
 import com.qkzc.workerm.ui.todo.TodoFragment
+import com.qkzc.workerm.ui.worker.ProjectMemberManageFragment
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
@@ -100,7 +100,7 @@ class MainActivity : AppCompatActivity() {
             R.id.nav_supervision -> "supervision"
             R.id.nav_todo -> "todo"
             R.id.nav_message -> "message"
-            R.id.nav_profile -> "profile"
+            R.id.nav_profile -> "approval"
             else -> "home"
         }
         val fragment = supportFragmentManager.findFragmentByTag(tag) ?: createFragment(itemId)
@@ -114,9 +114,9 @@ class MainActivity : AppCompatActivity() {
         return when (itemId) {
             R.id.nav_home -> HomeFragment()
             R.id.nav_supervision -> SupervisionFragment()
-            R.id.nav_todo -> TodoFragment()
+            R.id.nav_todo -> ProjectMemberManageFragment.newInstance()
             R.id.nav_message -> MessageFragment()
-            R.id.nav_profile -> ProfileFragment()
+            R.id.nav_profile -> TodoFragment()
             else -> HomeFragment()
         }
     }

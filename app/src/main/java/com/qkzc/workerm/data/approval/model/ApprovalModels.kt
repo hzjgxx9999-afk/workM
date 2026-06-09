@@ -15,6 +15,8 @@ enum class ApprovalCategory {
     ADVANCE,
     MATERIAL,
     EXCEPTION,
+    EXIT,
+    LEAVE,
 }
 
 data class ApprovalItem(
@@ -24,7 +26,13 @@ data class ApprovalItem(
     val typeName: String,
     val title: String,
     val applicantName: String,
+    val applicantMobile: String = "",
     val projectName: String,
+    val projectAddress: String = "",
+    val contractorUnit: String = "",
+    val projectStatusName: String = "",
+    val teamName: String = "",
+    val leaderName: String = "",
     val submittedAt: String,
     val currentNodeName: String,
     val reason: String,

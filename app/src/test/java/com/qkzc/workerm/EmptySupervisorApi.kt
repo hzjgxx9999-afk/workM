@@ -16,6 +16,10 @@ import com.qkzc.workerm.data.network.AttendanceExceptionVo
 import com.qkzc.workerm.data.network.AuditListReq
 import com.qkzc.workerm.data.network.ExceptionAuditReq
 import com.qkzc.workerm.data.network.ExceptionDetailReq
+import com.qkzc.workerm.data.network.ExitAuditReq
+import com.qkzc.workerm.data.network.ExitDetailReq
+import com.qkzc.workerm.data.network.ExitListReq
+import com.qkzc.workerm.data.network.ExitRequestVo
 import com.qkzc.workerm.data.network.LoginReq
 import com.qkzc.workerm.data.network.ManageInviteCodeCreateReq
 import com.qkzc.workerm.data.network.ManageInviteCodeStatusReq
@@ -64,6 +68,9 @@ open class EmptySupervisorApi : SupervisorApi {
     override suspend fun exceptionList(token: String, body: AuditListReq): AjaxResp<List<AttendanceExceptionVo>> = error("unused")
     override suspend fun exceptionDetail(token: String, body: ExceptionDetailReq): AjaxResp<AttendanceExceptionVo> = error("unused")
     override suspend fun auditException(token: String, body: ExceptionAuditReq): AjaxResp<AttendanceExceptionVo> = error("unused")
+    override suspend fun exitList(token: String, body: ExitListReq): AjaxResp<List<ExitRequestVo>> = error("unused")
+    override suspend fun exitDetail(token: String, body: ExitDetailReq): AjaxResp<ExitRequestVo> = error("unused")
+    override suspend fun auditExit(token: String, body: ExitAuditReq): AjaxResp<ExitRequestVo> = error("unused")
     override suspend fun manageAiWarningList(token: String, body: AiWarningListReq): AjaxResp<AiWarningPageVo> = error("unused")
     override suspend fun manageAiWarningDetail(token: String, body: AiWarningDetailReq): AjaxResp<AiWarningVo> = error("unused")
     override suspend fun manageAiWarningRead(token: String, body: AiWarningReadReq): AjaxResp<Any> = error("unused")

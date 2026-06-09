@@ -26,7 +26,7 @@
                     <TextView android:id="@+id/applicant_phone" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="5dp" android:text="手机号：138****5678" android:textColor="@color/text_secondary" android:textSize="12sp" />
                     <TextView android:id="@+id/applicant_no" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:text="工号：GJ20240520045" android:textColor="@color/text_secondary" android:textSize="12sp" />
                 </LinearLayout>
-                <TextView android:layout_width="54dp" android:layout_height="24dp" android:background="@drawable/bg_status_soft_orange" android:gravity="center" android:text="待审批" android:textColor="#E87900" android:textSize="12sp" />
+                <TextView android:id="@+id/status_text" android:layout_width="54dp" android:layout_height="24dp" android:background="@drawable/bg_status_soft_orange" android:gravity="center" android:text="待审批" android:textColor="#E87900" android:textSize="12sp" />
             </LinearLayout>
 
             <LinearLayout android:id="@+id/main_info_card" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="10dp" android:background="@drawable/bg_card_stroke" android:orientation="vertical" android:padding="14dp">
@@ -51,11 +51,11 @@
             <LinearLayout android:layout_width="match_parent" android:layout_height="78dp" android:layout_marginTop="10dp" android:background="@drawable/bg_card_stroke" android:gravity="center_vertical" android:orientation="horizontal" android:padding="10dp">
                 <ImageView android:layout_width="76dp" android:layout_height="58dp" android:scaleType="centerCrop" android:src="@drawable/project_crane" />
                 <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginStart="10dp" android:layout_weight="1" android:orientation="vertical">
-                    <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="中建 · 未来城二期项目" android:textColor="@color/text_primary" android:textSize="13sp" android:textStyle="bold" />
-                    <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:text="广州市天河区珠江新城中建路888号" android:textColor="@color/text_secondary" android:textSize="11sp" />
-                    <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="3dp" android:text="总包单位：中建五局" android:textColor="@color/text_secondary" android:textSize="11sp" />
+                    <TextView android:id="@+id/project_name_text" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="中建 · 未来城二期项目" android:textColor="@color/text_primary" android:textSize="13sp" android:textStyle="bold" />
+                    <TextView android:id="@+id/project_address_text" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:text="广州市天河区珠江新城中建路888号" android:textColor="@color/text_secondary" android:textSize="11sp" />
+                    <TextView android:id="@+id/contractor_unit_text" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="3dp" android:text="总包单位：中建五局" android:textColor="@color/text_secondary" android:textSize="11sp" />
                 </LinearLayout>
-                <TextView android:layout_width="46dp" android:layout_height="22dp" android:background="@drawable/bg_status_soft_green" android:gravity="center" android:text="施工中" android:textColor="#0BA260" android:textSize="11sp" />
+                <TextView android:id="@+id/project_status_text" android:layout_width="46dp" android:layout_height="22dp" android:background="@drawable/bg_status_soft_green" android:gravity="center" android:text="施工中" android:textColor="#0BA260" android:textSize="11sp" />
             </LinearLayout>
 
             <LinearLayout android:layout_width="match_parent" android:layout_height="58dp" android:layout_marginTop="10dp" android:background="@drawable/bg_card_stroke" android:gravity="center_vertical" android:orientation="horizontal" android:paddingHorizontal="14dp">
@@ -66,7 +66,7 @@
             <LinearLayout android:layout_width="match_parent" android:layout_height="110dp" android:layout_marginTop="10dp" android:background="@drawable/bg_card_stroke" android:orientation="vertical" android:padding="14dp">
                 <LinearLayout android:layout_width="match_parent" android:layout_height="24dp" android:gravity="center_vertical" android:orientation="horizontal">
                     <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="审批结果" android:textColor="@color/text_primary" android:textSize="15sp" android:textStyle="bold" />
-                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="待审批" android:textColor="#E87900" android:textSize="13sp" android:textStyle="bold" />
+                    <TextView android:id="@+id/result_status_text" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="待审批" android:textColor="#E87900" android:textSize="13sp" android:textStyle="bold" />
                 </LinearLayout>
                 <TextView android:layout_width="match_parent" android:layout_height="0dp" android:layout_marginTop="10dp" android:layout_weight="1" android:background="@drawable/bg_search_pill" android:gravity="top" android:padding="10dp" android:text="请输入审批意见（选填）" android:textColor="#A0A8B4" android:textSize="12sp" />
             </LinearLayout>
@@ -74,7 +74,7 @@
     </androidx.core.widget.NestedScrollView>
 
     <LinearLayout android:layout_width="match_parent" android:layout_height="70dp" android:layout_gravity="bottom" android:background="@color/white" android:elevation="6dp" android:gravity="center" android:orientation="horizontal" android:paddingHorizontal="16dp">
-        <TextView android:layout_width="0dp" android:layout_height="42dp" android:layout_marginEnd="8dp" android:layout_weight="1" android:background="@drawable/bg_outline_red" android:gravity="center" android:text="驳回" android:textColor="#F04438" android:textSize="15sp" android:textStyle="bold" />
-        <TextView android:layout_width="0dp" android:layout_height="42dp" android:layout_marginStart="8dp" android:layout_weight="1" android:background="@drawable/bg_round_blue" android:gravity="center" android:text="同意" android:textColor="@color/white" android:textSize="15sp" android:textStyle="bold" />
+        <TextView android:id="@+id/reject_button" android:layout_width="0dp" android:layout_height="42dp" android:layout_marginEnd="8dp" android:layout_weight="1" android:background="@drawable/bg_outline_red" android:gravity="center" android:text="驳回" android:textColor="#F04438" android:textSize="15sp" android:textStyle="bold" />
+        <TextView android:id="@+id/approve_button" android:layout_width="0dp" android:layout_height="42dp" android:layout_marginStart="8dp" android:layout_weight="1" android:background="@drawable/bg_round_blue" android:gravity="center" android:text="同意" android:textColor="@color/white" android:textSize="15sp" android:textStyle="bold" />
     </LinearLayout>
 </FrameLayout>

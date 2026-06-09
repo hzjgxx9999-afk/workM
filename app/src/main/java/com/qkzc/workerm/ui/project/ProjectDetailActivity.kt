@@ -26,6 +26,7 @@ import com.qkzc.workerm.data.session.SessionStore
 import com.qkzc.workerm.databinding.ActivityProjectDetailBinding
 import com.qkzc.workerm.ui.invite.InviteCodeManageActivity
 import com.qkzc.workerm.ui.video.DrawingDocsActivity
+import com.qkzc.workerm.ui.worker.ProjectMemberManageActivity
 import com.qkzc.workerm.ui.worker.WorkerScanActivity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
@@ -69,7 +70,7 @@ class ProjectDetailActivity : AppCompatActivity() {
             openProjectScoped(ProjectReportActivity::class.java)
         }
         binding.projectMembersAction.setOnClickListener {
-            openProjectScoped(ProjectTeamManageActivity::class.java)
+            openProjectScoped(ProjectMemberManageActivity::class.java)
         }
         binding.inviteCodeAction.setOnClickListener {
             openProjectScoped(InviteCodeManageActivity::class.java)

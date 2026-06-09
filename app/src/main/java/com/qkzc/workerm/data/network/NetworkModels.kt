@@ -217,6 +217,17 @@ data class ExceptionDetailReq(
     val exceptionId: Long,
 )
 
+data class ExitListReq(
+    val projectId: Long? = null,
+    val status: String? = ApprovalApiConstants.STATUS_PENDING_MANAGER,
+    val workerId: Long? = null,
+    val requestType: String? = null,
+)
+
+data class ExitDetailReq(
+    val requestId: Long,
+)
+
 data class AdvanceAuditReq(
     val requestId: Long,
     val action: String,
@@ -231,6 +242,12 @@ data class MaterialAuditReq(
 
 data class ExceptionAuditReq(
     val exceptionId: Long,
+    val action: String,
+    val auditRemark: String,
+)
+
+data class ExitAuditReq(
+    val requestId: Long,
     val action: String,
     val auditRemark: String,
 )
@@ -260,8 +277,16 @@ data class AiWarningHandleReq(
 data class AdvanceRequestVo(
     val id: Long,
     val userId: Long?,
+    val realName: String? = null,
+    val mobile: String? = null,
     val projectId: Long?,
+    val projectName: String? = null,
+    val projectAddress: String? = null,
+    val contractorUnit: String? = null,
+    val projectStatus: String? = null,
     val leaderId: Long?,
+    val leaderName: String? = null,
+    val teamName: String? = null,
     val amount: Double?,
     val reason: String?,
     val status: String?,
@@ -279,8 +304,16 @@ data class AdvanceRequestVo(
 data class MaterialRequestVo(
     val id: Long,
     val userId: Long?,
+    val realName: String? = null,
+    val mobile: String? = null,
     val projectId: Long?,
+    val projectName: String? = null,
+    val projectAddress: String? = null,
+    val contractorUnit: String? = null,
+    val projectStatus: String? = null,
     val leaderId: Long?,
+    val leaderName: String? = null,
+    val teamName: String? = null,
     val itemName: String?,
     val quantity: Double?,
     val unit: String?,
@@ -297,8 +330,16 @@ data class MaterialRequestVo(
 data class AttendanceExceptionVo(
     val id: Long,
     val userId: Long?,
+    val realName: String? = null,
+    val mobile: String? = null,
     val projectId: Long?,
+    val projectName: String? = null,
+    val projectAddress: String? = null,
+    val contractorUnit: String? = null,
+    val projectStatus: String? = null,
     val leaderId: Long?,
+    val leaderName: String? = null,
+    val teamName: String? = null,
     val attendanceId: Long?,
     val exceptionType: String?,
     val exceptionTypeLabel: String?,
@@ -313,6 +354,42 @@ data class AttendanceExceptionVo(
     val leaderAuditStatusLabel: String?,
     val managerAuditStatus: String?,
     val managerAuditStatusLabel: String?,
+)
+
+data class ExitRequestVo(
+    val id: Long,
+    val exitProcessId: Long? = null,
+    val entryId: Long? = null,
+    val projectId: Long? = null,
+    val projectName: String? = null,
+    val projectAddress: String? = null,
+    val contractorUnit: String? = null,
+    val projectStatus: String? = null,
+    val leaderId: Long? = null,
+    val leaderName: String? = null,
+    val teamName: String? = null,
+    val requestType: String? = null,
+    val requestTypeLabel: String? = null,
+    val requestStatus: String? = null,
+    val statusLabel: String? = null,
+    val applicantId: Long? = null,
+    val realName: String? = null,
+    val mobile: String? = null,
+    val approverId: Long? = null,
+    val approverName: String? = null,
+    val payloadJson: String? = null,
+    val attachmentsJson: String? = null,
+    val applyTime: String? = null,
+    val approveTime: String? = null,
+    val approveRemark: String? = null,
+    val leaderAuditStatus: String? = null,
+    val leaderAuditUserId: Long? = null,
+    val leaderAuditTime: String? = null,
+    val leaderAuditRemark: String? = null,
+    val managerAuditStatus: String? = null,
+    val managerAuditUserId: Long? = null,
+    val managerAuditTime: String? = null,
+    val managerAuditRemark: String? = null,
 )
 
 data class AiWarningPageVo(

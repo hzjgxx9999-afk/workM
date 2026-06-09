@@ -29,9 +29,9 @@
     <string name="supervision_subtitle">当前聚焦驾驶舱、视频监控、巡检隐患、工单与审批闭环</string>
 
     <string name="todo_title">审批中心</string>
-    <string name="todo_subtitle">监管端统一处理工人端发起的补卡、入场、请假等申请，并保留完整审批记录</string>
+    <string name="todo_subtitle">监管端统一处理工人端发起的补卡、借支、物资、离场申请，并保留完整审批记录</string>
     <string name="today_focus">今日重点</string>
-    <string name="approval_focus_text">优先处理补卡、入场与请假申请，避免一线作业受阻。</string>
+    <string name="approval_focus_text">优先处理补卡、借支、物资与离场终审，避免一线作业受阻。</string>
     <string name="approval_pending_stat">待审批</string>
     <string name="approval_processed_stat">今日已处理</string>
     <string name="approval_rejected_stat">已驳回</string>

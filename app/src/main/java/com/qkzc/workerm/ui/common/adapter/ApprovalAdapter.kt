@@ -14,6 +14,7 @@ import com.qkzc.workerm.databinding.ItemApprovalCardBinding
 class ApprovalAdapter(
     private val onApproveClick: (ApprovalItem) -> Unit,
     private val onRejectClick: (ApprovalItem) -> Unit,
+    private val onItemClick: (ApprovalItem) -> Unit = {},
 ) : RecyclerView.Adapter<ApprovalAdapter.ApprovalViewHolder>() {
 
     private val items = mutableListOf<ApprovalItem>()
@@ -34,7 +35,7 @@ class ApprovalAdapter(
     }
 
     override fun onBindViewHolder(holder: ApprovalViewHolder, position: Int) {
-        holder.bind(items[position], onApproveClick, onRejectClick)
+        holder.bind(items[position], onApproveClick, onRejectClick, onItemClick)
     }
 
     override fun getItemCount(): Int = items.size
@@ -47,6 +48,7 @@ class ApprovalAdapter(
             item: ApprovalItem,
             onApproveClick: (ApprovalItem) -> Unit,
             onRejectClick: (ApprovalItem) -> Unit,
+            onItemClick: (ApprovalItem) -> Unit,
         ) {
             val context = binding.root.context
             binding.typeBadgeText.text = item.typeName
@@ -64,7 +66,12 @@ class ApprovalAdapter(
                 R.string.approval_field_submitted_at,
                 item.submittedAt,
             )
-            binding.nodeText.text = context.getString(R.string.approval_field_node, item.currentNodeName)
+            binding.nodeText.text = buildString {
+                append("班组：")
+                append(item.teamName.ifBlank { "-" })
+                append("    负责人：")
+                append(item.leaderName.ifBlank { "-" })
+            }
             binding.reasonText.text = item.reason
 
             val isPending = item.status == ApprovalStatus.PENDING
@@ -111,6 +118,9 @@ class ApprovalAdapter(
             }
             binding.rejectButton.setOnClickListener {
                 onRejectClick(item)
+            }
+            binding.root.setOnClickListener {
+                onItemClick(item)
             }
         }
     }
