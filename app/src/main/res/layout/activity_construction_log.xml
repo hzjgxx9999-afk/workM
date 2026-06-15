@@ -1,149 +1,254 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/construction_log_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/bg_app_page"
-    android:fillViewport="true"
-    android:overScrollMode="never">
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="48dp">
+
+        <ImageButton
+            android:id="@+id/back_button"
+            android:layout_width="42dp"
+            android:layout_height="42dp"
+            android:layout_gravity="start|center_vertical"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:padding="9dp"
+            android:src="@drawable/ic_back" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:text="施工日志"
+            android:textColor="@color/text_primary"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/add_button"
+            android:layout_width="66dp"
+            android:layout_height="34dp"
+            android:layout_gravity="end|center_vertical"
+            android:background="@drawable/bg_round_blue"
+            android:gravity="center"
+            android:text="新增"
+            android:textColor="@color/white"
+            android:textSize="13sp"
+            android:textStyle="bold" />
+    </FrameLayout>
+
+    <GridLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:columnCount="3">
+
+        <TextView
+            android:id="@+id/today_count_text"
+            style="@style/ReportMetricCard"
+            android:text="今日记录\n0 条" />
+
+        <TextView
+            android:id="@+id/pending_count_text"
+            style="@style/ReportMetricCard"
+            android:text="待审核\n0 条" />
+
+        <TextView
+            android:id="@+id/archived_count_text"
+            style="@style/ReportMetricCard"
+            android:text="本月归档\n0 条" />
+    </GridLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:background="@drawable/bg_card_round"
+        android:elevation="2dp"
         android:orientation="vertical"
-        android:padding="16dp"
-        android:paddingBottom="24dp">
+        android:padding="16dp">
 
-        <FrameLayout
+        <TextView
             android:layout_width="match_parent"
-            android:layout_height="48dp">
+            android:layout_height="wrap_content"
+            android:text="今日记录"
+            android:textColor="@color/text_primary"
+            android:textSize="16sp"
+            android:textStyle="bold" />
 
-            <ImageButton
-                android:id="@+id/back_button"
-                android:layout_width="42dp"
-                android:layout_height="42dp"
-                android:layout_gravity="start|center_vertical"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:padding="9dp"
-                android:src="@drawable/ic_back" />
+        <TextView
+            android:id="@+id/today_record_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:lineSpacingExtra="8dp"
+            android:text="暂无日志记录"
+            android:textColor="@color/text_secondary"
+            android:textSize="14sp" />
+    </LinearLayout>
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_gravity="center"
-                android:gravity="center"
-                android:text="施工日志"
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:background="@drawable/bg_card_round"
+        android:elevation="2dp"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/search_input"
+                android:layout_width="0dp"
+                android:layout_height="40dp"
+                android:layout_weight="1"
+                android:background="@drawable/bg_audit_input"
+                android:hint="搜索日志标题"
+                android:paddingHorizontal="12dp"
                 android:textColor="@color/text_primary"
-                android:textSize="18sp"
-                android:textStyle="bold" />
+                android:textColorHint="@color/text_secondary"
+                android:textSize="13sp" />
 
             <TextView
-                android:layout_width="66dp"
-                android:layout_height="34dp"
-                android:layout_gravity="end|center_vertical"
-                android:background="@drawable/bg_round_blue"
+                android:id="@+id/search_button"
+                android:layout_width="52dp"
+                android:layout_height="40dp"
+                android:layout_marginStart="8dp"
+                android:background="@drawable/bg_outline_blue"
                 android:gravity="center"
-                android:text="新增"
-                android:textColor="@color/white"
+                android:text="查询"
+                android:textColor="@color/dashboard_blue"
                 android:textSize="13sp"
                 android:textStyle="bold" />
-        </FrameLayout>
-
-        <GridLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:columnCount="3">
 
             <TextView
-                style="@style/ReportMetricCard"
-                android:text="今日记录\n1 条" />
-
-            <TextView
-                style="@style/ReportMetricCard"
-                android:text="待审核\n2 条" />
-
-            <TextView
-                style="@style/ReportMetricCard"
-                android:text="本月归档\n18 条" />
-        </GridLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:background="@drawable/bg_card_round"
-            android:elevation="2dp"
-            android:orientation="vertical"
-            android:padding="16dp">
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="今日记录"
-                android:textColor="@color/text_primary"
-                android:textSize="16sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:lineSpacingExtra="8dp"
-                android:text="日期  2026-06-04    天气  晴\n施工人数  36 人    机械  6 台\n完成内容  3 号楼外立面拆改、管线定位复核\n安全情况  未发现重大隐患"
-                android:textColor="@color/text_secondary"
-                android:textSize="14sp" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:background="@drawable/bg_card_round"
-            android:elevation="2dp"
-            android:orientation="vertical"
-            android:padding="16dp">
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="日志列表"
-                android:textColor="@color/text_primary"
-                android:textSize="16sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="58dp"
-                android:layout_marginTop="12dp"
-                android:background="@drawable/bg_search_pill"
-                android:gravity="center_vertical"
-                android:paddingHorizontal="14dp"
-                android:text="06-03  基础墙体加固施工记录\n提交人 李工    已审核"
-                android:textColor="@color/text_primary"
-                android:textSize="13sp" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="58dp"
-                android:layout_marginTop="10dp"
-                android:background="@drawable/bg_search_pill"
-                android:gravity="center_vertical"
-                android:paddingHorizontal="14dp"
-                android:text="06-02  临水临电巡检记录\n提交人 王工    待审核"
-                android:textColor="@color/text_primary"
-                android:textSize="13sp" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="44dp"
-                android:layout_marginTop="14dp"
-                android:background="@drawable/bg_round_blue"
+                android:id="@+id/refresh_button"
+                android:layout_width="52dp"
+                android:layout_height="40dp"
+                android:layout_marginStart="8dp"
+                android:background="@drawable/bg_outline_blue"
                 android:gravity="center"
-                android:text="新增日志"
-                android:textColor="@color/white"
-                android:textSize="14sp"
+                android:text="刷新"
+                android:textColor="@color/dashboard_blue"
+                android:textSize="13sp"
                 android:textStyle="bold" />
         </LinearLayout>
+
+        <HorizontalScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:scrollbars="none">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/filter_all_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="34dp"
+                    android:background="@drawable/bg_round_blue"
+                    android:gravity="center"
+                    android:minWidth="68dp"
+                    android:paddingHorizontal="14dp"
+                    android:text="全部"
+                    android:textColor="@color/white"
+                    android:textSize="13sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/filter_draft_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="34dp"
+                    android:layout_marginStart="8dp"
+                    android:background="@drawable/bg_search_pill"
+                    android:gravity="center"
+                    android:minWidth="68dp"
+                    android:paddingHorizontal="14dp"
+                    android:text="草稿"
+                    android:textColor="@color/text_primary"
+                    android:textSize="13sp" />
+
+                <TextView
+                    android:id="@+id/filter_pending_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="34dp"
+                    android:layout_marginStart="8dp"
+                    android:background="@drawable/bg_search_pill"
+                    android:gravity="center"
+                    android:minWidth="68dp"
+                    android:paddingHorizontal="14dp"
+                    android:text="待审核"
+                    android:textColor="@color/text_primary"
+                    android:textSize="13sp" />
+
+                <TextView
+                    android:id="@+id/filter_approved_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="34dp"
+                    android:layout_marginStart="8dp"
+                    android:background="@drawable/bg_search_pill"
+                    android:gravity="center"
+                    android:minWidth="68dp"
+                    android:paddingHorizontal="14dp"
+                    android:text="已通过"
+                    android:textColor="@color/text_primary"
+                    android:textSize="13sp" />
+            </LinearLayout>
+        </HorizontalScrollView>
     </LinearLayout>
-</androidx.core.widget.NestedScrollView>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:text="日志列表"
+        android:textColor="@color/text_primary"
+        android:textSize="16sp"
+        android:textStyle="bold" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/log_recycler_view"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="8dp"
+        android:layout_weight="1"
+        android:clipToPadding="false"
+        android:paddingBottom="8dp" />
+
+    <TextView
+        android:id="@+id/empty_text"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:text="暂无日志记录"
+        android:textColor="@color/text_secondary"
+        android:textSize="14sp"
+        android:visibility="gone" />
+
+    <TextView
+        android:id="@+id/create_bottom_button"
+        android:layout_width="match_parent"
+        android:layout_height="44dp"
+        android:layout_marginTop="12dp"
+        android:background="@drawable/bg_round_blue"
+        android:gravity="center"
+        android:text="新增日志"
+        android:textColor="@color/white"
+        android:textSize="14sp"
+        android:textStyle="bold" />
+</LinearLayout>

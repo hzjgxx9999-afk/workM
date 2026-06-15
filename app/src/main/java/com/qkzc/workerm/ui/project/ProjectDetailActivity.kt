@@ -16,12 +16,9 @@ import androidx.core.view.updatePadding
 import androidx.lifecycle.lifecycleScope
 import com.qkzc.workerm.BuildConfig
 import com.qkzc.workerm.R
-import com.qkzc.workerm.data.network.ApiClient
-import com.qkzc.workerm.data.network.bearerToken
 import com.qkzc.workerm.data.project.ManagerProject
 import com.qkzc.workerm.data.project.ManagerProjectFile
 import com.qkzc.workerm.data.project.ManagerProjectRepository
-import com.qkzc.workerm.data.project.ProjectCoverUrlResolver
 import com.qkzc.workerm.data.session.SessionStore
 import com.qkzc.workerm.databinding.ActivityProjectDetailBinding
 import com.qkzc.workerm.ui.invite.InviteCodeManageActivity
@@ -32,7 +29,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import okhttp3.Request
 
 class ProjectDetailActivity : AppCompatActivity() {
 
@@ -94,6 +90,7 @@ class ProjectDetailActivity : AppCompatActivity() {
                 projectRepository.loadProjectDetail(session.accessToken, projectId)
             }.onSuccess { project ->
                 renderProject(project)
+                loadWorkerStats()
             }.onFailure { throwable ->
                 Toast.makeText(
                     this@ProjectDetailActivity,
@@ -119,7 +116,20 @@ class ProjectDetailActivity : AppCompatActivity() {
             "待处理风险 ${project.unhandledRiskCount}条",
         ).joinToString("  ")
         renderRecentFiles(project.recentFiles)
-        loadCover(project.coverImageUrl)
+        loadCover(project)
+    }
+
+    private fun loadWorkerStats() {
+        val token = currentAccessToken.takeIf { it.isNotBlank() } ?: return
+        val projectId = currentProjectId.takeIf { it > 0L } ?: return
+        lifecycleScope.launch {
+            runCatching {
+                projectRepository.loadWorkerStats(token, projectId)
+            }.onSuccess { stats ->
+                val base = binding.projectPlanText.text.toString().substringBefore("\n在场统计")
+                binding.projectPlanText.text = "$base\n在场统计 ${stats.totalCurrentCount}人：在场${stats.activeCount}，入场中${stats.enteringCount}，已绑定${stats.boundCount}"
+            }
+        }
     }
 
     private fun renderRecentFiles(files: List<ManagerProjectFile>) {
@@ -151,37 +161,25 @@ class ProjectDetailActivity : AppCompatActivity() {
         }
     }
 
-    private fun loadCover(url: String) {
-        val coverUrl = ProjectCoverUrlResolver.resolve(BuildConfig.SUPERVISOR_BASE_URL, url)
-        logCover("raw=$url resolved=$coverUrl")
-        if (coverUrl.isBlank()) {
+    private fun loadCover(project: ManagerProject) {
+        val token = currentAccessToken.takeIf { it.isNotBlank() }
+        val projectId = project.projectId.takeIf { it > 0L } ?: currentProjectId.takeIf { it > 0L }
+        if (project.coverImageUrl.isBlank() || token == null || projectId == null) {
             binding.projectCoverImage.setImageResource(R.drawable.detail_header_crane)
             return
         }
+        logCover("preview projectId=$projectId")
         lifecycleScope.launch {
             runCatching {
                 withContext(Dispatchers.IO) {
-                    val request = Request.Builder()
-                        .url(coverUrl)
-                        .get()
-                        .apply {
-                            if (currentAccessToken.isNotBlank()) {
-                                header("Authorization", bearerToken(currentAccessToken))
-                            }
-                        }
-                        .build()
-                    ApiClient.okHttpClient.newCall(request).execute().use { response ->
-                        if (!response.isSuccessful) error("项目封面加载失败: HTTP ${response.code}")
-                        val contentType = response.body.contentType()?.toString().orEmpty()
-                        val bytes = response.body.bytes()
-                        BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
-                            ?: error("项目封面解码失败: contentType=$contentType bytes=${bytes.size}")
-                    }
+                    val bytes = projectRepository.loadProjectCoverBytes(token, projectId)
+                    BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
+                        ?: error("项目封面解码失败: bytes=${bytes.size}")
                 }
             }.onSuccess { bitmap ->
                 binding.projectCoverImage.setImageBitmap(bitmap)
             }.onFailure {
-                logCover("failed raw=$url resolved=$coverUrl", it)
+                logCover("failed projectId=$projectId", it)
                 binding.projectCoverImage.setImageResource(R.drawable.detail_header_crane)
             }
         }

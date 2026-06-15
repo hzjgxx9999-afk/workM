@@ -14,6 +14,7 @@ import com.qkzc.workerm.data.network.AjaxResp
 import com.qkzc.workerm.data.network.AjaxTokenResp
 import com.qkzc.workerm.data.network.AttendanceExceptionVo
 import com.qkzc.workerm.data.network.AuditListReq
+import com.qkzc.workerm.data.network.BindChangeAuditReq
 import com.qkzc.workerm.data.network.ExceptionAuditReq
 import com.qkzc.workerm.data.network.ExceptionDetailReq
 import com.qkzc.workerm.data.network.ExitAuditReq
@@ -33,20 +34,26 @@ import com.qkzc.workerm.data.network.ManagerProjectVo
 import com.qkzc.workerm.data.network.ManagerTeamLeaderVo
 import com.qkzc.workerm.data.network.ManagerWorkTypeOptionVo
 import com.qkzc.workerm.data.network.ManagerWorkerScanReq
+import com.qkzc.workerm.data.network.ManagerWorkerStatsVo
 import com.qkzc.workerm.data.network.ManagerWorkerVo
 import com.qkzc.workerm.data.network.MaterialAuditReq
 import com.qkzc.workerm.data.network.MaterialDetailReq
 import com.qkzc.workerm.data.network.MaterialListReq
 import com.qkzc.workerm.data.network.MaterialRequestVo
 import com.qkzc.workerm.data.network.SupervisorApi
+import com.qkzc.workerm.data.network.WorkerBindChangeRequestVo
+import com.qkzc.workerm.data.network.WorkerBindRelationVo
+import okhttp3.ResponseBody
 
 open class EmptySupervisorApi : SupervisorApi {
     override suspend fun login(body: LoginReq): AjaxTokenResp = error("unused")
     override suspend fun profile(token: String): AjaxProfileResp = error("unused")
     override suspend fun manageProjects(token: String): AjaxResp<List<ManagerProjectVo>> = error("unused")
     override suspend fun manageProjectDetail(token: String, projectId: Long): AjaxResp<ManagerProjectVo> = error("unused")
+    override suspend fun manageProjectCoverPreview(token: String, projectId: Long): ResponseBody = error("unused")
     override suspend fun manageProjectTeamLeaders(token: String, projectId: Long): AjaxResp<List<ManagerTeamLeaderVo>> = error("unused")
     override suspend fun manageProjectTeams(token: String, projectId: Long): AjaxResp<List<ManagerProjectTeamVo>> = error("unused")
+    override suspend fun manageProjectWorkerStats(token: String, projectId: Long): AjaxResp<ManagerWorkerStatsVo> = error("unused")
     override suspend fun manageProjectLeaderOptions(token: String, projectId: Long, keyword: String?): AjaxResp<List<ManagerLeaderOptionVo>> = error("unused")
     override suspend fun manageProjectWorkTypes(token: String, projectId: Long, keyword: String?): AjaxResp<List<ManagerWorkTypeOptionVo>> = error("unused")
     override suspend fun createManageProjectTeam(token: String, projectId: Long, body: ManagerProjectTeamSaveReq): AjaxResp<ManagerProjectTeamVo> = error("unused")
@@ -58,6 +65,7 @@ open class EmptySupervisorApi : SupervisorApi {
     override suspend fun manageHomeOverview(token: String, projectId: Long?): AjaxResp<ManagerHomeOverviewVo> = error("unused")
     override suspend fun manageWorkers(token: String, projectId: Long?, status: String?, keyword: String?): AjaxResp<List<ManagerWorkerVo>> = error("unused")
     override suspend fun manageWorkerDetail(token: String, workerId: Long, projectId: Long): AjaxResp<ManagerWorkerVo> = error("unused")
+    override suspend fun manageWorkerRelations(token: String, workerId: Long, projectId: Long?): AjaxResp<List<WorkerBindRelationVo>> = error("unused")
     override suspend fun manageWorkerScanTicket(token: String, body: ManagerWorkerScanReq): AjaxResp<ManagerWorkerVo> = error("unused")
     override suspend fun advanceList(token: String, body: AuditListReq): AjaxResp<List<AdvanceRequestVo>> = error("unused")
     override suspend fun advanceDetail(token: String, body: AdvanceDetailReq): AjaxResp<AdvanceRequestVo> = error("unused")
@@ -71,6 +79,10 @@ open class EmptySupervisorApi : SupervisorApi {
     override suspend fun exitList(token: String, body: ExitListReq): AjaxResp<List<ExitRequestVo>> = error("unused")
     override suspend fun exitDetail(token: String, body: ExitDetailReq): AjaxResp<ExitRequestVo> = error("unused")
     override suspend fun auditExit(token: String, body: ExitAuditReq): AjaxResp<ExitRequestVo> = error("unused")
+    override suspend fun bindChangeRequests(token: String, projectId: Long?, status: String?): AjaxResp<List<WorkerBindChangeRequestVo>> =
+        AjaxResp(code = 200, msg = "ok", data = emptyList())
+    override suspend fun approveBindChangeRequest(token: String, id: Long, body: BindChangeAuditReq): AjaxResp<WorkerBindChangeRequestVo> = error("unused")
+    override suspend fun rejectBindChangeRequest(token: String, id: Long, body: BindChangeAuditReq): AjaxResp<WorkerBindChangeRequestVo> = error("unused")
     override suspend fun manageAiWarningList(token: String, body: AiWarningListReq): AjaxResp<AiWarningPageVo> = error("unused")
     override suspend fun manageAiWarningDetail(token: String, body: AiWarningDetailReq): AjaxResp<AiWarningVo> = error("unused")
     override suspend fun manageAiWarningRead(token: String, body: AiWarningReadReq): AjaxResp<Any> = error("unused")

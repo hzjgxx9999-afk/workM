@@ -63,6 +63,12 @@ data class ManagerProjectFileVo(
     val fileSize: Long? = null,
     val category: String? = null,
     val createTime: String? = null,
+    @SerializedName(value = "previewUrl", alternate = ["fileUrl"])
+    val previewUrl: String? = null,
+    val downloadUrl: String? = null,
+    val objectUrl: String? = null,
+    @SerializedName(value = "uploaderName", alternate = ["uploadUserName", "createByName"])
+    val uploaderName: String? = null,
 )
 
 data class ManagerTeamLeaderVo(
@@ -190,6 +196,58 @@ data class ManagerWorkerScanReq(
     @SerializedName("workerId")
     val workerUserId: Long? = null,
     val ticket: String? = null,
+)
+
+data class WorkerBindRelationVo(
+    val id: Long? = null,
+    val userId: Long? = null,
+    val projectId: Long? = null,
+    val projectName: String? = null,
+    val leaderId: Long? = null,
+    val leaderName: String? = null,
+    val teamId: Long? = null,
+    val teamName: String? = null,
+    val bindSource: String? = null,
+    val status: String? = null,
+    val currentFlag: Int? = null,
+    val bindTime: String? = null,
+    val sourceRequestId: Long? = null,
+)
+
+data class WorkerBindChangeRequestVo(
+    val id: Long? = null,
+    val workerUserId: Long? = null,
+    val sourceRelationId: Long? = null,
+    val sourceProjectId: Long? = null,
+    val sourceTeamId: Long? = null,
+    val sourceLeaderId: Long? = null,
+    val sourceStatus: String? = null,
+    val targetProjectId: Long? = null,
+    val targetTeamId: Long? = null,
+    val targetLeaderId: Long? = null,
+    val targetInviteCodeId: Long? = null,
+    val targetProjectName: String? = null,
+    val targetTeamName: String? = null,
+    val targetLeaderName: String? = null,
+    val changeType: String? = null,
+    val status: String? = null,
+    val applyReason: String? = null,
+    val auditRemark: String? = null,
+    val newRelationId: Long? = null,
+    val resultCode: String? = null,
+    val createTime: String? = null,
+    val auditTime: String? = null,
+)
+
+data class BindChangeAuditReq(
+    val auditRemark: String? = null,
+)
+
+data class ManagerWorkerStatsVo(
+    val boundCount: Int? = null,
+    val enteringCount: Int? = null,
+    val activeCount: Int? = null,
+    val totalCurrentCount: Int? = null,
 )
 
 data class AuditListReq(
@@ -450,3 +508,179 @@ object ApprovalApiConstants {
     const val STATUS_ALL = "ALL"
     const val USER_TYPE_PROJECT_MANAGER = "PROJECT_MANAGER"
 }
+
+data class PageResp<T>(
+    val total: Long? = null,
+    val pageNum: Int? = null,
+    val pageSize: Int? = null,
+    val pages: Int? = null,
+    @SerializedName(value = "rows", alternate = ["list"])
+    val rows: List<T>? = null,
+)
+
+data class VersionReq(
+    val version: Int,
+)
+
+data class ConstructionLogOverviewVo(
+    val todayCount: Int? = null,
+    val pendingCount: Int? = null,
+    val archivedMonthCount: Int? = null,
+    val draftCount: Int? = null,
+)
+
+data class ConstructionLogPageReq(
+    val pageNum: Int = 1,
+    val pageSize: Int = 20,
+    val keyword: String? = null,
+    val status: String? = null,
+    val dateStart: String? = null,
+    val dateEnd: String? = null,
+    val teamId: Long? = null,
+    val mineOnly: Boolean? = null,
+)
+
+data class ConstructionLogSaveReq(
+    val requestId: String? = null,
+    val logDate: String,
+    val logType: String = "DAILY",
+    val sectionId: Long? = null,
+    val sectionName: String? = null,
+    val teamId: Long? = null,
+    val teamName: String? = null,
+    val title: String,
+    val weatherAm: String? = null,
+    val weatherPm: String? = null,
+    val temperatureMin: Int? = null,
+    val temperatureMax: Int? = null,
+    val workerCount: Int = 0,
+    val machineCount: Int = 0,
+    val progressSummary: String,
+    val qualitySummary: String,
+    val safetySummary: String,
+    val contentHtml: String? = null,
+    val contentText: String,
+    val riskCount: Int = 0,
+    val locationText: String? = null,
+    val rectifySuggestion: String? = null,
+    val extraRemark: String? = null,
+    val attachments: List<ConstructionLogAttachmentSaveReq> = emptyList(),
+    val version: Int? = null,
+)
+
+data class ConstructionLogAttachmentSaveReq(
+    val fileCategory: String = "DOCUMENT",
+    val fileName: String,
+    val objectKey: String,
+    val objectUrl: String? = null,
+    val mimeType: String? = null,
+    val fileSize: Long? = null,
+    val sha256: String? = null,
+    val sortNo: Int = 0,
+)
+
+data class ConstructionLogItemVo(
+    val id: Long? = null,
+    val logNo: String? = null,
+    val logDate: String? = null,
+    val title: String? = null,
+    val logType: String? = null,
+    val teamId: Long? = null,
+    val teamName: String? = null,
+    val recorderName: String? = null,
+    val workerCount: Int? = null,
+    val machineCount: Int? = null,
+    val status: String? = null,
+    val statusName: String? = null,
+    val currentAuditorName: String? = null,
+    val attachmentCount: Int? = null,
+    val submittedAt: String? = null,
+    val updateTime: String? = null,
+    @SerializedName(value = "actionCodes", alternate = ["actions"])
+    val actionCodes: List<String>? = null,
+)
+
+data class ConstructionLogDetailVo(
+    val id: Long? = null,
+    val logNo: String? = null,
+    val projectId: Long? = null,
+    val projectName: String? = null,
+    val logDate: String? = null,
+    val logType: String? = null,
+    val sectionId: Long? = null,
+    val sectionName: String? = null,
+    val teamId: Long? = null,
+    val teamName: String? = null,
+    val title: String? = null,
+    val weatherAm: String? = null,
+    val weatherPm: String? = null,
+    val temperatureMin: Int? = null,
+    val temperatureMax: Int? = null,
+    val workerCount: Int? = null,
+    val machineCount: Int? = null,
+    val progressSummary: String? = null,
+    val qualitySummary: String? = null,
+    val safetySummary: String? = null,
+    val contentHtml: String? = null,
+    val contentText: String? = null,
+    val riskCount: Int? = null,
+    val locationText: String? = null,
+    val rectifySuggestion: String? = null,
+    val extraRemark: String? = null,
+    val status: String? = null,
+    val version: Int? = null,
+    val recorderName: String? = null,
+    val submitterName: String? = null,
+    val submittedAt: String? = null,
+    val approvedAt: String? = null,
+    val attachments: List<ConstructionLogAttachmentVo>? = null,
+    @SerializedName(value = "auditTracks", alternate = ["auditNodes"])
+    val auditTracks: List<ConstructionLogAuditNodeVo>? = null,
+    val versions: List<ConstructionLogVersionVo>? = null,
+    @SerializedName(value = "actionCodes", alternate = ["actions"])
+    val actionCodes: List<String>? = null,
+)
+
+data class ConstructionLogAttachmentVo(
+    val id: Long? = null,
+    val fileCategory: String? = null,
+    val fileName: String? = null,
+    val mimeType: String? = null,
+    val fileSize: Long? = null,
+    val previewUrl: String? = null,
+    val downloadUrl: String? = null,
+    val objectKey: String? = null,
+    val objectUrl: String? = null,
+    val sha256: String? = null,
+    val sortNo: Int? = null,
+)
+
+data class ConstructionLogAuditNodeVo(
+    val nodeNo: Int? = null,
+    val nodeType: String? = null,
+    val approverUserId: Long? = null,
+    val approverName: String? = null,
+    val action: String? = null,
+    val actionRemark: String? = null,
+    val status: String? = null,
+    val actedAt: String? = null,
+    val createTime: String? = null,
+)
+
+data class ConstructionLogVersionVo(
+    val versionNo: Int? = null,
+    val sourceAction: String? = null,
+    val operatorName: String? = null,
+    val createTime: String? = null,
+    val diffSummary: String? = null,
+)
+
+data class FileUploadVo(
+    val fileToken: String? = null,
+    val fileName: String? = null,
+    val fileUrl: String? = null,
+    val objectKey: String? = null,
+    val mimeType: String? = null,
+    val fileSize: Long? = null,
+    val sha256: String? = null,
+)

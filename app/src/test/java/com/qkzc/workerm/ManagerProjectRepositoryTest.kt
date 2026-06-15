@@ -6,7 +6,11 @@ import com.qkzc.workerm.data.network.ManagerTeamLeaderVo
 import com.qkzc.workerm.data.network.SupervisorApi
 import com.qkzc.workerm.data.project.ManagerProjectRepository
 import kotlinx.coroutines.runBlocking
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.ResponseBody
+import okhttp3.ResponseBody.Companion.toResponseBody
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertArrayEquals
 import org.junit.Test
 
 class ManagerProjectRepositoryTest {
@@ -35,10 +39,29 @@ class ManagerProjectRepositoryTest {
         assertEquals("广州", projects.first().projectAddress)
     }
 
+    @Test
+    fun loadProjectCoverBytesUsesAuthorizedPreviewEndpoint() = runBlocking {
+        val coverBytes = byteArrayOf(1, 2, 3, 4)
+        val api = FakeProjectApi(
+            projects = listOf(ManagerProjectVo(projectId = 10)),
+            coverBody = coverBytes.toResponseBody("image/jpeg".toMediaType()),
+        )
+        val repository = ManagerProjectRepository(api)
+
+        val actual = repository.loadProjectCoverBytes("token", 10L)
+
+        assertEquals("Bearer token", api.lastCoverToken)
+        assertEquals(10L, api.lastCoverProjectId)
+        assertArrayEquals(coverBytes, actual)
+    }
+
     private class FakeProjectApi(
         private val projects: List<ManagerProjectVo>,
+        private val coverBody: ResponseBody = ByteArray(0).toResponseBody(null),
     ) : SupervisorApi by EmptySupervisorApi() {
         var lastToken: String? = null
+        var lastCoverToken: String? = null
+        var lastCoverProjectId: Long? = null
 
         override suspend fun manageProjects(token: String): AjaxResp<List<ManagerProjectVo>> {
             lastToken = token
@@ -50,6 +73,12 @@ class ManagerProjectRepositoryTest {
             projectId: Long,
         ): AjaxResp<ManagerProjectVo> {
             return AjaxResp(code = 200, msg = "ok", data = projects.first { it.projectId == projectId })
+        }
+
+        override suspend fun manageProjectCoverPreview(token: String, projectId: Long): ResponseBody {
+            lastCoverToken = token
+            lastCoverProjectId = projectId
+            return coverBody
         }
 
         override suspend fun manageProjectTeamLeaders(

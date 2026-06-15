@@ -3,6 +3,7 @@ package com.qkzc.workerm.data.project
 import com.qkzc.workerm.data.network.AjaxResp
 import com.qkzc.workerm.data.network.ApiClient
 import com.qkzc.workerm.data.network.ManagerProjectFileVo
+import com.qkzc.workerm.data.network.ManagerWorkerStatsVo
 import com.qkzc.workerm.data.network.ManagerProjectVo
 import com.qkzc.workerm.data.network.ManagerTeamLeaderVo
 import com.qkzc.workerm.data.network.SupervisorApi
@@ -22,10 +23,22 @@ class ManagerProjectRepository(
         return response.data?.toDomain() ?: ManagerProject(projectId = projectId)
     }
 
+    suspend fun loadProjectCoverBytes(token: String, projectId: Long): ByteArray {
+        return api.manageProjectCoverPreview(bearerToken(token), projectId).use { body ->
+            body.bytes()
+        }
+    }
+
     suspend fun loadTeamLeaders(token: String, projectId: Long): List<ManagerTeamLeader> {
         return api.manageProjectTeamLeaders(bearerToken(token), projectId)
             .requireDataList()
             .map { it.toDomain() }
+    }
+
+    suspend fun loadWorkerStats(token: String, projectId: Long): ManagerWorkerStats {
+        val response = api.manageProjectWorkerStats(bearerToken(token), projectId)
+        requireSuccess(response.code, response.msg)
+        return response.data?.toDomain() ?: ManagerWorkerStats()
     }
 
     private fun ManagerProjectVo.toDomain(): ManagerProject {
@@ -79,6 +92,15 @@ class ManagerProjectRepository(
             createTime = createTime.orEmpty(),
         )
     }
+
+    private fun ManagerWorkerStatsVo.toDomain(): ManagerWorkerStats {
+        return ManagerWorkerStats(
+            boundCount = boundCount ?: 0,
+            enteringCount = enteringCount ?: 0,
+            activeCount = activeCount ?: 0,
+            totalCurrentCount = totalCurrentCount ?: 0,
+        )
+    }
 }
 
 data class ManagerProject(
@@ -120,4 +142,11 @@ data class ManagerProjectFile(
     val fileSize: Long,
     val category: String,
     val createTime: String,
+)
+
+data class ManagerWorkerStats(
+    val boundCount: Int = 0,
+    val enteringCount: Int = 0,
+    val activeCount: Int = 0,
+    val totalCurrentCount: Int = 0,
 )

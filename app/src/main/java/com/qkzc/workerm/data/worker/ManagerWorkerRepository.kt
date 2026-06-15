@@ -5,6 +5,7 @@ import com.qkzc.workerm.data.network.ApiClient
 import com.qkzc.workerm.data.network.ManagerWorkerScanReq
 import com.qkzc.workerm.data.network.ManagerWorkerVo
 import com.qkzc.workerm.data.network.SupervisorApi
+import com.qkzc.workerm.data.network.WorkerBindRelationVo
 import com.qkzc.workerm.data.network.bearerToken
 import com.qkzc.workerm.data.network.requireSuccess
 
@@ -54,6 +55,18 @@ class ManagerWorkerRepository(
         return response.data?.toDomain() ?: ManagerWorker(workerUserId = 0L, projectId = projectId)
     }
 
+    suspend fun relationHistory(
+        token: String,
+        workerUserId: Long,
+        projectId: Long? = null,
+    ): List<ManagerWorkerRelation> {
+        return api.manageWorkerRelations(
+            token = bearerToken(token),
+            workerId = workerUserId,
+            projectId = projectId,
+        ).requireDataList().map { it.toDomain() }
+    }
+
     private fun ManagerWorkerVo.toDomain(): ManagerWorker {
         return ManagerWorker(
             relationId = relationId ?: 0L,
@@ -84,6 +97,24 @@ class ManagerWorkerRepository(
             signedTime = signedTime.orEmpty(),
             contractStatus = contractStatus.orEmpty(),
             createTime = createTime.orEmpty(),
+        )
+    }
+
+    private fun WorkerBindRelationVo.toDomain(): ManagerWorkerRelation {
+        return ManagerWorkerRelation(
+            relationId = id ?: 0L,
+            workerUserId = userId ?: 0L,
+            projectId = projectId ?: 0L,
+            projectName = projectName.orEmpty(),
+            leaderId = leaderId ?: 0L,
+            leaderName = leaderName.orEmpty(),
+            teamId = teamId ?: 0L,
+            teamName = teamName.orEmpty(),
+            bindSource = bindSource.orEmpty(),
+            status = status.orEmpty(),
+            currentFlag = currentFlag ?: 0,
+            bindTime = bindTime.orEmpty(),
+            sourceRequestId = sourceRequestId,
         )
     }
 
@@ -122,4 +153,20 @@ data class ManagerWorker(
     val signedTime: String = "",
     val contractStatus: String = "",
     val createTime: String = "",
+)
+
+data class ManagerWorkerRelation(
+    val relationId: Long = 0L,
+    val workerUserId: Long = 0L,
+    val projectId: Long = 0L,
+    val projectName: String = "",
+    val leaderId: Long = 0L,
+    val leaderName: String = "",
+    val teamId: Long = 0L,
+    val teamName: String = "",
+    val bindSource: String = "",
+    val status: String = "",
+    val currentFlag: Int = 0,
+    val bindTime: String = "",
+    val sourceRequestId: Long? = null,
 )

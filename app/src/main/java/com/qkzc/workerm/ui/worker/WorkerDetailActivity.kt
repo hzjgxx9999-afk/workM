@@ -1,6 +1,9 @@
 package com.qkzc.workerm.ui.worker
 
 import android.os.Bundle
+import android.view.ViewGroup
+import android.widget.LinearLayout
+import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -21,6 +24,9 @@ class WorkerDetailActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityWorkerDetailBinding
     private val workerRepository = ManagerWorkerRepository()
+    private var currentAccessToken: String = ""
+    private var currentProjectId: Long = 0L
+    private var currentWorkerId: Long = 0L
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,6 +47,7 @@ class WorkerDetailActivity : AppCompatActivity() {
         lifecycleScope.launch {
             runCatching {
                 val session = SessionStore(this@WorkerDetailActivity).sessionFlow.first()
+                currentAccessToken = session.accessToken
                 val projectId = intent.getLongExtra(EXTRA_PROJECT_ID, 0L)
                     .takeIf { it > 0L }
                     ?: session.projectId.toLongOrNull()
@@ -48,9 +55,12 @@ class WorkerDetailActivity : AppCompatActivity() {
                 val workerId = intent.getLongExtra(EXTRA_WORKER_ID, 0L)
                     .takeIf { it > 0L }
                     ?: error("请从工人列表或扫码结果进入详情")
+                currentProjectId = projectId
+                currentWorkerId = workerId
                 workerRepository.detail(session.accessToken, projectId, workerId)
             }.onSuccess { worker ->
                 bindWorker(worker)
+                loadRelationHistory()
             }.onFailure { throwable ->
                 bindError(throwable.message ?: "工人信息加载失败")
             }
@@ -81,6 +91,49 @@ class WorkerDetailActivity : AppCompatActivity() {
         binding.workerIdCardText.text = "身份证号\n--"
         binding.entryProgressTitleText.text = "入场流程"
         setFlowSteps(null)
+    }
+
+    private fun loadRelationHistory() {
+        val token = currentAccessToken.takeIf { it.isNotBlank() } ?: return
+        val workerId = currentWorkerId.takeIf { it > 0L } ?: return
+        val projectId = currentProjectId.takeIf { it > 0L }
+        lifecycleScope.launch {
+            runCatching {
+                workerRepository.relationHistory(token, workerId, projectId)
+            }.onSuccess { relations ->
+                val text = relations.joinToString("\n\n") { relation ->
+                    listOf(
+                        "项目：${relation.projectName.ifBlank { "--" }}",
+                        "班组长：${relation.leaderName.ifBlank { "--" }}",
+                        "班组：${relation.teamName.ifBlank { "--" }}",
+                        "状态：${statusLabel(relation.status)}",
+                        "绑定时间：${relation.bindTime.ifBlank { "--" }}"
+                    ).joinToString("\n")
+                }.ifBlank { "暂无项目履历" }
+                bindRelationHistory(text)
+            }.onFailure {
+                bindRelationHistory("项目履历加载失败")
+            }
+        }
+    }
+
+    private fun bindRelationHistory(text: String) {
+        val container = binding.workerDetailRoot.getChildAt(0) as? LinearLayout ?: return
+        val existing = container.findViewWithTag<TextView>("relation_history_card")
+        val card = existing ?: TextView(this).apply {
+            tag = "relation_history_card"
+            setPadding(14.dp(), 12.dp(), 14.dp(), 12.dp())
+            textSize = 13f
+            setTextColor(getColor(com.qkzc.workerm.R.color.text_primary))
+            background = getDrawable(com.qkzc.workerm.R.drawable.bg_card_stroke)
+            container.addView(this, ViewGroup.MarginLayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+            ).apply {
+                topMargin = 12.dp()
+            })
+        }
+        card.text = "项目履历\n$text"
     }
 
     private fun bindWorker(worker: ManagerWorker) {
@@ -137,6 +190,8 @@ class WorkerDetailActivity : AppCompatActivity() {
         if (text.contains("*") || text.length < 8) return text
         return text.take(3) + "************" + text.takeLast(4)
     }
+
+    private fun Int.dp(): Int = (this * resources.displayMetrics.density).toInt()
 
     companion object {
         const val EXTRA_PROJECT_ID = "projectId"

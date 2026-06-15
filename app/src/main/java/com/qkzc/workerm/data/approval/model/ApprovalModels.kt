@@ -16,6 +16,7 @@ enum class ApprovalCategory {
     MATERIAL,
     EXCEPTION,
     EXIT,
+    BIND_CHANGE,
     LEAVE,
 }
 

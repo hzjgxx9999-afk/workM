@@ -1,12 +1,17 @@
 package com.qkzc.workerm.data.network
 
+import okhttp3.ResponseBody
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.Header
+import retrofit2.http.Multipart
 import retrofit2.http.Path
+import retrofit2.http.Part
 import retrofit2.http.POST
 import retrofit2.http.Query
 import retrofit2.http.PUT
+import okhttp3.MultipartBody
+import retrofit2.http.Streaming
 
 interface SupervisorApi {
 
@@ -27,6 +32,20 @@ interface SupervisorApi {
         @Path("projectId") projectId: Long,
     ): AjaxResp<ManagerProjectVo>
 
+    @GET("/app/manage/projects/{projectId}/drawing-docs")
+    suspend fun manageProjectDrawingDocs(
+        @Header("Authorization") token: String,
+        @Path("projectId") projectId: Long,
+        @Query("limit") limit: Int? = null,
+    ): AjaxResp<List<ManagerProjectFileVo>>
+
+    @Streaming
+    @GET("/app/manage/projects/{projectId}/cover/preview")
+    suspend fun manageProjectCoverPreview(
+        @Header("Authorization") token: String,
+        @Path("projectId") projectId: Long,
+    ): ResponseBody
+
     @GET("/app/manage/projects/{projectId}/team-leaders")
     suspend fun manageProjectTeamLeaders(
         @Header("Authorization") token: String,
@@ -38,6 +57,12 @@ interface SupervisorApi {
         @Header("Authorization") token: String,
         @Path("projectId") projectId: Long,
     ): AjaxResp<List<ManagerProjectTeamVo>>
+
+    @GET("/app/manage/projects/{projectId}/worker-stats")
+    suspend fun manageProjectWorkerStats(
+        @Header("Authorization") token: String,
+        @Path("projectId") projectId: Long,
+    ): AjaxResp<ManagerWorkerStatsVo>
 
     @GET("/app/manage/projects/{projectId}/leader-options")
     suspend fun manageProjectLeaderOptions(
@@ -118,6 +143,13 @@ interface SupervisorApi {
         @Query("projectId") projectId: Long,
     ): AjaxResp<ManagerWorkerVo>
 
+    @GET("/app/manage/workers/{workerId}/relations")
+    suspend fun manageWorkerRelations(
+        @Header("Authorization") token: String,
+        @Path("workerId") workerId: Long,
+        @Query("projectId") projectId: Long? = null,
+    ): AjaxResp<List<WorkerBindRelationVo>>
+
     @POST("/app/manage/workers/scan-ticket")
     suspend fun manageWorkerScanTicket(
         @Header("Authorization") token: String,
@@ -196,6 +228,27 @@ interface SupervisorApi {
         @Body body: ExitAuditReq,
     ): AjaxResp<ExitRequestVo>
 
+    @GET("/app/manage/bind-change-requests")
+    suspend fun bindChangeRequests(
+        @Header("Authorization") token: String,
+        @Query("projectId") projectId: Long? = null,
+        @Query("status") status: String? = null,
+    ): AjaxResp<List<WorkerBindChangeRequestVo>>
+
+    @POST("/app/manage/bind-change-requests/{id}/approve")
+    suspend fun approveBindChangeRequest(
+        @Header("Authorization") token: String,
+        @Path("id") id: Long,
+        @Body body: BindChangeAuditReq,
+    ): AjaxResp<WorkerBindChangeRequestVo>
+
+    @POST("/app/manage/bind-change-requests/{id}/reject")
+    suspend fun rejectBindChangeRequest(
+        @Header("Authorization") token: String,
+        @Path("id") id: Long,
+        @Body body: BindChangeAuditReq,
+    ): AjaxResp<WorkerBindChangeRequestVo>
+
     @POST("/app/manage/ai-warning/list")
     suspend fun manageAiWarningList(
         @Header("Authorization") token: String,
@@ -225,4 +278,80 @@ interface SupervisorApi {
         @Header("Authorization") token: String,
         @Body body: AiWarningListReq = AiWarningListReq(),
     ): AjaxResp<Int>
+
+    @GET("/app/manage/projects/{projectId}/construction-logs/overview")
+    suspend fun constructionLogOverview(
+        @Header("Authorization") token: String,
+        @Path("projectId") projectId: Long,
+    ): AjaxResp<ConstructionLogOverviewVo>
+
+    @POST("/app/manage/projects/{projectId}/construction-logs/page")
+    suspend fun constructionLogPage(
+        @Header("Authorization") token: String,
+        @Path("projectId") projectId: Long,
+        @Body body: ConstructionLogPageReq,
+    ): AjaxResp<PageResp<ConstructionLogItemVo>>
+
+    @GET("/app/manage/projects/{projectId}/construction-logs/{logId}")
+    suspend fun constructionLogDetail(
+        @Header("Authorization") token: String,
+        @Path("projectId") projectId: Long,
+        @Path("logId") logId: Long,
+    ): AjaxResp<ConstructionLogDetailVo>
+
+    @POST("/app/manage/projects/{projectId}/construction-logs")
+    suspend fun createConstructionLog(
+        @Header("Authorization") token: String,
+        @Path("projectId") projectId: Long,
+        @Body body: ConstructionLogSaveReq,
+    ): AjaxResp<ConstructionLogDetailVo>
+
+    @PUT("/app/manage/projects/{projectId}/construction-logs/{logId}")
+    suspend fun updateConstructionLog(
+        @Header("Authorization") token: String,
+        @Path("projectId") projectId: Long,
+        @Path("logId") logId: Long,
+        @Body body: ConstructionLogSaveReq,
+    ): AjaxResp<ConstructionLogDetailVo>
+
+    @POST("/app/manage/projects/{projectId}/construction-logs/{logId}/delete")
+    suspend fun deleteConstructionLog(
+        @Header("Authorization") token: String,
+        @Path("projectId") projectId: Long,
+        @Path("logId") logId: Long,
+        @Body body: VersionReq,
+    ): AjaxResp<Any>
+
+    @POST("/app/manage/projects/{projectId}/construction-logs/{logId}/submit")
+    suspend fun submitConstructionLog(
+        @Header("Authorization") token: String,
+        @Path("projectId") projectId: Long,
+        @Path("logId") logId: Long,
+        @Body body: VersionReq,
+    ): AjaxResp<Any>
+
+    @POST("/app/manage/projects/{projectId}/construction-logs/{logId}/withdraw")
+    suspend fun withdrawConstructionLog(
+        @Header("Authorization") token: String,
+        @Path("projectId") projectId: Long,
+        @Path("logId") logId: Long,
+        @Body body: VersionReq,
+    ): AjaxResp<Any>
+
+    @Multipart
+    @POST("/app/manage/projects/{projectId}/drawing-docs/upload")
+    suspend fun uploadProjectDrawingDoc(
+        @Header("Authorization") token: String,
+        @Path("projectId") projectId: Long,
+        @Part file: MultipartBody.Part,
+        @Part("category") category: okhttp3.RequestBody,
+        @Part("remark") remark: okhttp3.RequestBody,
+    ): AjaxResp<ManagerProjectFileVo>
+
+    @Multipart
+    @POST("/app/common/files/upload")
+    suspend fun uploadCommonFile(
+        @Header("Authorization") token: String,
+        @Part file: MultipartBody.Part,
+    ): AjaxResp<FileUploadVo>
 }

@@ -1,12 +1,10 @@
 package com.qkzc.workerm.ui.todo
 
-import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.EditText
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
@@ -20,6 +18,7 @@ import com.qkzc.workerm.data.approval.model.ApprovalFilter
 import com.qkzc.workerm.data.approval.model.ApprovalItem
 import com.qkzc.workerm.data.session.SessionStore
 import com.qkzc.workerm.databinding.FragmentApprovalCenterBinding
+import com.qkzc.workerm.ui.approval.ApprovalAuditDialog
 import com.qkzc.workerm.ui.approval.ApprovalDetailActivity
 import com.qkzc.workerm.ui.common.adapter.ApprovalAdapter
 import kotlinx.coroutines.launch
@@ -92,37 +91,14 @@ class TodoFragment : Fragment() {
     }
 
     private fun showAuditDialog(item: ApprovalItem, approve: Boolean) {
-        val input = EditText(requireContext()).apply {
-            hint = getString(R.string.approval_dialog_hint)
-            setSingleLine(false)
-            minLines = 3
-            setText(
-                if (approve) {
-                    R.string.approval_default_remark_approve
-                } else {
-                    R.string.approval_default_remark_reject
-                },
-            )
+        ApprovalAuditDialog.show(requireContext(), item, approve) { remark ->
+            viewModel.audit(item, approve, remark)
+            Toast.makeText(
+                requireContext(),
+                if (approve) R.string.approval_toast_approved else R.string.approval_toast_rejected,
+                Toast.LENGTH_SHORT,
+            ).show()
         }
-        AlertDialog.Builder(requireContext())
-            .setTitle(
-                if (approve) {
-                    R.string.approval_dialog_approve_title
-                } else {
-                    R.string.approval_dialog_reject_title
-                },
-            )
-            .setView(input)
-            .setNegativeButton(R.string.approval_action_cancel, null)
-            .setPositiveButton(R.string.approval_action_confirm) { _, _ ->
-                viewModel.audit(item, approve, input.text?.toString().orEmpty())
-                Toast.makeText(
-                    requireContext(),
-                    if (approve) R.string.approval_toast_approved else R.string.approval_toast_rejected,
-                    Toast.LENGTH_SHORT,
-                ).show()
-            }
-            .show()
     }
 
     private fun openDetail(item: ApprovalItem) {

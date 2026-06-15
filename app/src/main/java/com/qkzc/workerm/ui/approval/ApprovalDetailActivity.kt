@@ -1,8 +1,6 @@
 package com.qkzc.workerm.ui.approval
 
-import android.app.AlertDialog
 import android.os.Bundle
-import android.widget.EditText
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -109,32 +107,9 @@ class ApprovalDetailActivity : AppCompatActivity() {
     }
 
     private fun showAuditDialog(item: ApprovalItem, approve: Boolean) {
-        val input = EditText(this).apply {
-            hint = getString(R.string.approval_dialog_hint)
-            minLines = 3
-            setSingleLine(false)
-            setText(
-                if (approve) {
-                    R.string.approval_default_remark_approve
-                } else {
-                    R.string.approval_default_remark_reject
-                },
-            )
+        ApprovalAuditDialog.show(this, item, approve) { remark ->
+            audit(item, approve, remark)
         }
-        AlertDialog.Builder(this)
-            .setTitle(
-                if (approve) {
-                    R.string.approval_dialog_approve_title
-                } else {
-                    R.string.approval_dialog_reject_title
-                },
-            )
-            .setView(input)
-            .setNegativeButton(R.string.approval_action_cancel, null)
-            .setPositiveButton(R.string.approval_action_confirm) { _, _ ->
-                audit(item, approve, input.text?.toString().orEmpty())
-            }
-            .show()
     }
 
     private fun audit(item: ApprovalItem, approve: Boolean, remark: String) {

@@ -12,6 +12,7 @@ import com.qkzc.workerm.data.network.ApiClient
 import com.qkzc.workerm.data.network.ApprovalApiConstants
 import com.qkzc.workerm.data.network.AttendanceExceptionVo
 import com.qkzc.workerm.data.network.AuditListReq
+import com.qkzc.workerm.data.network.BindChangeAuditReq
 import com.qkzc.workerm.data.network.ExceptionAuditReq
 import com.qkzc.workerm.data.network.ExceptionDetailReq
 import com.qkzc.workerm.data.network.ExitAuditReq
@@ -24,6 +25,7 @@ import com.qkzc.workerm.data.network.MaterialAuditReq
 import com.qkzc.workerm.data.network.MaterialListReq
 import com.qkzc.workerm.data.network.MaterialRequestVo
 import com.qkzc.workerm.data.network.SupervisorApi
+import com.qkzc.workerm.data.network.WorkerBindChangeRequestVo
 import com.qkzc.workerm.data.network.bearerToken
 import com.qkzc.workerm.data.network.requireSuccess
 
@@ -93,8 +95,13 @@ class ApprovalRepository(
             token = auth,
             body = ExitListReq(projectId = projectId, status = status),
         ).requireList().map { it.toApprovalItem() }
+        val bindChanges = api.bindChangeRequests(
+            token = auth,
+            projectId = projectId,
+            status = status.toBindChangeStatus(),
+        ).requireList().map { it.toApprovalItem() }
 
-        return advances + materials + exceptions + exits
+        return advances + materials + exceptions + exits + bindChanges
     }
 
     suspend fun summary(token: String, projectId: Long?): ApprovalSummary {
@@ -157,6 +164,20 @@ class ApprovalRepository(
                 ),
             ).requireOk()
 
+            ApprovalCategory.BIND_CHANGE -> if (approve) {
+                api.approveBindChangeRequest(
+                    token = auth,
+                    id = item.id,
+                    body = BindChangeAuditReq(auditRemark = remark),
+                ).requireOk()
+            } else {
+                api.rejectBindChangeRequest(
+                    token = auth,
+                    id = item.id,
+                    body = BindChangeAuditReq(auditRemark = remark),
+                ).requireOk()
+            }
+
             ApprovalCategory.LEAVE -> error("请假审批接口尚未接入")
         }
     }
@@ -187,6 +208,15 @@ class ApprovalRepository(
                 token = auth,
                 body = ExitDetailReq(id),
             ).requireData().toApprovalItem()
+
+            ApprovalCategory.BIND_CHANGE -> api.bindChangeRequests(
+                token = auth,
+                projectId = null,
+                status = null,
+            ).requireList()
+                .firstOrNull { it.id == id }
+                ?.toApprovalItem()
+                ?: error("换绑申请不存在")
 
             ApprovalCategory.LEAVE -> error("请假审批接口尚未接入")
         }
@@ -320,6 +350,51 @@ class ApprovalRepository(
             reviewedAt = managerAuditTime ?: approveTime,
             reviewRemark = managerAuditRemark ?: approveRemark,
         )
+    }
+
+    private fun WorkerBindChangeRequestVo.toApprovalItem(): ApprovalItem {
+        val approvalStatus = status.toApprovalStatus()
+        val targetProject = targetProjectName.displayText() ?: targetProjectId?.let { "项目 $it" }.orEmpty()
+        val targetTeam = targetTeamName.displayText() ?: targetTeamId?.let { "班组 $it" }.orEmpty()
+        val targetLeader = targetLeaderName.displayText() ?: targetLeaderId?.let { "班组长 $it" }.orEmpty()
+        return ApprovalItem(
+            id = id ?: 0L,
+            category = ApprovalCategory.BIND_CHANGE,
+            formNo = "BCR-${id ?: 0L}",
+            typeName = changeType.toBindChangeTypeName(),
+            title = listOf(targetProject, targetTeam, targetLeader)
+                .filter { it.isNotBlank() }
+                .joinToString(separator = " · "),
+            applicantName = workerUserId?.let { "工人 $it" }.orEmpty(),
+            projectName = targetProject,
+            teamName = targetTeam,
+            leaderName = targetLeader,
+            submittedAt = createTime.orEmpty(),
+            currentNodeName = "项目经理审批",
+            reason = applyReason.orEmpty(),
+            status = approvalStatus,
+            statusName = approvalStatus.toDisplayName(),
+            reviewResultName = resultCode.displayText() ?: approvalStatus.toDisplayName(),
+            reviewedAt = auditTime,
+            reviewRemark = auditRemark,
+        )
+    }
+
+    private fun String.toBindChangeStatus(): String? {
+        return when (this) {
+            ApprovalApiConstants.STATUS_PENDING_MANAGER -> "PENDING"
+            ApprovalApiConstants.STATUS_ALL -> null
+            else -> this
+        }
+    }
+
+    private fun String?.toBindChangeTypeName(): String {
+        return when (this) {
+            "TRANSFER_LEADER" -> "更换班组长"
+            "TRANSFER_TEAM" -> "调班审批"
+            "TRANSFER_PROJECT" -> "换项目审批"
+            else -> displayText() ?: "项目换绑"
+        }
     }
 
     private fun String?.toApprovalStatus(): ApprovalStatus {

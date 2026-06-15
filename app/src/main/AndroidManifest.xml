@@ -18,6 +18,9 @@
         android:usesCleartextTraffic="true"
         android:theme="@style/Theme.WorkerM">
         <activity
+            android:name=".ui.cad.CadPreviewActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.invite.InviteCodeManageActivity"
             android:exported="false" />
         <activity
@@ -25,6 +28,12 @@
             android:exported="false" />
         <activity
             android:name=".ui.project.ConstructionLogActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.project.ConstructionLogDetailActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.project.ConstructionLogEditActivity"
             android:exported="false" />
         <activity
             android:name=".ui.project.ProjectMaterialsActivity"
