@@ -66,6 +66,7 @@ data class ManagerProjectFileVo(
     @SerializedName(value = "previewUrl", alternate = ["fileUrl"])
     val previewUrl: String? = null,
     val downloadUrl: String? = null,
+    val objectKey: String? = null,
     val objectUrl: String? = null,
     @SerializedName(value = "uploaderName", alternate = ["uploadUserName", "createByName"])
     val uploaderName: String? = null,
@@ -248,6 +249,100 @@ data class ManagerWorkerStatsVo(
     val enteringCount: Int? = null,
     val activeCount: Int? = null,
     val totalCurrentCount: Int? = null,
+)
+
+data class MaterialOverviewVo(
+    val materialCount: Int? = null,
+    val stockTotal: Double? = null,
+    val lowStockCount: Int? = null,
+    val categories: List<MaterialCategorySummaryVo>? = null,
+)
+
+data class MaterialCategorySummaryVo(
+    val category: String? = null,
+    val quantity: Double? = null,
+    val unit: String? = null,
+)
+
+data class MaterialInventoryPageReq(
+    val pageNum: Int = 1,
+    val pageSize: Int = 20,
+    val category: String? = null,
+    val itemName: String? = null,
+    val specModel: String? = null,
+    val materialCode: String? = null,
+    val status: String? = null,
+)
+
+data class MaterialInventoryItemVo(
+    val id: Long? = null,
+    val projectId: Long? = null,
+    val category: String? = null,
+    val itemName: String? = null,
+    val specModel: String? = null,
+    val unit: String? = null,
+    val materialCode: String? = null,
+    val safeStock: Double? = null,
+    val maxStock: Double? = null,
+    val status: String? = null,
+    val currentQty: Double? = null,
+    val lockedQty: Double? = null,
+    val warehouseId: Long? = null,
+    val warehouseName: String? = null,
+    val locationText: String? = null,
+    val managerName: String? = null,
+    val contactPhone: String? = null,
+    val lowStock: Boolean? = null,
+)
+
+data class MaterialStockRecordVo(
+    val id: Long? = null,
+    val projectId: Long? = null,
+    val materialId: Long? = null,
+    val warehouseId: Long? = null,
+    val bizType: String? = null,
+    val bizNo: String? = null,
+    val changeQty: Double? = null,
+    val beforeQty: Double? = null,
+    val afterQty: Double? = null,
+    val operatorId: Long? = null,
+    val operatorName: String? = null,
+    val relatedTeamId: Long? = null,
+    val relatedTeamName: String? = null,
+    val itemName: String? = null,
+    val unit: String? = null,
+    val warehouseName: String? = null,
+    val remark: String? = null,
+    val createTime: String? = null,
+)
+
+data class MaterialReportVo(
+    val materialCount: Int? = null,
+    val stockTotal: Double? = null,
+    val lowStockCount: Int? = null,
+    val categories: List<MaterialCategorySummaryVo>? = null,
+    val records: List<MaterialStockRecordVo>? = null,
+)
+
+data class MaterialInventoryChangeReq(
+    val materialId: Long,
+    val warehouseId: Long,
+    val quantity: Double,
+    val bizNo: String? = null,
+    val sourceRequestId: Long? = null,
+    val relatedTeamId: Long? = null,
+    val relatedTeamName: String? = null,
+    val remark: String? = null,
+)
+
+data class MaterialStockVo(
+    val id: Long? = null,
+    val projectId: Long? = null,
+    val materialId: Long? = null,
+    val warehouseId: Long? = null,
+    val currentQty: Double? = null,
+    val lockedQty: Double? = null,
+    val lowStock: Boolean? = null,
 )
 
 data class AuditListReq(

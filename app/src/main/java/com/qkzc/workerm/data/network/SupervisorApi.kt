@@ -64,6 +64,55 @@ interface SupervisorApi {
         @Path("projectId") projectId: Long,
     ): AjaxResp<ManagerWorkerStatsVo>
 
+    @GET("/app/manage/projects/{projectId}/materials/overview")
+    suspend fun materialInventoryOverview(
+        @Header("Authorization") token: String,
+        @Path("projectId") projectId: Long,
+    ): AjaxResp<MaterialOverviewVo>
+
+    @POST("/app/manage/projects/{projectId}/materials/page")
+    suspend fun materialInventoryPage(
+        @Header("Authorization") token: String,
+        @Path("projectId") projectId: Long,
+        @Body body: MaterialInventoryPageReq,
+    ): AjaxResp<PageResp<MaterialInventoryItemVo>>
+
+    @GET("/app/manage/projects/{projectId}/materials/{materialId}")
+    suspend fun materialInventoryDetail(
+        @Header("Authorization") token: String,
+        @Path("projectId") projectId: Long,
+        @Path("materialId") materialId: Long,
+    ): AjaxResp<MaterialInventoryItemVo>
+
+    @GET("/app/manage/projects/{projectId}/materials/records")
+    suspend fun materialInventoryRecords(
+        @Header("Authorization") token: String,
+        @Path("projectId") projectId: Long,
+        @Query("materialId") materialId: Long? = null,
+        @Query("warehouseId") warehouseId: Long? = null,
+        @Query("bizType") bizType: String? = null,
+    ): AjaxResp<List<MaterialStockRecordVo>>
+
+    @GET("/app/manage/projects/{projectId}/materials/report")
+    suspend fun materialInventoryReport(
+        @Header("Authorization") token: String,
+        @Path("projectId") projectId: Long,
+    ): AjaxResp<MaterialReportVo>
+
+    @POST("/app/manage/projects/{projectId}/materials/inbound")
+    suspend fun materialInventoryInbound(
+        @Header("Authorization") token: String,
+        @Path("projectId") projectId: Long,
+        @Body body: MaterialInventoryChangeReq,
+    ): AjaxResp<MaterialStockVo>
+
+    @POST("/app/manage/projects/{projectId}/materials/outbound")
+    suspend fun materialInventoryOutbound(
+        @Header("Authorization") token: String,
+        @Path("projectId") projectId: Long,
+        @Body body: MaterialInventoryChangeReq,
+    ): AjaxResp<MaterialStockVo>
+
     @GET("/app/manage/projects/{projectId}/leader-options")
     suspend fun manageProjectLeaderOptions(
         @Header("Authorization") token: String,

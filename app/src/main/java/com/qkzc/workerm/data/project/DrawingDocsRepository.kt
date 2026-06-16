@@ -1,5 +1,6 @@
 package com.qkzc.workerm.data.project
 
+import com.qkzc.workerm.BuildConfig
 import com.qkzc.workerm.data.network.ApiClient
 import com.qkzc.workerm.data.network.ManagerProjectFileVo
 import com.qkzc.workerm.data.network.SupervisorApi
@@ -8,6 +9,8 @@ import com.qkzc.workerm.data.network.requireSuccess
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.toRequestBody
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
 import java.util.Locale
 
 class DrawingDocsRepository(
@@ -46,7 +49,9 @@ class DrawingDocsRepository(
 
     private fun ManagerProjectFileVo.toDomain(projectId: Long, index: Int): DrawingDoc {
         val detectedFileType = fileType.orEmpty().ifBlank { inferFileType(fileName.orEmpty()) }
-        val rawPreviewUrl = previewUrl.orEmpty().ifBlank { objectUrl.orEmpty().ifBlank { downloadUrl.orEmpty() } }
+        val rawPreviewUrl = previewUrl.orEmpty()
+            .ifBlank { objectKey.orEmpty().toPreviewStreamUrl() }
+            .ifBlank { objectUrl.orEmpty().ifBlank { downloadUrl.orEmpty() } }
         return DrawingDoc(
             docId = fileId ?: (projectId * 10_000 + index + 1),
             projectId = projectId,
@@ -56,10 +61,62 @@ class DrawingDocsRepository(
             category = category.orEmpty(),
             createTime = createTime.orEmpty(),
             rawUrl = rawPreviewUrl,
-            previewPageUrl = rawPreviewUrl,
+            previewPageUrl = buildPreviewPageUrl(detectedFileType, rawPreviewUrl, fileName.orEmpty()),
             uploadedBy = uploaderName.orEmpty(),
             uploadedFromMobile = false,
         )
+    }
+
+    private fun buildPreviewPageUrl(fileType: String, rawUrl: String, fileName: String): String {
+        if (rawUrl.isBlank()) {
+            return ""
+        }
+        if (fileType.lowercase(Locale.ROOT) !in setOf("dwg", "dxf")) {
+            return toBackendAbsoluteUrl(rawUrl)
+        }
+        return appendQueryParameters(
+            BuildConfig.CAD_PREVIEW_BASE_URL,
+            "url" to toBackendAbsoluteUrl(rawUrl),
+            "name" to fileName.ifBlank { "drawing" },
+        )
+    }
+
+    private fun String.toPreviewStreamUrl(): String {
+        val objectName = trim().trimStart('/')
+        if (objectName.isBlank()) {
+            return ""
+        }
+        return "/common/file/preview?path=${encodeQueryValue(objectName)}"
+    }
+
+    private fun toBackendAbsoluteUrl(url: String): String {
+        val value = url.trim()
+        if (value.isBlank() || value.startsWith("http://") || value.startsWith("https://")) {
+            return value
+        }
+        val base = BuildConfig.SUPERVISOR_BASE_URL.trimEnd('/')
+        val path = if (value.startsWith("/")) value else "/$value"
+        return "$base$path"
+    }
+
+    private fun appendQueryParameters(baseUrl: String, vararg params: Pair<String, String>): String {
+        val separator = if (baseUrl.contains("?")) "&" else "?"
+        return buildString {
+            append(baseUrl)
+            append(separator)
+            params.forEachIndexed { index, (key, value) ->
+                if (index > 0) {
+                    append("&")
+                }
+                append(encodeQueryValue(key))
+                append("=")
+                append(encodeQueryValue(value))
+            }
+        }
+    }
+
+    private fun encodeQueryValue(value: String): String {
+        return URLEncoder.encode(value, StandardCharsets.UTF_8.name()).replace("+", "%20")
     }
 
     private fun inferFileType(fileName: String, mimeType: String? = null): String {

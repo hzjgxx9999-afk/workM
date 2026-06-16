@@ -15,18 +15,25 @@ import com.qkzc.workerm.data.network.AjaxTokenResp
 import com.qkzc.workerm.data.network.AttendanceExceptionVo
 import com.qkzc.workerm.data.network.AuditListReq
 import com.qkzc.workerm.data.network.BindChangeAuditReq
+import com.qkzc.workerm.data.network.ConstructionLogDetailVo
+import com.qkzc.workerm.data.network.ConstructionLogItemVo
+import com.qkzc.workerm.data.network.ConstructionLogOverviewVo
+import com.qkzc.workerm.data.network.ConstructionLogPageReq
+import com.qkzc.workerm.data.network.ConstructionLogSaveReq
 import com.qkzc.workerm.data.network.ExceptionAuditReq
 import com.qkzc.workerm.data.network.ExceptionDetailReq
 import com.qkzc.workerm.data.network.ExitAuditReq
 import com.qkzc.workerm.data.network.ExitDetailReq
 import com.qkzc.workerm.data.network.ExitListReq
 import com.qkzc.workerm.data.network.ExitRequestVo
+import com.qkzc.workerm.data.network.FileUploadVo
 import com.qkzc.workerm.data.network.LoginReq
 import com.qkzc.workerm.data.network.ManageInviteCodeCreateReq
 import com.qkzc.workerm.data.network.ManageInviteCodeStatusReq
 import com.qkzc.workerm.data.network.ManageInviteCodeVo
 import com.qkzc.workerm.data.network.ManagerLeaderOptionVo
 import com.qkzc.workerm.data.network.ManagerHomeOverviewVo
+import com.qkzc.workerm.data.network.ManagerProjectFileVo
 import com.qkzc.workerm.data.network.ManagerProjectTeamSaveReq
 import com.qkzc.workerm.data.network.ManagerProjectTeamStatusReq
 import com.qkzc.workerm.data.network.ManagerProjectTeamVo
@@ -38,11 +45,22 @@ import com.qkzc.workerm.data.network.ManagerWorkerStatsVo
 import com.qkzc.workerm.data.network.ManagerWorkerVo
 import com.qkzc.workerm.data.network.MaterialAuditReq
 import com.qkzc.workerm.data.network.MaterialDetailReq
+import com.qkzc.workerm.data.network.MaterialInventoryChangeReq
+import com.qkzc.workerm.data.network.MaterialInventoryItemVo
+import com.qkzc.workerm.data.network.MaterialInventoryPageReq
 import com.qkzc.workerm.data.network.MaterialListReq
+import com.qkzc.workerm.data.network.MaterialOverviewVo
+import com.qkzc.workerm.data.network.MaterialReportVo
 import com.qkzc.workerm.data.network.MaterialRequestVo
+import com.qkzc.workerm.data.network.MaterialStockRecordVo
+import com.qkzc.workerm.data.network.MaterialStockVo
+import com.qkzc.workerm.data.network.PageResp
 import com.qkzc.workerm.data.network.SupervisorApi
+import com.qkzc.workerm.data.network.VersionReq
 import com.qkzc.workerm.data.network.WorkerBindChangeRequestVo
 import com.qkzc.workerm.data.network.WorkerBindRelationVo
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import okhttp3.ResponseBody
 
 open class EmptySupervisorApi : SupervisorApi {
@@ -50,10 +68,18 @@ open class EmptySupervisorApi : SupervisorApi {
     override suspend fun profile(token: String): AjaxProfileResp = error("unused")
     override suspend fun manageProjects(token: String): AjaxResp<List<ManagerProjectVo>> = error("unused")
     override suspend fun manageProjectDetail(token: String, projectId: Long): AjaxResp<ManagerProjectVo> = error("unused")
+    override suspend fun manageProjectDrawingDocs(token: String, projectId: Long, limit: Int?): AjaxResp<List<ManagerProjectFileVo>> = error("unused")
     override suspend fun manageProjectCoverPreview(token: String, projectId: Long): ResponseBody = error("unused")
     override suspend fun manageProjectTeamLeaders(token: String, projectId: Long): AjaxResp<List<ManagerTeamLeaderVo>> = error("unused")
     override suspend fun manageProjectTeams(token: String, projectId: Long): AjaxResp<List<ManagerProjectTeamVo>> = error("unused")
     override suspend fun manageProjectWorkerStats(token: String, projectId: Long): AjaxResp<ManagerWorkerStatsVo> = error("unused")
+    override suspend fun materialInventoryOverview(token: String, projectId: Long): AjaxResp<MaterialOverviewVo> = error("unused")
+    override suspend fun materialInventoryPage(token: String, projectId: Long, body: MaterialInventoryPageReq): AjaxResp<PageResp<MaterialInventoryItemVo>> = error("unused")
+    override suspend fun materialInventoryDetail(token: String, projectId: Long, materialId: Long): AjaxResp<MaterialInventoryItemVo> = error("unused")
+    override suspend fun materialInventoryRecords(token: String, projectId: Long, materialId: Long?, warehouseId: Long?, bizType: String?): AjaxResp<List<MaterialStockRecordVo>> = error("unused")
+    override suspend fun materialInventoryReport(token: String, projectId: Long): AjaxResp<MaterialReportVo> = error("unused")
+    override suspend fun materialInventoryInbound(token: String, projectId: Long, body: MaterialInventoryChangeReq): AjaxResp<MaterialStockVo> = error("unused")
+    override suspend fun materialInventoryOutbound(token: String, projectId: Long, body: MaterialInventoryChangeReq): AjaxResp<MaterialStockVo> = error("unused")
     override suspend fun manageProjectLeaderOptions(token: String, projectId: Long, keyword: String?): AjaxResp<List<ManagerLeaderOptionVo>> = error("unused")
     override suspend fun manageProjectWorkTypes(token: String, projectId: Long, keyword: String?): AjaxResp<List<ManagerWorkTypeOptionVo>> = error("unused")
     override suspend fun createManageProjectTeam(token: String, projectId: Long, body: ManagerProjectTeamSaveReq): AjaxResp<ManagerProjectTeamVo> = error("unused")
@@ -88,4 +114,14 @@ open class EmptySupervisorApi : SupervisorApi {
     override suspend fun manageAiWarningRead(token: String, body: AiWarningReadReq): AjaxResp<Any> = error("unused")
     override suspend fun manageAiWarningHandle(token: String, body: AiWarningHandleReq): AjaxResp<Any> = error("unused")
     override suspend fun manageAiWarningUnreadCount(token: String, body: AiWarningListReq): AjaxResp<Int> = error("unused")
+    override suspend fun constructionLogOverview(token: String, projectId: Long): AjaxResp<ConstructionLogOverviewVo> = error("unused")
+    override suspend fun constructionLogPage(token: String, projectId: Long, body: ConstructionLogPageReq): AjaxResp<PageResp<ConstructionLogItemVo>> = error("unused")
+    override suspend fun constructionLogDetail(token: String, projectId: Long, logId: Long): AjaxResp<ConstructionLogDetailVo> = error("unused")
+    override suspend fun createConstructionLog(token: String, projectId: Long, body: ConstructionLogSaveReq): AjaxResp<ConstructionLogDetailVo> = error("unused")
+    override suspend fun updateConstructionLog(token: String, projectId: Long, logId: Long, body: ConstructionLogSaveReq): AjaxResp<ConstructionLogDetailVo> = error("unused")
+    override suspend fun deleteConstructionLog(token: String, projectId: Long, logId: Long, body: VersionReq): AjaxResp<Any> = error("unused")
+    override suspend fun submitConstructionLog(token: String, projectId: Long, logId: Long, body: VersionReq): AjaxResp<Any> = error("unused")
+    override suspend fun withdrawConstructionLog(token: String, projectId: Long, logId: Long, body: VersionReq): AjaxResp<Any> = error("unused")
+    override suspend fun uploadProjectDrawingDoc(token: String, projectId: Long, file: MultipartBody.Part, category: RequestBody, remark: RequestBody): AjaxResp<ManagerProjectFileVo> = error("unused")
+    override suspend fun uploadCommonFile(token: String, file: MultipartBody.Part): AjaxResp<FileUploadVo> = error("unused")
 }

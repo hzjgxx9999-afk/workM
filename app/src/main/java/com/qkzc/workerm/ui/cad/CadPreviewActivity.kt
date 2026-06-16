@@ -15,6 +15,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
 import androidx.core.view.updatePadding
+import com.qkzc.workerm.BuildConfig
 import com.qkzc.workerm.databinding.ActivityCadPreviewBinding
 
 class CadPreviewActivity : AppCompatActivity() {
@@ -112,6 +113,6 @@ class CadPreviewActivity : AppCompatActivity() {
     companion object {
         const val EXTRA_TITLE = "extra_title"
         const val EXTRA_PREVIEW_URL = "extra_preview_url"
-        const val DEFAULT_PREVIEW_URL = "https://mlightcad.github.io/cad-viewer/"
+        val DEFAULT_PREVIEW_URL: String = BuildConfig.CAD_PREVIEW_BASE_URL
     }
 }

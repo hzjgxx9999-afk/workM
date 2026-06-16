@@ -22,10 +22,14 @@ android {
         val supervisorBaseUrl = providers.gradleProperty("SUPERVISOR_BASE_URL")
             .orElse("http://192.168.3.166:8080/")
             .get()
+        val cadPreviewBaseUrl = providers.gradleProperty("CAD_PREVIEW_BASE_URL")
+            .orElse("http://192.168.3.166:5173/cad-preview.html")
+            .get()
         val defaultProjectId = providers.gradleProperty("DEFAULT_PROJECT_ID")
             .orElse("1")
             .get()
         buildConfigField("String", "SUPERVISOR_BASE_URL", "\"$supervisorBaseUrl\"")
+        buildConfigField("String", "CAD_PREVIEW_BASE_URL", "\"$cadPreviewBaseUrl\"")
         buildConfigField("long", "DEFAULT_PROJECT_ID", "${defaultProjectId}L")
     }
 

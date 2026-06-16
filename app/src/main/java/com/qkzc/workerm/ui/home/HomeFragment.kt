@@ -45,7 +45,7 @@ class HomeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         binding.homeProjectRecycler.layoutManager = LinearLayoutManager(requireContext())
         binding.homeProjectRecycler.adapter = projectAdapter
-        binding.searchButton.setOnClickListener { toast("搜索功能静态占位") }
+
         binding.notificationButton.setOnClickListener {
             (activity as? MainActivity)?.navigateToTab(R.id.nav_message)
         }

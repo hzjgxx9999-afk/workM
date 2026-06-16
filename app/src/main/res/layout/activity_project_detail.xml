@@ -53,15 +53,7 @@
                     android:textSize="17sp"
                     android:textStyle="bold" />
 
-                <TextView
-                    android:layout_width="64dp"
-                    android:layout_height="match_parent"
-                    android:layout_gravity="end"
-                    android:drawableStart="@drawable/ic_share"
-                    android:gravity="center"
-                    android:text="分享"
-                    android:textColor="@color/text_primary"
-                    android:textSize="13sp" />
+
             </FrameLayout>
 
             <LinearLayout
@@ -107,7 +99,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="6dp"
                     android:text="广州市天河区珠江新城中建路888号"
-                    android:textColor="#E4ECF8"
+                    android:textColor="#121111"
                     android:textSize="12sp" />
             </LinearLayout>
         </FrameLayout>
