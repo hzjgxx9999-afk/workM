@@ -45,7 +45,7 @@ class LoginActivity : AppCompatActivity() {
             insets
         }
         binding.accountInput.editText?.setText("13900010001")
-        binding.passwordInput.editText?.setText("admin123")
+        binding.passwordInput.editText?.setText("123456")
         binding.loginButton.setOnClickListener {
             submitLogin()
         }

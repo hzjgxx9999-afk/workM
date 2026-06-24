@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:background="@color/surface_background" android:orientation="vertical">
+    <LinearLayout android:layout_width="match_parent" android:layout_height="64dp" android:background="@color/dashboard_blue"
+        android:gravity="center_vertical" android:paddingHorizontal="16dp">
+        <ImageButton android:id="@+id/back_button" android:layout_width="40dp" android:layout_height="40dp"
+            android:background="@android:color/transparent" android:contentDescription="返回" android:src="@drawable/ic_back" />
+        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1"
+            android:text="派工单" android:textColor="@color/white" android:textSize="19sp" android:textStyle="bold" />
+        <Button android:id="@+id/create_button" android:layout_width="wrap_content" android:layout_height="42dp"
+            android:text="新建" android:textColor="@color/dashboard_blue" />
+    </LinearLayout>
+    <Spinner android:id="@+id/status_spinner" android:layout_width="match_parent" android:layout_height="48dp"
+        android:layout_margin="16dp" android:background="@drawable/bg_card_stroke" />
+    <androidx.recyclerview.widget.RecyclerView android:id="@+id/dispatch_recycler" android:layout_width="match_parent"
+        android:layout_height="0dp" android:layout_weight="1" android:paddingHorizontal="16dp" />
+    <TextView android:id="@+id/empty_text" android:layout_width="match_parent" android:layout_height="120dp"
+        android:gravity="center" android:text="暂无派工任务" android:textColor="@color/text_secondary" android:visibility="gone" />
+</LinearLayout>

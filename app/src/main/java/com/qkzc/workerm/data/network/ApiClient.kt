@@ -6,6 +6,7 @@ import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
+import com.qkzc.workerm.data.dispatch.DispatchApi
 
 object ApiClient {
 
@@ -37,5 +38,14 @@ object ApiClient {
             .addConverterFactory(GsonConverterFactory.create())
             .build()
             .create(SupervisorApi::class.java)
+    }
+
+    val dispatchApi: DispatchApi by lazy {
+        Retrofit.Builder()
+            .baseUrl(BuildConfig.SUPERVISOR_BASE_URL)
+            .client(okHttpClient)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create(DispatchApi::class.java)
     }
 }

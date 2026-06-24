@@ -18,6 +18,23 @@
         android:usesCleartextTraffic="true"
         android:theme="@style/Theme.WorkerM">
         <activity
+            android:name=".ui.dispatch.DispatchCreateActivity"
+            android:exported="false"
+            android:theme="@style/Theme.WorkerM.DispatchCreate" />
+        <activity
+            android:name=".ui.dispatch.DispatchDetailActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.dispatch.SpotCheckReviewActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.dispatch.DispatchPhotoPreviewActivity"
+            android:exported="false"
+            android:theme="@style/Theme.WorkerM" />
+        <activity
+            android:name=".ui.dispatch.DispatchListActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.cad.CadPreviewActivity"
             android:exported="false" />
         <activity

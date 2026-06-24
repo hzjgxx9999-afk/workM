@@ -324,7 +324,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:includeFontPadding="false"
-                    android:text="项目动态"
+                    android:text="派工动态"
                     android:textColor="@color/text_primary"
                     android:textSize="17sp"
                     android:textStyle="bold" />
@@ -334,13 +334,13 @@
                     android:layout_width="wrap_content"
                     android:layout_height="32dp"
                     android:gravity="center_vertical"
-                    android:text="全部项目  >"
+                    android:text="全部派工单  >"
                     android:textColor="@color/text_secondary"
                     android:textSize="12sp" />
             </LinearLayout>
 
             <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/home_project_recycler"
+                android:id="@+id/home_dispatch_recycler"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="2dp"
@@ -348,11 +348,11 @@
                 android:overScrollMode="never" />
 
             <TextView
-                android:id="@+id/home_project_empty_text"
+                android:id="@+id/home_dispatch_empty_text"
                 android:layout_width="match_parent"
                 android:layout_height="96dp"
                 android:gravity="center"
-                android:text="暂无可管理项目"
+                android:text="暂无派工任务"
                 android:textColor="@color/text_secondary"
                 android:textSize="14sp"
                 android:visibility="gone" />

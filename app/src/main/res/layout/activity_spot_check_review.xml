@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto" android:layout_width="match_parent" android:layout_height="match_parent" android:background="#F3F6FA" android:orientation="vertical">
+    <LinearLayout android:layout_width="match_parent" android:layout_height="64dp" android:background="@color/dashboard_blue" android:gravity="center_vertical" android:paddingHorizontal="8dp">
+        <ImageButton android:id="@+id/back_button" android:layout_width="48dp" android:layout_height="48dp" android:background="?attr/selectableItemBackgroundBorderless" android:contentDescription="返回" android:padding="13dp" android:src="@drawable/ic_arrow_back" android:tint="@android:color/white" />
+        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="抽查审核" android:textColor="@android:color/white" android:textSize="21sp" android:textStyle="bold" />
+        <TextView android:id="@+id/operation_record_button" android:layout_width="wrap_content" android:layout_height="48dp" android:gravity="center" android:paddingHorizontal="8dp" android:text="操作记录" android:textColor="@android:color/white" android:textSize="14sp" />
+    </LinearLayout>
+    <androidx.core.widget.NestedScrollView android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" android:clipToPadding="false">
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="10dp">
+            <com.google.android.material.card.MaterialCardView android:layout_width="match_parent" android:layout_height="wrap_content" app:cardCornerRadius="12dp" app:cardElevation="2dp">
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center_vertical" android:orientation="horizontal" android:padding="14dp">
+                    <TextView android:id="@+id/spot_status_text" android:layout_width="wrap_content" android:layout_height="wrap_content" android:background="@drawable/bg_status_soft_orange" android:paddingHorizontal="9dp" android:paddingVertical="6dp" android:textColor="#F79009" android:textStyle="bold" />
+                    <TextView android:id="@+id/title_text" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginStart="12dp" android:layout_weight="1" android:textColor="#101828" android:textSize="18sp" android:textStyle="bold" />
+                    <TextView android:id="@+id/phase_text" android:layout_width="wrap_content" android:layout_height="wrap_content" android:gravity="end" android:maxWidth="150dp" android:textColor="#667085" android:textSize="12sp" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+            <com.google.android.material.card.MaterialCardView android:id="@+id/order_info_card" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="10dp" app:cardCornerRadius="12dp" app:cardElevation="1dp">
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="14dp">
+                    <TextView style="@style/DispatchSectionTitle" android:text="工单信息" />
+                    <TextView android:id="@+id/order_info_text" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="10dp" android:lineSpacingExtra="6dp" android:textColor="#475467" android:textSize="14sp" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+            <com.google.android.material.card.MaterialCardView android:id="@+id/spot_description_card" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="10dp" app:cardCornerRadius="12dp" app:cardElevation="1dp">
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="14dp">
+                    <TextView style="@style/DispatchSectionTitle" android:text="抽查说明" />
+                    <TextView android:id="@+id/submission_meta_text" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="10dp" android:textColor="#667085" android:textSize="13sp" />
+                    <TextView android:id="@+id/description_text" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:lineSpacingExtra="4dp" android:textColor="#344054" android:textSize="14sp" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+            <com.google.android.material.card.MaterialCardView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="10dp" app:cardCornerRadius="12dp" app:cardElevation="1dp">
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="14dp">
+                    <TextView style="@style/DispatchSectionTitle" android:text="抽查资料" />
+                    <androidx.recyclerview.widget.RecyclerView android:id="@+id/photo_list" android:layout_width="match_parent" android:layout_height="132dp" android:layout_marginTop="10dp" />
+                    <TextView android:id="@+id/location_text" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:background="#F7F9FC" android:padding="10dp" android:textColor="#667085" android:textSize="13sp" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+            <com.google.android.material.card.MaterialCardView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="10dp" app:cardCornerRadius="12dp" app:cardElevation="1dp">
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="14dp">
+                    <TextView style="@style/DispatchSectionTitle" android:text="过程检查联动记录" />
+                    <androidx.recyclerview.widget.RecyclerView android:id="@+id/linked_process_list" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:nestedScrollingEnabled="false" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+            <com.google.android.material.card.MaterialCardView android:id="@+id/review_section" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="10dp" app:cardCornerRadius="12dp" app:cardElevation="1dp">
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="14dp">
+                    <TextView style="@style/DispatchSectionTitle" android:text="项目经理抽查意见" />
+                    <com.google.android.material.textfield.TextInputLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="10dp" app:counterEnabled="true" app:counterMaxLength="200" app:hintEnabled="false">
+                        <com.google.android.material.textfield.TextInputEditText android:id="@+id/review_input" android:layout_width="match_parent" android:layout_height="96dp" android:gravity="top|start" android:hint="请输入抽查审核意见（必填）" android:inputType="textMultiLine" android:maxLength="200" android:padding="12dp" />
+                    </com.google.android.material.textfield.TextInputLayout>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+    <LinearLayout android:id="@+id/review_action_bar" android:layout_width="match_parent" android:layout_height="72dp" android:background="@android:color/white" android:gravity="center" android:orientation="horizontal" android:padding="10dp">
+        <com.google.android.material.button.MaterialButton android:id="@+id/reject_button" android:layout_width="0dp" android:layout_height="52dp" android:layout_marginEnd="6dp" android:layout_weight="1" android:text="驳回整改" android:textColor="#F04438" app:backgroundTint="@android:color/white" app:cornerRadius="8dp" app:strokeColor="#F04438" app:strokeWidth="1dp" />
+        <com.google.android.material.button.MaterialButton android:id="@+id/pass_button" android:layout_width="0dp" android:layout_height="52dp" android:layout_marginStart="6dp" android:layout_weight="1" android:text="抽查通过" android:textColor="@android:color/white" app:backgroundTint="#12B76A" app:cornerRadius="8dp" />
+    </LinearLayout>
+</LinearLayout>

@@ -97,7 +97,7 @@ class InviteCodeManageContractTest {
 
         val home = File("src/main/res/layout/fragment_home.xml").readText()
         assertTrue(home.contains("@+id/invite_code_action"))
-        assertTrue(home.contains("@+id/home_project_recycler"))
+        assertTrue(home.contains("@+id/home_dispatch_recycler"))
         assertTrue(!home.contains("item_static_project_"))
 
         val homeFragment = File("src/main/java/com/qkzc/workerm/ui/home/HomeFragment.kt").readText()

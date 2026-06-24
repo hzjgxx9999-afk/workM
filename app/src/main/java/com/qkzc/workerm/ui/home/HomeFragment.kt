@@ -12,14 +12,14 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.qkzc.workerm.MainActivity
 import com.qkzc.workerm.R
-import com.qkzc.workerm.data.project.ManagerProject
-import com.qkzc.workerm.data.project.ManagerProjectRepository
+import com.qkzc.workerm.data.dispatch.DispatchRepository
 import com.qkzc.workerm.data.session.SessionStore
 import com.qkzc.workerm.databinding.FragmentHomeBinding
 import com.qkzc.workerm.ui.bracelet.BraceletMonitorActivity
 import com.qkzc.workerm.ui.material.MaterialHomeActivity
-import com.qkzc.workerm.ui.project.ManagerProjectAdapter
-import com.qkzc.workerm.ui.project.ProjectDetailActivity
+import com.qkzc.workerm.ui.dispatch.DispatchDetailActivity
+import com.qkzc.workerm.ui.dispatch.DispatchListActivity
+import com.qkzc.workerm.ui.dispatch.ManagerDispatchAdapter
 import com.qkzc.workerm.ui.video.VideoHomeActivity
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -29,8 +29,10 @@ class HomeFragment : Fragment() {
     private var _binding: FragmentHomeBinding? = null
     private val binding: FragmentHomeBinding
         get() = checkNotNull(_binding)
-    private val projectRepository = ManagerProjectRepository()
-    private val projectAdapter = ManagerProjectAdapter { project -> openProject(project) }
+    private val dispatchRepository = DispatchRepository()
+    private val dispatchAdapter = ManagerDispatchAdapter { order ->
+        startActivity(DispatchDetailActivity.intent(requireContext(), order.id))
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -43,8 +45,8 @@ class HomeFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.homeProjectRecycler.layoutManager = LinearLayoutManager(requireContext())
-        binding.homeProjectRecycler.adapter = projectAdapter
+        binding.homeDispatchRecycler.layoutManager = LinearLayoutManager(requireContext())
+        binding.homeDispatchRecycler.adapter = dispatchAdapter
 
         binding.notificationButton.setOnClickListener {
             (activity as? MainActivity)?.navigateToTab(R.id.nav_message)
@@ -68,39 +70,29 @@ class HomeFragment : Fragment() {
 //            (activity as? MainActivity)?.openInviteCodeManage()
 //        }
         binding.allTodoBar.setOnClickListener {
-            (activity as? MainActivity)?.navigateToTab(R.id.nav_supervision)
+            startActivity(Intent(requireContext(), DispatchListActivity::class.java))
         }
-        loadHomeProject()
+        loadDispatches()
     }
 
-    private fun loadHomeProject() {
+    private fun loadDispatches() {
         viewLifecycleOwner.lifecycleScope.launch {
             runCatching {
                 val session = SessionStore(requireContext().applicationContext).sessionFlow.first()
                 val token = session.accessToken.takeIf { it.isNotBlank() } ?: return@launch
-                projectRepository.loadProjects(token)
-            }.onSuccess { projects ->
-                projectAdapter.submitList(projects.take(3))
-                binding.homeProjectRecycler.isVisible = projects.isNotEmpty()
-                binding.homeProjectEmptyText.isVisible = projects.isEmpty()
+                dispatchRepository.recent(token)
+            }.onSuccess { orders ->
+                dispatchAdapter.submitList(orders)
+                binding.homeDispatchRecycler.isVisible = orders.isNotEmpty()
+                binding.homeDispatchEmptyText.isVisible = orders.isEmpty()
             }.onFailure {
-                projectAdapter.submitList(emptyList())
-                binding.homeProjectRecycler.isVisible = false
-                binding.homeProjectEmptyText.isVisible = true
+                dispatchAdapter.submitList(emptyList())
+                binding.homeDispatchRecycler.isVisible = false
+                binding.homeDispatchEmptyText.isVisible = true
+                binding.homeDispatchEmptyText.text = "派工动态加载失败，点击重试"
+                binding.homeDispatchEmptyText.setOnClickListener { loadDispatches() }
             }
         }
-    }
-
-    private fun openProject(project: ManagerProject) {
-        val projectId = project.projectId.takeIf { it > 0L }
-        if (projectId == null || projectId <= 0L) {
-            toast("暂无可管理项目")
-            return
-        }
-        startActivity(
-            Intent(requireContext(), ProjectDetailActivity::class.java)
-                .putExtra(ProjectDetailActivity.EXTRA_PROJECT_ID, projectId),
-        )
     }
 
     private fun toast(message: String) {
@@ -109,7 +101,7 @@ class HomeFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        binding.homeProjectRecycler.adapter = null
+        binding.homeDispatchRecycler.adapter = null
         _binding = null
     }
 }

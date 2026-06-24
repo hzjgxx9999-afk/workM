@@ -13,4 +13,9 @@
     </style>
 
     <style name="Theme.WorkerM" parent="Base.Theme.WorkerM" />
+
+    <style name="Theme.WorkerM.DispatchCreate" parent="Theme.WorkerM">
+        <item name="android:statusBarColor">@color/dashboard_blue</item>
+        <item name="android:windowLightStatusBar">false</item>
+    </style>
 </resources>
