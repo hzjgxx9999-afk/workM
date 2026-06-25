@@ -46,6 +46,9 @@ class DispatchCreateActivity : AppCompatActivity() {
     private var selectedTeam: ManagerProjectTeam? = null
     private var contextLoadJob: Job? = null
     private var coverLoadJob: Job? = null
+    private val preselectedProjectId: Long by lazy { intent.getLongExtra(EXTRA_PROJECT_ID, 0L) }
+    private val preselectedTeamId: Long by lazy { intent.getLongExtra(EXTRA_TEAM_ID, 0L) }
+    private val preselectedLeaderId: Long by lazy { intent.getLongExtra(EXTRA_LEADER_ID, 0L) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -97,7 +100,8 @@ class DispatchCreateActivity : AppCompatActivity() {
                 projectRepository.loadProjects(token)
             }.onSuccess { loaded ->
                 projects = loaded
-                if (loaded.isEmpty()) showEmptyProject() else selectProject(loaded.first())
+                val selected = loaded.firstOrNull { it.projectId == preselectedProjectId } ?: loaded.firstOrNull()
+                if (selected == null) showEmptyProject() else selectProject(selected)
             }.onFailure {
                 showEmptyProject()
                 toast(it.message ?: "项目加载失败")
@@ -175,8 +179,20 @@ class DispatchCreateActivity : AppCompatActivity() {
             updateTeamSummary()
         } else {
             binding.teamSpinner.isEnabled = true
-            selectTeam(0)
+            selectTeam(preselectedTeamIndex().takeIf { it >= 0 } ?: 0)
         }
+    }
+
+    private fun preselectedTeamIndex(): Int {
+        val selectedProjectId = selectedProject?.projectId ?: return -1
+        if (preselectedProjectId > 0L && selectedProjectId != preselectedProjectId) return -1
+        preselectedTeamId.takeIf { it > 0L }?.let { teamId ->
+            teams.indexOfFirst { it.teamId == teamId }.takeIf { it >= 0 }?.let { return it }
+        }
+        preselectedLeaderId.takeIf { it > 0L }?.let { leaderId ->
+            teams.indexOfFirst { it.leaderId == leaderId }.takeIf { it >= 0 }?.let { return it }
+        }
+        return -1
     }
 
     private fun selectTeam(position: Int) {
@@ -314,6 +330,9 @@ class DispatchCreateActivity : AppCompatActivity() {
     private fun toast(message: String) = Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
 
     companion object {
+        const val EXTRA_PROJECT_ID = "projectId"
+        const val EXTRA_TEAM_ID = "teamId"
+        const val EXTRA_LEADER_ID = "leaderId"
         private const val DEADLINE_PATTERN = "yyyy-MM-dd HH:mm:ss"
         private const val MIN_PHOTO_COUNT = 1
         private const val MAX_PHOTO_COUNT = 99

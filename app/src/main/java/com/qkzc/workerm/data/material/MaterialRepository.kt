@@ -5,6 +5,8 @@ import com.qkzc.workerm.data.network.MaterialInventoryChangeReq
 import com.qkzc.workerm.data.network.MaterialInventoryItemVo
 import com.qkzc.workerm.data.network.MaterialInventoryPageReq
 import com.qkzc.workerm.data.network.MaterialStockRecordVo
+import com.qkzc.workerm.data.network.MaterialStockWarningPageReq
+import com.qkzc.workerm.data.network.MaterialStockWarningVo
 import com.qkzc.workerm.data.network.SupervisorApi
 import com.qkzc.workerm.data.network.bearerToken
 import com.qkzc.workerm.data.network.requireSuccess
@@ -96,6 +98,43 @@ class MaterialRepository(
         requireSuccess(response.code, response.msg)
     }
 
+    suspend fun warningSummary(token: String, projectId: Long): MaterialWarningSummary {
+        val response = api.materialStockWarningSummary(bearerToken(token), projectId)
+        requireSuccess(response.code, response.msg)
+        val data = response.data
+        return MaterialWarningSummary(
+            openCount = data?.openCount ?: 0,
+            criticalCount = data?.criticalCount ?: 0,
+            unreadCount = data?.unreadCount ?: 0,
+        )
+    }
+
+    suspend fun warningPage(
+        token: String,
+        projectId: Long,
+        status: String? = STATUS_OPEN,
+        warningLevel: String? = null,
+        pageSize: Int = 50,
+    ): List<MaterialStockWarning> {
+        val response = api.materialStockWarningPage(
+            bearerToken(token),
+            projectId,
+            MaterialStockWarningPageReq(
+                pageNum = 1,
+                pageSize = pageSize,
+                status = status,
+                warningLevel = warningLevel,
+            ),
+        )
+        requireSuccess(response.code, response.msg)
+        return response.data?.rows.orEmpty().map { it.toDomain() }
+    }
+
+    suspend fun ackWarning(token: String, projectId: Long, warningId: Long) {
+        val response = api.ackMaterialStockWarning(bearerToken(token), projectId, warningId)
+        requireSuccess(response.code, response.msg)
+    }
+
     private fun MaterialInventoryItemVo.toDomain() = MaterialInventoryItem(
         id = id ?: 0L,
         projectId = projectId ?: 0L,
@@ -133,6 +172,32 @@ class MaterialRepository(
         remark = remark.orEmpty(),
         createTime = createTime.orEmpty(),
     )
+
+    private fun MaterialStockWarningVo.toDomain() = MaterialStockWarning(
+        warningId = warningId ?: 0L,
+        projectId = projectId ?: 0L,
+        materialId = materialId ?: 0L,
+        itemName = itemName.orEmpty(),
+        unit = unit.orEmpty(),
+        materialCode = materialCode.orEmpty(),
+        category = category.orEmpty(),
+        warningType = warningType.orEmpty(),
+        warningLevel = warningLevel.orEmpty(),
+        status = status.orEmpty(),
+        currentQty = currentQty ?: 0.0,
+        lockedQty = lockedQty ?: 0.0,
+        availableQty = availableQty ?: 0.0,
+        safeStock = safeStock ?: 0.0,
+        shortageQty = shortageQty ?: 0.0,
+        firstTriggerTime = firstTriggerTime.orEmpty(),
+        lastTriggerTime = lastTriggerTime.orEmpty(),
+        ackTime = ackTime.orEmpty(),
+        resolvedTime = resolvedTime.orEmpty(),
+    )
+
+    companion object {
+        const val STATUS_OPEN = "OPEN"
+    }
 }
 
 data class MaterialOverview(
@@ -192,4 +257,32 @@ data class MaterialReport(
     val lowStockCount: Int = 0,
     val categories: List<MaterialCategory> = emptyList(),
     val records: List<MaterialStockRecord> = emptyList(),
+)
+
+data class MaterialWarningSummary(
+    val openCount: Int = 0,
+    val criticalCount: Int = 0,
+    val unreadCount: Int = 0,
+)
+
+data class MaterialStockWarning(
+    val warningId: Long = 0L,
+    val projectId: Long = 0L,
+    val materialId: Long = 0L,
+    val itemName: String = "",
+    val unit: String = "",
+    val materialCode: String = "",
+    val category: String = "",
+    val warningType: String = "",
+    val warningLevel: String = "",
+    val status: String = "",
+    val currentQty: Double = 0.0,
+    val lockedQty: Double = 0.0,
+    val availableQty: Double = 0.0,
+    val safeStock: Double = 0.0,
+    val shortageQty: Double = 0.0,
+    val firstTriggerTime: String = "",
+    val lastTriggerTime: String = "",
+    val ackTime: String = "",
+    val resolvedTime: String = "",
 )

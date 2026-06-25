@@ -5,12 +5,14 @@ import com.qkzc.workerm.data.aiwarning.model.AiWarningHandleStatus
 import com.qkzc.workerm.data.aiwarning.model.AiWarningHazard
 import com.qkzc.workerm.data.aiwarning.model.AiWarningItem
 import com.qkzc.workerm.data.aiwarning.model.AiWarningPage
+import com.qkzc.workerm.data.aiwarning.model.AiWarningSummary
 import com.qkzc.workerm.data.network.AiWarningDetailReq
 import com.qkzc.workerm.data.network.AiWarningHandleReq
 import com.qkzc.workerm.data.network.AiWarningHazardVo
 import com.qkzc.workerm.data.network.AiWarningListReq
 import com.qkzc.workerm.data.network.AiWarningPageVo
 import com.qkzc.workerm.data.network.AiWarningReadReq
+import com.qkzc.workerm.data.network.AiWarningSummaryVo
 import com.qkzc.workerm.data.network.AiWarningVo
 import com.qkzc.workerm.data.network.AjaxResp
 import com.qkzc.workerm.data.network.ApiClient
@@ -55,6 +57,14 @@ class AiWarningRepository(
         return page.toDomain(unreadCount)
     }
 
+    suspend fun loadSummary(token: String, projectId: Long? = null): AiWarningSummary {
+        val summary = api.manageAiWarningSummary(
+            token = bearerToken(token),
+            body = AiWarningListReq(projectId = projectId),
+        ).requireData("AI预警汇总为空")
+        return summary.toDomain()
+    }
+
     suspend fun detail(token: String, warningId: Long): AiWarningDetail {
         val detail = api.manageAiWarningDetail(
             token = bearerToken(token),
@@ -90,6 +100,16 @@ class AiWarningRepository(
             pages = pages ?: 1,
             hasMore = hasMore ?: false,
             rows = mappedRows,
+        )
+    }
+
+    private fun AiWarningSummaryVo.toDomain(): AiWarningSummary {
+        return AiWarningSummary(
+            totalCount = totalCount ?: 0L,
+            pendingCount = pendingCount ?: 0L,
+            unreadCount = unreadCount ?: 0L,
+            highRiskCount = highRiskCount ?: 0L,
+            maxRiskScore = maxRiskScore ?: 0,
         )
     }
 

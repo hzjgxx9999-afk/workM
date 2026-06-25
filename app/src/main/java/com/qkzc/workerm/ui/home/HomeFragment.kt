@@ -12,6 +12,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.qkzc.workerm.MainActivity
 import com.qkzc.workerm.R
+import com.qkzc.workerm.data.aiwarning.AiWarningRepository
 import com.qkzc.workerm.data.dispatch.DispatchRepository
 import com.qkzc.workerm.data.session.SessionStore
 import com.qkzc.workerm.databinding.FragmentHomeBinding
@@ -30,6 +31,7 @@ class HomeFragment : Fragment() {
     private val binding: FragmentHomeBinding
         get() = checkNotNull(_binding)
     private val dispatchRepository = DispatchRepository()
+    private val aiWarningRepository = AiWarningRepository()
     private val dispatchAdapter = ManagerDispatchAdapter { order ->
         startActivity(DispatchDetailActivity.intent(requireContext(), order.id))
     }
@@ -72,7 +74,39 @@ class HomeFragment : Fragment() {
         binding.allTodoBar.setOnClickListener {
             startActivity(Intent(requireContext(), DispatchListActivity::class.java))
         }
+        renderAiWarningCard(HomeAiWarningCardState.loading())
         loadDispatches()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (_binding != null) {
+            loadAiWarningSummary()
+        }
+    }
+
+    private fun loadAiWarningSummary() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            renderAiWarningCard(HomeAiWarningCardState.loading())
+            runCatching {
+                val session = SessionStore(requireContext().applicationContext).sessionFlow.first()
+                val token = session.accessToken.takeIf { it.isNotBlank() } ?: error("请先登录")
+                aiWarningRepository.loadSummary(token)
+            }.onSuccess { summary ->
+                renderAiWarningCard(HomeAiWarningCardState.fromSummary(summary))
+            }.onFailure {
+                renderAiWarningCard(HomeAiWarningCardState.error())
+            }
+        }
+    }
+
+    private fun renderAiWarningCard(state: HomeAiWarningCardState) {
+        binding.homeAiWarningScoreText.text = state.scoreText
+        binding.homeAiWarningMetricTitleText.text = state.metricTitle
+        binding.homeAiWarningMetricSubtitleText.text = state.metricSubtitle
+        binding.homeAiWarningTotalChip.text = state.chips.getOrNull(0).orEmpty()
+        binding.homeAiWarningPendingChip.text = state.chips.getOrNull(1).orEmpty()
+        binding.homeAiWarningUnreadChip.text = state.chips.getOrNull(2).orEmpty()
     }
 
     private fun loadDispatches() {

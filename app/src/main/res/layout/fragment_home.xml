@@ -95,6 +95,7 @@
                     android:orientation="horizontal">
 
                     <TextView
+                        android:id="@+id/home_ai_warning_total_chip"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
@@ -124,12 +125,13 @@
                     android:orientation="horizontal">
 
                     <TextView
+                        android:id="@+id/home_ai_warning_score_text"
                         android:layout_width="90dp"
                         android:layout_height="96dp"
                         android:background="@drawable/bg_circle_gauge"
                         android:gravity="center"
                         android:includeFontPadding="false"
-                        android:text="72"
+                        android:text="--"
                         android:textColor="@color/white"
                         android:textSize="36sp"
                         android:textStyle="bold" />
@@ -148,28 +150,22 @@
                         android:orientation="vertical">
 
                         <TextView
+                            android:id="@+id/home_ai_warning_metric_title_text"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="今日异常事件"
+                            android:text="当前最高风险分"
                             android:textColor="#CFE3FF"
                             android:textSize="12sp" />
 
                         <TextView
+                            android:id="@+id/home_ai_warning_metric_subtitle_text"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="8dp"
-                            android:text="8 条"
+                            android:text="高风险 0 条"
                             android:textColor="@color/white"
-                            android:textSize="25sp"
+                            android:textSize="20sp"
                             android:textStyle="bold" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="7dp"
-                            android:text="较昨日 +2"
-                            android:textColor="#FFCFD2"
-                            android:textSize="12sp" />
                     </LinearLayout>
                 </LinearLayout>
 
@@ -188,11 +184,12 @@
                         android:ellipsize="end"
                         android:gravity="center"
                         android:maxLines="1"
-                        android:text="安全帽未佩戴 3"
+                        android:text="全部预警 0条"
                         android:textColor="#EF2D2D"
                         android:textSize="10sp" />
 
                     <TextView
+                        android:id="@+id/home_ai_warning_pending_chip"
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_marginHorizontal="5dp"
@@ -201,11 +198,12 @@
                         android:ellipsize="end"
                         android:gravity="center"
                         android:maxLines="1"
-                        android:text="考勤异常 2"
+                        android:text="待处理 0条"
                         android:textColor="#EF2D2D"
                         android:textSize="10sp" />
 
                     <TextView
+                        android:id="@+id/home_ai_warning_unread_chip"
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_marginStart="5dp"
@@ -214,7 +212,7 @@
                         android:ellipsize="end"
                         android:gravity="center"
                         android:maxLines="1"
-                        android:text="材料库存不足 1"
+                        android:text="未读 0条"
                         android:textColor="#EF2D2D"
                         android:textSize="10sp" />
                 </LinearLayout>

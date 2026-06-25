@@ -8,6 +8,7 @@ import com.qkzc.workerm.data.network.AiWarningHandleReq
 import com.qkzc.workerm.data.network.AiWarningListReq
 import com.qkzc.workerm.data.network.AiWarningPageVo
 import com.qkzc.workerm.data.network.AiWarningReadReq
+import com.qkzc.workerm.data.network.AiWarningSummaryVo
 import com.qkzc.workerm.data.network.AiWarningVo
 import com.qkzc.workerm.data.network.AjaxResp
 import com.qkzc.workerm.data.network.SupervisorApi
@@ -67,12 +68,30 @@ class AiWarningRepositoryTest {
         )
     }
 
+    @Test
+    fun loadSummaryUsesManageSummaryEndpointAndMapsCounts() = runBlocking {
+        val api = FakeSupervisorApi()
+        val repository = AiWarningRepository(api)
+
+        val summary = repository.loadSummary("abc", projectId = 301L)
+
+        assertEquals("Bearer abc", api.summaryToken)
+        assertEquals(AiWarningListReq(projectId = 301L), api.summaryBody)
+        assertEquals(3L, summary.totalCount)
+        assertEquals(2L, summary.pendingCount)
+        assertEquals(1L, summary.unreadCount)
+        assertEquals(0L, summary.highRiskCount)
+        assertEquals(15, summary.maxRiskScore)
+    }
+
     private class FakeSupervisorApi : SupervisorApi by EmptySupervisorApi() {
         var listToken: String? = null
         var listBody: AiWarningListReq? = null
         var unreadToken: String? = null
         var handleToken: String? = null
         var handleBody: AiWarningHandleReq? = null
+        var summaryToken: String? = null
+        var summaryBody: AiWarningListReq? = null
 
         override suspend fun manageAiWarningList(
             token: String,
@@ -145,6 +164,25 @@ class AiWarningRepositoryTest {
         ): AjaxResp<Int> {
             unreadToken = token
             return AjaxResp(200, "ok", 5)
+        }
+
+        override suspend fun manageAiWarningSummary(
+            token: String,
+            body: AiWarningListReq,
+        ): AjaxResp<AiWarningSummaryVo> {
+            summaryToken = token
+            summaryBody = body
+            return AjaxResp(
+                code = 200,
+                msg = "ok",
+                data = AiWarningSummaryVo(
+                    totalCount = 3,
+                    pendingCount = 2,
+                    unreadCount = 1,
+                    highRiskCount = 0,
+                    maxRiskScore = 15,
+                ),
+            )
         }
     }
 }

@@ -113,6 +113,26 @@ interface SupervisorApi {
         @Body body: MaterialInventoryChangeReq,
     ): AjaxResp<MaterialStockVo>
 
+    @GET("/app/manage/projects/{projectId}/materials/warnings/summary")
+    suspend fun materialStockWarningSummary(
+        @Header("Authorization") token: String,
+        @Path("projectId") projectId: Long,
+    ): AjaxResp<MaterialStockWarningSummaryVo>
+
+    @POST("/app/manage/projects/{projectId}/materials/warnings/page")
+    suspend fun materialStockWarningPage(
+        @Header("Authorization") token: String,
+        @Path("projectId") projectId: Long,
+        @Body body: MaterialStockWarningPageReq,
+    ): AjaxResp<PageResp<MaterialStockWarningVo>>
+
+    @POST("/app/manage/projects/{projectId}/materials/warnings/{warningId}/ack")
+    suspend fun ackMaterialStockWarning(
+        @Header("Authorization") token: String,
+        @Path("projectId") projectId: Long,
+        @Path("warningId") warningId: Long,
+    ): AjaxResp<Any>
+
     @GET("/app/manage/projects/{projectId}/leader-options")
     suspend fun manageProjectLeaderOptions(
         @Header("Authorization") token: String,
@@ -327,6 +347,12 @@ interface SupervisorApi {
         @Header("Authorization") token: String,
         @Body body: AiWarningListReq = AiWarningListReq(),
     ): AjaxResp<Int>
+
+    @POST("/app/manage/ai-warning/summary")
+    suspend fun manageAiWarningSummary(
+        @Header("Authorization") token: String,
+        @Body body: AiWarningListReq = AiWarningListReq(),
+    ): AjaxResp<AiWarningSummaryVo>
 
     @GET("/app/manage/projects/{projectId}/construction-logs/overview")
     suspend fun constructionLogOverview(

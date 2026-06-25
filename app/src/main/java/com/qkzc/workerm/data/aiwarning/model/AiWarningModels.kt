@@ -22,6 +22,14 @@ data class AiWarningPage(
     val rows: List<AiWarningItem>,
 )
 
+data class AiWarningSummary(
+    val totalCount: Long,
+    val pendingCount: Long,
+    val unreadCount: Long,
+    val highRiskCount: Long,
+    val maxRiskScore: Int,
+)
+
 data class AiWarningItem(
     val warningId: Long,
     val recordId: Long?,

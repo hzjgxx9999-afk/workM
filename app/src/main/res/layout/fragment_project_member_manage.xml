@@ -170,14 +170,26 @@
             android:textStyle="bold" />
 
         <TextView
-            android:id="@+id/tab_active"
+            android:id="@+id/tab_leader"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:clickable="true"
             android:foreground="?attr/selectableItemBackground"
             android:gravity="center"
-            android:text="在场"
+            android:text="班组长"
+            android:textColor="@color/text_secondary"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/tab_worker"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:clickable="true"
+            android:foreground="?attr/selectableItemBackground"
+            android:gravity="center"
+            android:text="工人"
             android:textColor="@color/text_secondary"
             android:textSize="14sp" />
 

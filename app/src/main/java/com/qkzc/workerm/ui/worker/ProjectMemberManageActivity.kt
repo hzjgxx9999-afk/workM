@@ -35,6 +35,8 @@ class ProjectMemberManageActivity : AppCompatActivity() {
                     R.id.project_member_container,
                     ProjectMemberManageFragment.newInstance(
                         intent.getLongExtra(EXTRA_PROJECT_ID, 0L).takeIf { it > 0L },
+                        intent.getLongExtra(EXTRA_LEADER_ID, 0L),
+                        intent.getStringExtra(EXTRA_LEADER_NAME).orEmpty(),
                     ),
                 )
             }
@@ -43,5 +45,7 @@ class ProjectMemberManageActivity : AppCompatActivity() {
 
     companion object {
         const val EXTRA_PROJECT_ID = "projectId"
+        const val EXTRA_LEADER_ID = "leaderId"
+        const val EXTRA_LEADER_NAME = "leaderName"
     }
 }

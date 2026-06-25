@@ -77,6 +77,9 @@
             android:name=".ui.material.MaterialReportActivity"
             android:exported="false" />
         <activity
+            android:name=".ui.material.MaterialWarningActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.material.MaterialDetailActivity"
             android:exported="false" />
         <activity

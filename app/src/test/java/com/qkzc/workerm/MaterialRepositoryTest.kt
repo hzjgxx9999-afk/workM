@@ -6,6 +6,9 @@ import com.qkzc.workerm.data.network.MaterialCategorySummaryVo
 import com.qkzc.workerm.data.network.MaterialInventoryItemVo
 import com.qkzc.workerm.data.network.MaterialInventoryPageReq
 import com.qkzc.workerm.data.network.MaterialOverviewVo
+import com.qkzc.workerm.data.network.MaterialStockWarningPageReq
+import com.qkzc.workerm.data.network.MaterialStockWarningSummaryVo
+import com.qkzc.workerm.data.network.MaterialStockWarningVo
 import com.qkzc.workerm.data.network.PageResp
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
@@ -28,7 +31,36 @@ class MaterialRepositoryTest {
         assertTrue(rows.first().lowStock)
     }
 
+    @Test
+    fun parsesMaterialStockWarningSummaryAndPage() = runBlocking {
+        val api = FakeMaterialApi()
+        val repository = MaterialRepository(api)
+
+        val summary = repository.warningSummary("token", 100L)
+        val warnings = repository.warningPage("token", 100L)
+        repository.ackWarning("token", 100L, 9001L)
+
+        assertEquals("Bearer token", api.warningSummaryToken)
+        assertEquals(2, summary.openCount)
+        assertEquals(1, summary.criticalCount)
+        assertEquals(2, summary.unreadCount)
+        assertEquals("Bearer token", api.warningPageToken)
+        assertEquals("OPEN", api.warningPageBody?.status)
+        assertEquals(9001L, warnings.first().warningId)
+        assertEquals("水泥", warnings.first().itemName)
+        assertEquals("WARNING", warnings.first().warningLevel)
+        assertEquals(12.0, warnings.first().availableQty, 0.001)
+        assertEquals("Bearer token", api.ackToken)
+        assertEquals(9001L, api.ackWarningId)
+    }
+
     private class FakeMaterialApi : EmptySupervisorApi() {
+        var warningSummaryToken: String? = null
+        var warningPageToken: String? = null
+        var warningPageBody: MaterialStockWarningPageReq? = null
+        var ackToken: String? = null
+        var ackWarningId: Long? = null
+
         override suspend fun materialInventoryOverview(token: String, projectId: Long) =
             AjaxResp(
                 code = 200,
@@ -66,5 +98,61 @@ class MaterialRepositoryTest {
                 ),
             ),
         )
+
+        override suspend fun materialStockWarningSummary(
+            token: String,
+            projectId: Long,
+        ): AjaxResp<MaterialStockWarningSummaryVo> {
+            warningSummaryToken = token
+            return AjaxResp(
+                code = 200,
+                msg = "ok",
+                data = MaterialStockWarningSummaryVo(openCount = 2, criticalCount = 1, unreadCount = 2),
+            )
+        }
+
+        override suspend fun materialStockWarningPage(
+            token: String,
+            projectId: Long,
+            body: MaterialStockWarningPageReq,
+        ): AjaxResp<PageResp<MaterialStockWarningVo>> {
+            warningPageToken = token
+            warningPageBody = body
+            return AjaxResp(
+                code = 200,
+                msg = "ok",
+                data = PageResp(
+                    total = 1,
+                    rows = listOf(
+                        MaterialStockWarningVo(
+                            warningId = 9001L,
+                            projectId = projectId,
+                            materialId = 10L,
+                            itemName = "水泥",
+                            unit = "袋",
+                            warningLevel = "WARNING",
+                            status = "OPEN",
+                            currentQty = 12.0,
+                            lockedQty = 0.0,
+                            availableQty = 12.0,
+                            safeStock = 20.0,
+                            shortageQty = 8.0,
+                            firstTriggerTime = "2026-06-24 10:00:00",
+                            lastTriggerTime = "2026-06-24 10:30:00",
+                        ),
+                    ),
+                ),
+            )
+        }
+
+        override suspend fun ackMaterialStockWarning(
+            token: String,
+            projectId: Long,
+            warningId: Long,
+        ): AjaxResp<Any> {
+            ackToken = token
+            ackWarningId = warningId
+            return AjaxResp(200, "ok", null)
+        }
     }
 }

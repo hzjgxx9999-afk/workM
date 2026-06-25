@@ -47,6 +47,11 @@ class ManagerWorkerAdapter(
                 append(maskMobile(worker.mobile))
             }
             binding.textWorkerScope.text = buildString {
+                worker.projectName.takeIf { it.isNotBlank() }?.let {
+                    append("项目：")
+                    append(it)
+                    append("    ")
+                }
                 append("班组：")
                 append(worker.teamName.ifBlank { "--" })
                 append("    班组长：")

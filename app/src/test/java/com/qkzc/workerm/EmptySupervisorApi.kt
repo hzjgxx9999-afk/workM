@@ -8,6 +8,7 @@ import com.qkzc.workerm.data.network.AiWarningHandleReq
 import com.qkzc.workerm.data.network.AiWarningListReq
 import com.qkzc.workerm.data.network.AiWarningPageVo
 import com.qkzc.workerm.data.network.AiWarningReadReq
+import com.qkzc.workerm.data.network.AiWarningSummaryVo
 import com.qkzc.workerm.data.network.AiWarningVo
 import com.qkzc.workerm.data.network.AjaxProfileResp
 import com.qkzc.workerm.data.network.AjaxResp
@@ -53,6 +54,9 @@ import com.qkzc.workerm.data.network.MaterialOverviewVo
 import com.qkzc.workerm.data.network.MaterialReportVo
 import com.qkzc.workerm.data.network.MaterialRequestVo
 import com.qkzc.workerm.data.network.MaterialStockRecordVo
+import com.qkzc.workerm.data.network.MaterialStockWarningPageReq
+import com.qkzc.workerm.data.network.MaterialStockWarningSummaryVo
+import com.qkzc.workerm.data.network.MaterialStockWarningVo
 import com.qkzc.workerm.data.network.MaterialStockVo
 import com.qkzc.workerm.data.network.PageResp
 import com.qkzc.workerm.data.network.SupervisorApi
@@ -80,6 +84,9 @@ open class EmptySupervisorApi : SupervisorApi {
     override suspend fun materialInventoryReport(token: String, projectId: Long): AjaxResp<MaterialReportVo> = error("unused")
     override suspend fun materialInventoryInbound(token: String, projectId: Long, body: MaterialInventoryChangeReq): AjaxResp<MaterialStockVo> = error("unused")
     override suspend fun materialInventoryOutbound(token: String, projectId: Long, body: MaterialInventoryChangeReq): AjaxResp<MaterialStockVo> = error("unused")
+    override suspend fun materialStockWarningSummary(token: String, projectId: Long): AjaxResp<MaterialStockWarningSummaryVo> = error("unused")
+    override suspend fun materialStockWarningPage(token: String, projectId: Long, body: MaterialStockWarningPageReq): AjaxResp<PageResp<MaterialStockWarningVo>> = error("unused")
+    override suspend fun ackMaterialStockWarning(token: String, projectId: Long, warningId: Long): AjaxResp<Any> = error("unused")
     override suspend fun manageProjectLeaderOptions(token: String, projectId: Long, keyword: String?): AjaxResp<List<ManagerLeaderOptionVo>> = error("unused")
     override suspend fun manageProjectWorkTypes(token: String, projectId: Long, keyword: String?): AjaxResp<List<ManagerWorkTypeOptionVo>> = error("unused")
     override suspend fun createManageProjectTeam(token: String, projectId: Long, body: ManagerProjectTeamSaveReq): AjaxResp<ManagerProjectTeamVo> = error("unused")
@@ -114,6 +121,7 @@ open class EmptySupervisorApi : SupervisorApi {
     override suspend fun manageAiWarningRead(token: String, body: AiWarningReadReq): AjaxResp<Any> = error("unused")
     override suspend fun manageAiWarningHandle(token: String, body: AiWarningHandleReq): AjaxResp<Any> = error("unused")
     override suspend fun manageAiWarningUnreadCount(token: String, body: AiWarningListReq): AjaxResp<Int> = error("unused")
+    override suspend fun manageAiWarningSummary(token: String, body: AiWarningListReq): AjaxResp<AiWarningSummaryVo> = error("unused")
     override suspend fun constructionLogOverview(token: String, projectId: Long): AjaxResp<ConstructionLogOverviewVo> = error("unused")
     override suspend fun constructionLogPage(token: String, projectId: Long, body: ConstructionLogPageReq): AjaxResp<PageResp<ConstructionLogItemVo>> = error("unused")
     override suspend fun constructionLogDetail(token: String, projectId: Long, logId: Long): AjaxResp<ConstructionLogDetailVo> = error("unused")

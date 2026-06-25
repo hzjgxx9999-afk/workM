@@ -67,7 +67,7 @@ class MaterialHomeActivity : AppCompatActivity() {
         binding.projectSwitchText.text = "请选择项目"
         binding.backButton.setOnClickListener { finish() }
         binding.searchButton.setOnClickListener { openMaterialList() }
-        binding.notificationButton.setOnClickListener { toast("暂无新的材料库存预警") }
+        binding.notificationButton.setOnClickListener { openMaterialWarnings() }
         binding.projectSwitchText.setOnClickListener { showProjectSwitchDialog() }
         binding.materialListEntry.setOnClickListener { openMaterialList() }
         binding.materialReportEntry.setOnClickListener { openMaterialReport() }
@@ -351,6 +351,10 @@ class MaterialHomeActivity : AppCompatActivity() {
 
     private fun openMaterialReport() {
         startActivity(Intent(this, MaterialReportActivity::class.java).putExtra(ProjectDetailActivity.EXTRA_PROJECT_ID, currentProjectId))
+    }
+
+    private fun openMaterialWarnings() {
+        startActivity(Intent(this, MaterialWarningActivity::class.java).putExtra(ProjectDetailActivity.EXTRA_PROJECT_ID, currentProjectId))
     }
 
     private fun toast(message: String) {

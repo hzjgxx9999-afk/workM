@@ -345,6 +345,42 @@ data class MaterialStockVo(
     val lowStock: Boolean? = null,
 )
 
+data class MaterialStockWarningSummaryVo(
+    val openCount: Int? = null,
+    val criticalCount: Int? = null,
+    val unreadCount: Int? = null,
+)
+
+data class MaterialStockWarningPageReq(
+    val pageNum: Int = 1,
+    val pageSize: Int = 20,
+    val status: String? = "OPEN",
+    val warningLevel: String? = null,
+)
+
+data class MaterialStockWarningVo(
+    @SerializedName(value = "warningId", alternate = ["id"])
+    val warningId: Long? = null,
+    val projectId: Long? = null,
+    val materialId: Long? = null,
+    val itemName: String? = null,
+    val unit: String? = null,
+    val materialCode: String? = null,
+    val category: String? = null,
+    val warningType: String? = null,
+    val warningLevel: String? = null,
+    val status: String? = null,
+    val currentQty: Double? = null,
+    val lockedQty: Double? = null,
+    val availableQty: Double? = null,
+    val safeStock: Double? = null,
+    val shortageQty: Double? = null,
+    val firstTriggerTime: String? = null,
+    val lastTriggerTime: String? = null,
+    val ackTime: String? = null,
+    val resolvedTime: String? = null,
+)
+
 data class AuditListReq(
     val projectId: Long? = null,
     val status: String? = ApprovalApiConstants.STATUS_PENDING_MANAGER,
@@ -552,6 +588,14 @@ data class AiWarningPageVo(
     val pages: Int? = null,
     val hasMore: Boolean? = null,
     val rows: List<AiWarningVo>? = null,
+)
+
+data class AiWarningSummaryVo(
+    val totalCount: Long? = null,
+    val pendingCount: Long? = null,
+    val unreadCount: Long? = null,
+    val highRiskCount: Long? = null,
+    val maxRiskScore: Int? = null,
 )
 
 data class AiWarningVo(

@@ -17,7 +17,7 @@ class ProjectTeamRepository(
     suspend fun loadTeams(token: String, projectId: Long): List<ManagerProjectTeam> {
         return api.manageProjectTeams(bearerToken(token), projectId)
             .requireDataList()
-            .map { it.toDomain() }
+            .map { it.toDomain(projectId) }
     }
 
     suspend fun loadLeaderOptions(
@@ -105,8 +105,9 @@ class ProjectTeamRepository(
         return data.orEmpty()
     }
 
-    private fun ManagerProjectTeamVo.toDomain(): ManagerProjectTeam {
+    private fun ManagerProjectTeamVo.toDomain(projectId: Long = 0L): ManagerProjectTeam {
         return ManagerProjectTeam(
+            projectId = projectId,
             teamId = teamId ?: 0L,
             relationId = relationId ?: 0L,
             teamName = teamName.orEmpty(),

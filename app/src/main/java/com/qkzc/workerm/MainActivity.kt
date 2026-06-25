@@ -114,7 +114,7 @@ class MainActivity : AppCompatActivity() {
         return when (itemId) {
             R.id.nav_home -> HomeFragment()
             R.id.nav_supervision -> SupervisionFragment()
-            R.id.nav_todo -> ProjectMemberManageFragment.newInstance()
+            R.id.nav_todo -> ProjectMemberManageFragment.newGlobalInstance()
             R.id.nav_message -> MessageFragment()
             R.id.nav_profile -> TodoFragment()
             else -> HomeFragment()
