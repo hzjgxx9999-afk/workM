@@ -18,6 +18,7 @@ data class AjaxProfileResp(
     val msg: String?,
     val appUserId: Long?,
     val mobile: String?,
+    val realName: String? = null,
     val userType: String?,
     val clientType: String?,
 )
@@ -197,6 +198,60 @@ data class ManagerWorkerScanReq(
     @SerializedName("workerId")
     val workerUserId: Long? = null,
     val ticket: String? = null,
+)
+
+data class WorkerQrVerifyReq(
+    val scene: String,
+    val projectId: Long? = null,
+    val ticket: String,
+)
+
+data class WorkerQrVerifyVo(
+    val ticketValid: Boolean? = null,
+    val pass: Boolean? = null,
+    val status: String? = null,
+    val message: String? = null,
+    val worker: WorkerQrWorkerVo? = null,
+    val project: WorkerQrProjectVo? = null,
+    val entry: WorkerQrEntryVo? = null,
+    val exit: WorkerQrExitVo? = null,
+)
+
+data class WorkerQrWorkerVo(
+    val workerUserId: Long? = null,
+    val realName: String? = null,
+    val mobile: String? = null,
+    val idCardNo: String? = null,
+    val workTypeName: String? = null,
+    val avatarUrl: String? = null,
+)
+
+data class WorkerQrProjectVo(
+    val projectId: Long? = null,
+    val projectName: String? = null,
+    val teamId: Long? = null,
+    val teamName: String? = null,
+    val leaderId: Long? = null,
+    val leaderName: String? = null,
+)
+
+data class WorkerQrEntryVo(
+    val entryId: Long? = null,
+    val bindStatus: String? = null,
+    val entryStatus: String? = null,
+    val identityStatus: String? = null,
+    val safetyTrainingStatus: String? = null,
+    val healthCheckStatus: String? = null,
+    val contractStatus: String? = null,
+    val insuranceStatus: String? = null,
+    val signedTime: String? = null,
+)
+
+data class WorkerQrExitVo(
+    val exitId: Long? = null,
+    val exitStatus: String? = null,
+    val activeFlag: Long? = null,
+    val completedTime: String? = null,
 )
 
 data class WorkerBindRelationVo(

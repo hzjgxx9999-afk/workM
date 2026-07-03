@@ -27,6 +27,7 @@ class AuthRepositoryProjectScopeTest {
         val session = repository.login(LoginPayload(mobile = "13900010001", password = "123456"))
 
         assertEquals("Bearer login-token", api.projectsToken)
+        assertEquals("王经理", session.realName)
         assertEquals("10", session.projectId)
         assertEquals("一号项目", session.projectName)
         assertEquals(session, sessionStore.savedSession)
@@ -45,6 +46,7 @@ class AuthRepositoryProjectScopeTest {
                 msg = "ok",
                 appUserId = 300,
                 mobile = "13900010001",
+                realName = "王经理",
                 userType = "PROJECT_MANAGER",
                 clientType = "APP",
             )

@@ -44,6 +44,7 @@ class SessionStore(context: Context) : SessionDataSource {
                 refreshToken = preferences[Keys.refreshToken].orEmpty(),
                 userId = preferences[Keys.userId].orEmpty(),
                 userName = preferences[Keys.userName].orEmpty(),
+                realName = preferences[Keys.realName].orEmpty(),
                 mobile = preferences[Keys.mobile].orEmpty(),
                 userType = preferences[Keys.userType].orEmpty(),
                 clientType = preferences[Keys.clientType].orEmpty(),
@@ -60,6 +61,7 @@ class SessionStore(context: Context) : SessionDataSource {
             preferences[Keys.refreshToken] = session.refreshToken
             preferences[Keys.userId] = session.userId
             preferences[Keys.userName] = session.userName
+            preferences[Keys.realName] = session.realName
             preferences[Keys.mobile] = session.mobile
             preferences[Keys.userType] = session.userType
             preferences[Keys.clientType] = session.clientType
@@ -81,6 +83,7 @@ class SessionStore(context: Context) : SessionDataSource {
         val refreshToken = stringPreferencesKey("refresh_token")
         val userId = stringPreferencesKey("user_id")
         val userName = stringPreferencesKey("user_name")
+        val realName = stringPreferencesKey("real_name")
         val mobile = stringPreferencesKey("mobile")
         val userType = stringPreferencesKey("user_type")
         val clientType = stringPreferencesKey("client_type")

@@ -4,6 +4,11 @@ import com.qkzc.workerm.data.network.AjaxResp
 import com.qkzc.workerm.data.network.ManagerWorkerScanReq
 import com.qkzc.workerm.data.network.ManagerWorkerVo
 import com.qkzc.workerm.data.network.SupervisorApi
+import com.qkzc.workerm.data.network.WorkerQrEntryVo
+import com.qkzc.workerm.data.network.WorkerQrProjectVo
+import com.qkzc.workerm.data.network.WorkerQrVerifyReq
+import com.qkzc.workerm.data.network.WorkerQrVerifyVo
+import com.qkzc.workerm.data.network.WorkerQrWorkerVo
 import com.qkzc.workerm.data.worker.ManagerWorkerRepository
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
@@ -52,12 +57,30 @@ class ManagerWorkerRepositoryTest {
         assertEquals(501, worker.workerUserId)
     }
 
+    @Test
+    fun verifyQrTicketUsesUnifiedWorkerQrVerifyContract() = runBlocking {
+        val api = FakeWorkerApi()
+        val repository = ManagerWorkerRepository(api)
+
+        val result = repository.verifyQrTicket("token", projectId = 10, ticket = "ticket-1")
+
+        assertEquals("Bearer token", api.verifyToken)
+        assertEquals(WorkerQrVerifyReq(scene = "MANAGER_SCAN", projectId = 10, ticket = "ticket-1"), api.verifyBody)
+        assertEquals(true, result.pass)
+        assertEquals("PASS", result.status)
+        assertEquals("Worker A", result.workerName)
+        assertEquals("Project A", result.projectName)
+        assertEquals("COMPLETED", result.safetyTrainingStatus)
+    }
+
     private class FakeWorkerApi : SupervisorApi by EmptySupervisorApi() {
         var detailToken: String? = null
         var detailProjectId: Long? = null
         var detailWorkerId: Long? = null
         var scanToken: String? = null
         var scanBody: ManagerWorkerScanReq? = null
+        var verifyToken: String? = null
+        var verifyBody: WorkerQrVerifyReq? = null
 
         override suspend fun manageWorkerDetail(
             token: String,
@@ -98,6 +121,27 @@ class ManagerWorkerRepositoryTest {
                     workTypeName = "钢筋工",
                     leaderName = "钢筋班组",
                     projectName = "一号项目",
+                ),
+            )
+        }
+
+        override suspend fun verifyWorkerQr(
+            token: String,
+            body: WorkerQrVerifyReq,
+        ): AjaxResp<WorkerQrVerifyVo> {
+            verifyToken = token
+            verifyBody = body
+            return AjaxResp(
+                code = 200,
+                msg = "ok",
+                data = WorkerQrVerifyVo(
+                    ticketValid = true,
+                    pass = true,
+                    status = "PASS",
+                    message = "核验通过",
+                    worker = WorkerQrWorkerVo(workerUserId = 501, realName = "Worker A", workTypeName = "Steel"),
+                    project = WorkerQrProjectVo(projectId = 10, projectName = "Project A", teamName = "Team A"),
+                    entry = WorkerQrEntryVo(entryStatus = "COMPLETED", safetyTrainingStatus = "COMPLETED"),
                 ),
             )
         }

@@ -6,6 +6,8 @@ import com.qkzc.workerm.data.network.ManagerWorkerScanReq
 import com.qkzc.workerm.data.network.ManagerWorkerVo
 import com.qkzc.workerm.data.network.SupervisorApi
 import com.qkzc.workerm.data.network.WorkerBindRelationVo
+import com.qkzc.workerm.data.network.WorkerQrVerifyReq
+import com.qkzc.workerm.data.network.WorkerQrVerifyVo
 import com.qkzc.workerm.data.network.bearerToken
 import com.qkzc.workerm.data.network.requireSuccess
 
@@ -53,6 +55,22 @@ class ManagerWorkerRepository(
         )
         requireSuccess(response.code, response.msg)
         return response.data?.toDomain() ?: ManagerWorker(workerUserId = 0L, projectId = projectId)
+    }
+
+    suspend fun verifyQrTicket(token: String, projectId: Long, ticket: String): WorkerQrVerifyResult {
+        require(ticket.isNotBlank()) { "二维码ticket不能为空" }
+        val response = api.verifyWorkerQr(
+            token = bearerToken(token),
+            body = WorkerQrVerifyReq(scene = "MANAGER_SCAN", projectId = projectId, ticket = ticket),
+        )
+        requireSuccess(response.code, response.msg)
+        return response.data?.toDomain()
+            ?: WorkerQrVerifyResult(
+                ticketValid = false,
+                pass = false,
+                status = "EMPTY_RESPONSE",
+                message = response.msg.orEmpty(),
+            )
     }
 
     suspend fun relationHistory(
@@ -118,6 +136,36 @@ class ManagerWorkerRepository(
         )
     }
 
+    private fun WorkerQrVerifyVo.toDomain(): WorkerQrVerifyResult {
+        return WorkerQrVerifyResult(
+            ticketValid = ticketValid == true,
+            pass = pass == true,
+            status = status.orEmpty(),
+            message = message.orEmpty(),
+            workerUserId = worker?.workerUserId ?: 0L,
+            workerName = worker?.realName.orEmpty(),
+            mobile = worker?.mobile.orEmpty(),
+            idCardNo = worker?.idCardNo.orEmpty(),
+            workTypeName = worker?.workTypeName.orEmpty(),
+            avatarUrl = worker?.avatarUrl.orEmpty(),
+            projectId = project?.projectId ?: 0L,
+            projectName = project?.projectName.orEmpty(),
+            teamId = project?.teamId ?: 0L,
+            teamName = project?.teamName.orEmpty(),
+            leaderId = project?.leaderId ?: 0L,
+            leaderName = project?.leaderName.orEmpty(),
+            bindStatus = entry?.bindStatus.orEmpty(),
+            entryStatus = entry?.entryStatus.orEmpty(),
+            identityStatus = entry?.identityStatus.orEmpty(),
+            safetyTrainingStatus = entry?.safetyTrainingStatus.orEmpty(),
+            healthCheckStatus = entry?.healthCheckStatus.orEmpty(),
+            contractStatus = entry?.contractStatus.orEmpty(),
+            insuranceStatus = entry?.insuranceStatus.orEmpty(),
+            signedTime = entry?.signedTime.orEmpty(),
+            exitStatus = exit?.exitStatus.orEmpty(),
+        )
+    }
+
     private fun <T> AjaxResp<List<T>>.requireDataList(): List<T> {
         requireSuccess(code, msg)
         return data.orEmpty()
@@ -169,4 +217,32 @@ data class ManagerWorkerRelation(
     val currentFlag: Int = 0,
     val bindTime: String = "",
     val sourceRequestId: Long? = null,
+)
+
+data class WorkerQrVerifyResult(
+    val ticketValid: Boolean = false,
+    val pass: Boolean = false,
+    val status: String = "",
+    val message: String = "",
+    val workerUserId: Long = 0L,
+    val workerName: String = "",
+    val mobile: String = "",
+    val idCardNo: String = "",
+    val workTypeName: String = "",
+    val avatarUrl: String = "",
+    val projectId: Long = 0L,
+    val projectName: String = "",
+    val teamId: Long = 0L,
+    val teamName: String = "",
+    val leaderId: Long = 0L,
+    val leaderName: String = "",
+    val bindStatus: String = "",
+    val entryStatus: String = "",
+    val identityStatus: String = "",
+    val safetyTrainingStatus: String = "",
+    val healthCheckStatus: String = "",
+    val contractStatus: String = "",
+    val insuranceStatus: String = "",
+    val signedTime: String = "",
+    val exitStatus: String = "",
 )

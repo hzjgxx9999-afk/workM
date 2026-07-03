@@ -1,28 +1,25 @@
 package com.qkzc.workerm.ui.auth
 
+import android.graphics.Color
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
-import androidx.activity.enableEdgeToEdge
+import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.updatePadding
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.core.view.WindowCompat
 import com.qkzc.workerm.MainActivity
 import com.qkzc.workerm.R
 import com.qkzc.workerm.data.session.AuthRepository
 import com.qkzc.workerm.data.session.SessionStore
-import com.qkzc.workerm.databinding.ActivityLoginBinding
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.launch
+import com.qkzc.workerm.ui.login.SupervisionLoginRoute
+import com.qkzc.workerm.ui.theme.WorkerMTheme
 
 class LoginActivity : AppCompatActivity() {
 
-    private lateinit var binding: ActivityLoginBinding
     private val viewModel: LoginViewModel by viewModels {
         LoginViewModel.Factory(
             AuthRepository(SessionStore(applicationContext)),
@@ -31,42 +28,21 @@ class LoginActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        binding = ActivityLoginBinding.inflate(layoutInflater)
-        setContentView(binding.root)
-        ViewCompat.setOnApplyWindowInsetsListener(binding.loginRoot) { view, insets ->
-            val bars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            view.updatePadding(
-                left = bars.left,
-                top = bars.top,
-                right = bars.right,
-                bottom = bars.bottom,
-            )
-            insets
-        }
-        binding.accountInput.editText?.setText("13900010001")
-        binding.passwordInput.editText?.setText("123456")
-        binding.loginButton.setOnClickListener {
-            submitLogin()
-        }
-        observeUiState()
-    }
+        configureSystemBars()
 
-    private fun observeUiState() {
-        lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.uiState.collectLatest { state ->
-                    binding.loginButton.isEnabled = !state.loading
-                    binding.loginButton.text = if (state.loading) {
-                        getString(R.string.login_loading)
-                    } else {
-                        getString(R.string.login_submit)
-                    }
-                    state.errorMessage?.let { message ->
+        setContent {
+            WorkerMTheme {
+                val uiState by viewModel.uiState.collectAsState()
+
+                LaunchedEffect(uiState.errorMessage) {
+                    uiState.errorMessage?.let { message ->
                         Toast.makeText(this@LoginActivity, message, Toast.LENGTH_SHORT).show()
                         viewModel.consumeError()
                     }
-                    if (state.loggedIn) {
+                }
+
+                LaunchedEffect(uiState.loggedIn) {
+                    if (uiState.loggedIn) {
                         Toast.makeText(
                             this@LoginActivity,
                             getString(R.string.login_success),
@@ -80,28 +56,32 @@ class LoginActivity : AppCompatActivity() {
                         finish()
                     }
                 }
+
+                SupervisionLoginRoute(
+                    loading = uiState.loading,
+                    onLogin = { mobile, password ->
+                        viewModel.login(mobile, password)
+                    },
+                    onPrivacyClick = {
+                        Toast.makeText(this, "隐私说明待接入", Toast.LENGTH_SHORT).show()
+                    },
+                    onSecurityPolicyClick = {
+                        Toast.makeText(this, "数据安全规范待接入", Toast.LENGTH_SHORT).show()
+                    },
+                )
             }
         }
     }
 
-    private fun submitLogin() {
-        val mobile = binding.accountEdit.text?.toString().orEmpty().trim()
-        val password = binding.passwordEdit.text?.toString().orEmpty().trim()
+    private fun configureSystemBars() {
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+        window.statusBarColor = Color.TRANSPARENT
+        window.navigationBarColor = Color.rgb(245, 249, 255)
+        window.isNavigationBarContrastEnforced = false
 
-        binding.accountInput.error = null
-        binding.passwordInput.error = null
-
-        var hasError = false
-        if (mobile.isBlank()) {
-            binding.accountInput.error = getString(R.string.login_required_account)
-            hasError = true
+        WindowCompat.getInsetsController(window, window.decorView).apply {
+            isAppearanceLightStatusBars = true
+            isAppearanceLightNavigationBars = true
         }
-        if (password.isBlank()) {
-            binding.passwordInput.error = getString(R.string.login_required_password)
-            hasError = true
-        }
-        if (hasError) return
-
-        viewModel.login(mobile, password)
     }
 }

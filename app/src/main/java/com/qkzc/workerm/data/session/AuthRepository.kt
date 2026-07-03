@@ -42,6 +42,7 @@ class AuthRepository(
             accessToken = token,
             userId = profile.appUserId?.toString().orEmpty(),
             userName = profile.mobile.orEmpty(),
+            realName = profile.realName.orEmpty(),
             mobile = profile.mobile.orEmpty(),
             userType = profile.userType.orEmpty(),
             clientType = profile.clientType.orEmpty(),
@@ -68,6 +69,7 @@ class AuthRepository(
             val refreshed = cached.copy(
                 userId = profile.appUserId?.toString().orEmpty(),
                 userName = profile.mobile.orEmpty(),
+                realName = profile.realName.orEmpty().ifBlank { cached.realName },
                 mobile = profile.mobile.orEmpty(),
                 userType = profile.userType.orEmpty(),
                 clientType = profile.clientType.orEmpty(),

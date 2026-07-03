@@ -63,6 +63,8 @@ import com.qkzc.workerm.data.network.SupervisorApi
 import com.qkzc.workerm.data.network.VersionReq
 import com.qkzc.workerm.data.network.WorkerBindChangeRequestVo
 import com.qkzc.workerm.data.network.WorkerBindRelationVo
+import com.qkzc.workerm.data.network.WorkerQrVerifyReq
+import com.qkzc.workerm.data.network.WorkerQrVerifyVo
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import okhttp3.ResponseBody
@@ -100,6 +102,7 @@ open class EmptySupervisorApi : SupervisorApi {
     override suspend fun manageWorkerDetail(token: String, workerId: Long, projectId: Long): AjaxResp<ManagerWorkerVo> = error("unused")
     override suspend fun manageWorkerRelations(token: String, workerId: Long, projectId: Long?): AjaxResp<List<WorkerBindRelationVo>> = error("unused")
     override suspend fun manageWorkerScanTicket(token: String, body: ManagerWorkerScanReq): AjaxResp<ManagerWorkerVo> = error("unused")
+    override suspend fun verifyWorkerQr(token: String, body: WorkerQrVerifyReq): AjaxResp<WorkerQrVerifyVo> = error("unused")
     override suspend fun advanceList(token: String, body: AuditListReq): AjaxResp<List<AdvanceRequestVo>> = error("unused")
     override suspend fun advanceDetail(token: String, body: AdvanceDetailReq): AjaxResp<AdvanceRequestVo> = error("unused")
     override suspend fun auditAdvance(token: String, body: AdvanceAuditReq): AjaxResp<AdvanceRequestVo> = error("unused")

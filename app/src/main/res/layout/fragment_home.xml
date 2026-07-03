@@ -35,10 +35,11 @@
                     android:orientation="vertical">
 
                     <TextView
+                        android:id="@+id/greeting_text"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:includeFontPadding="false"
-                        android:text="上午好，张项目经理"
+                        android:text="上午好，项目经理"
                         android:textColor="@color/white"
                         android:textSize="18sp"
                         android:textStyle="bold" />
@@ -47,6 +48,17 @@
                 </LinearLayout>
 
 
+
+                <ImageButton
+                    android:id="@+id/logout_button"
+                    android:layout_width="42dp"
+                    android:layout_height="42dp"
+                    android:layout_marginStart="10dp"
+                    android:background="@drawable/bg_home_icon_button"
+                    android:contentDescription="@string/logout"
+                    android:foreground="?attr/selectableItemBackgroundBorderless"
+                    android:padding="9dp"
+                    android:src="@drawable/ic_logout" />
 
                 <FrameLayout
                     android:layout_width="42dp"
@@ -227,42 +239,10 @@
             android:paddingTop="16dp"
             android:paddingBottom="20dp">
 
-            <LinearLayout
+            <androidx.compose.ui.platform.ComposeView
+                android:id="@+id/home_overview_compose"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:includeFontPadding="false"
-                    android:text="项目概览"
-                    android:textColor="@color/text_primary"
-                    android:textSize="17sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="2024-05-20  星期一"
-                    android:textColor="@color/text_secondary"
-                    android:textSize="11sp" />
-            </LinearLayout>
-
-            <GridLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:columnCount="4"
-                android:rowCount="1">
-
-                <TextView style="@style/HomeMetricCard" android:drawableTop="@drawable/ic_project" android:text="在建项目\n12个" />
-                <TextView style="@style/HomeMetricCard" android:drawableTop="@drawable/ic_people" android:text="在场工人\n328人" />
-                <TextView style="@style/HomeMetricCard" android:drawableTop="@drawable/ic_approval" android:text="今日审批\n15项" />
-                <TextView style="@style/HomeMetricCard" android:drawableTop="@drawable/ic_alert" android:text="风险预警\n8条" />
-            </GridLayout>
+                android:layout_height="wrap_content" />
 
             <TextView
                 android:layout_width="wrap_content"

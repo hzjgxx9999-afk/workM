@@ -6,8 +6,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.Fragment
 import androidx.core.view.isVisible
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.qkzc.workerm.MainActivity
@@ -21,15 +25,18 @@ import com.qkzc.workerm.ui.material.MaterialHomeActivity
 import com.qkzc.workerm.ui.dispatch.DispatchDetailActivity
 import com.qkzc.workerm.ui.dispatch.DispatchListActivity
 import com.qkzc.workerm.ui.dispatch.ManagerDispatchAdapter
+import com.qkzc.workerm.ui.theme.WorkerMTheme
 import com.qkzc.workerm.ui.video.VideoHomeActivity
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import java.util.Calendar
 
 class HomeFragment : Fragment() {
 
     private var _binding: FragmentHomeBinding? = null
     private val binding: FragmentHomeBinding
         get() = checkNotNull(_binding)
+    private val overviewViewModel: HomeOverviewViewModel by viewModels()
     private val dispatchRepository = DispatchRepository()
     private val aiWarningRepository = AiWarningRepository()
     private val dispatchAdapter = ManagerDispatchAdapter { order ->
@@ -49,9 +56,14 @@ class HomeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         binding.homeDispatchRecycler.layoutManager = LinearLayoutManager(requireContext())
         binding.homeDispatchRecycler.adapter = dispatchAdapter
+        setupHomeOverview()
+        renderGreeting()
 
         binding.notificationButton.setOnClickListener {
             (activity as? MainActivity)?.navigateToTab(R.id.nav_message)
+        }
+        binding.logoutButton.setOnClickListener {
+            (activity as? MainActivity)?.logout()
         }
         binding.aiWarningCard.setOnClickListener {
             (activity as? MainActivity)?.navigateToTab(R.id.nav_message)
@@ -76,6 +88,56 @@ class HomeFragment : Fragment() {
         }
         renderAiWarningCard(HomeAiWarningCardState.loading())
         loadDispatches()
+    }
+
+    private fun setupHomeOverview() {
+        binding.homeOverviewCompose.setViewCompositionStrategy(
+            ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed,
+        )
+        binding.homeOverviewCompose.setContent {
+            WorkerMTheme {
+                val overviewState by overviewViewModel.uiState.collectAsState()
+                HomeOverviewSection(
+                    uiState = overviewState,
+                    onCardClick = ::handleOverviewCardClick,
+                    onRetryClick = overviewViewModel::loadOverview,
+                )
+            }
+        }
+    }
+
+    private fun renderGreeting() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            SessionStore(requireContext().applicationContext).sessionFlow.collect { session ->
+                val currentBinding = _binding ?: return@collect
+                val hourOfDay = Calendar.getInstance().get(Calendar.HOUR_OF_DAY)
+                currentBinding.greetingText.text = formatHomeGreeting(
+                    hourOfDay = hourOfDay,
+                    realName = session.realName,
+                )
+            }
+        }
+    }
+
+    private fun handleOverviewCardClick(type: OverviewType) {
+        when (type) {
+            OverviewType.UnderConstructionProjects -> {
+                (activity as? MainActivity)?.navigateToTab(R.id.nav_supervision)
+                    ?: toast(getString(R.string.home_overview_open_projects))
+            }
+            OverviewType.OnSiteWorkers -> {
+                (activity as? MainActivity)?.navigateToTab(R.id.nav_todo)
+                    ?: toast(getString(R.string.home_overview_open_workers))
+            }
+            OverviewType.TodayApprovals -> {
+                (activity as? MainActivity)?.navigateToTab(R.id.nav_profile)
+                    ?: toast(getString(R.string.home_overview_open_approvals))
+            }
+            OverviewType.RiskWarnings -> {
+                (activity as? MainActivity)?.navigateToTab(R.id.nav_message)
+                    ?: toast(getString(R.string.home_overview_open_warnings))
+            }
+        }
     }
 
     override fun onResume() {

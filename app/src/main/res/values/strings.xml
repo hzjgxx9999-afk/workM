@@ -70,6 +70,28 @@
     <string name="message_unread">未读消息</string>
     <string name="message_priority_warning">高优预警</string>
 
+    <string name="home_overview_title">项目概览</string>
+    <string name="home_overview_loading">项目概览加载中</string>
+    <string name="home_overview_error_title">项目概览加载失败</string>
+    <string name="home_overview_error_message">概览数据暂时不可用</string>
+    <string name="home_overview_retry">重试</string>
+    <string name="home_overview_project_title">在建项目</string>
+    <string name="home_overview_worker_title">在场工人</string>
+    <string name="home_overview_approval_title">今日审批</string>
+    <string name="home_overview_warning_title">风险预警</string>
+    <string name="home_overview_project_icon_cd">在建项目图标</string>
+    <string name="home_overview_worker_icon_cd">在场工人图标</string>
+    <string name="home_overview_approval_icon_cd">今日审批图标</string>
+    <string name="home_overview_warning_icon_cd">风险预警图标</string>
+    <string name="home_overview_unit_count">个</string>
+    <string name="home_overview_unit_person">人</string>
+    <string name="home_overview_unit_item">项</string>
+    <string name="home_overview_unit_record">条</string>
+    <string name="home_overview_open_projects">打开在建项目列表</string>
+    <string name="home_overview_open_workers">打开在场工人列表</string>
+    <string name="home_overview_open_approvals">打开今日审批列表</string>
+    <string name="home_overview_open_warnings">打开风险预警列表</string>
+
     <string name="profile_title">监管身份</string>
     <string name="profile_subtitle">项目经理 · 华东片区 · 数据范围已同步</string>
     <string name="profile_name">李建国</string>

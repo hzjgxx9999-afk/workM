@@ -2,6 +2,7 @@ package com.qkzc.workerm
 
 import android.content.Intent
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
@@ -84,6 +85,14 @@ class MainActivity : AppCompatActivity() {
 
     fun navigateToTab(itemId: Int) {
         binding.bottomNavigation.selectedItemId = itemId
+    }
+
+    fun logout() {
+        lifecycleScope.launch {
+            AuthRepository(SessionStore(applicationContext)).logout()
+            Toast.makeText(this@MainActivity, R.string.logout_success, Toast.LENGTH_SHORT).show()
+            redirectToLogin()
+        }
     }
 
     fun openInviteCodeManage(projectId: Long? = null) {

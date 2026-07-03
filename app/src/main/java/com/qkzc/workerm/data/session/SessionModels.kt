@@ -5,6 +5,7 @@ data class LoginSession(
     val refreshToken: String = "",
     val userId: String = "",
     val userName: String = "",
+    val realName: String = "",
     val mobile: String = "",
     val userType: String = "",
     val clientType: String = "",

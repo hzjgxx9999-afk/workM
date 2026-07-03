@@ -225,6 +225,12 @@ interface SupervisorApi {
         @Body body: ManagerWorkerScanReq,
     ): AjaxResp<ManagerWorkerVo>
 
+    @POST("/app/qr/worker/verify")
+    suspend fun verifyWorkerQr(
+        @Header("Authorization") token: String,
+        @Body body: WorkerQrVerifyReq,
+    ): AjaxResp<WorkerQrVerifyVo>
+
     @POST("/app/manage/request/advance/list")
     suspend fun advanceList(
         @Header("Authorization") token: String,
