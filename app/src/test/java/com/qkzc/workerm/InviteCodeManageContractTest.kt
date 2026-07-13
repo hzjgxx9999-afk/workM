@@ -12,6 +12,7 @@ import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.PUT
@@ -25,6 +26,7 @@ class InviteCodeManageContractTest {
         assertEquals("/app/manage/invite-code/list", apiPath("manageInviteCodeList", GET::class.java))
         assertEquals("/app/manage/invite-code", apiPath("createManageInviteCode", POST::class.java))
         assertEquals("/app/manage/invite-code/{id}/status", apiPath("updateManageInviteCodeStatus", PUT::class.java))
+        assertEquals("/app/manage/invite-code/{id}", apiPath("deleteManageInviteCode", DELETE::class.java))
 
         val create = method("createManageInviteCode")
         assertNotNull(create.parameters.firstOrNull { it.isAnnotationPresent(Body::class.java) })
@@ -32,6 +34,9 @@ class InviteCodeManageContractTest {
         val status = method("updateManageInviteCodeStatus")
         assertNotNull(status.parameters.firstOrNull { it.isAnnotationPresent(Path::class.java) })
         assertNotNull(status.parameters.firstOrNull { it.isAnnotationPresent(Body::class.java) })
+
+        val delete = method("deleteManageInviteCode")
+        assertNotNull(delete.parameters.firstOrNull { it.isAnnotationPresent(Path::class.java) })
     }
 
     @Test
@@ -67,6 +72,7 @@ class InviteCodeManageContractTest {
             remark = "现场招工",
         )
         repository.updateStatus("token", created.id, "DISABLED")
+        repository.delete("token", created.id)
 
         assertEquals("Bearer token", api.lastToken)
         assertEquals(10L, api.lastCreate?.projectId)
@@ -74,6 +80,7 @@ class InviteCodeManageContractTest {
         assertEquals(30L, api.lastCreate?.teamId)
         assertEquals("workerapp://register?inviteCode=INV100", created.qrContent)
         assertEquals("DISABLED", api.lastStatus?.status)
+        assertEquals(100L, api.lastDeleteId)
     }
 
     @Test
@@ -83,6 +90,8 @@ class InviteCodeManageContractTest {
 
         assertTrue(repositorySource.contains("teamId: Long,"))
         assertTrue(networkSource.contains("val teamId: Long,"))
+        assertTrue(repositorySource.contains("suspend fun delete(token: String, id: Long)"))
+        assertTrue(repositorySource.contains("deleteManageInviteCode"))
     }
 
     @Test
@@ -94,6 +103,18 @@ class InviteCodeManageContractTest {
         assertTrue(layout.contains("@+id/spinner_team"))
         assertTrue(layout.contains("@+id/button_create_invite"))
         assertTrue(layout.contains("@+id/recycler_invite_codes"))
+
+        val itemLayout = File("src/main/res/layout/item_invite_code.xml").readText()
+        assertTrue(itemLayout.contains("@+id/button_delete"))
+
+        val adapter = File("src/main/java/com/qkzc/workerm/ui/invite/InviteCodeAdapter.kt").readText()
+        assertTrue(adapter.contains("onDeleteClick"))
+        assertTrue(adapter.contains("buttonDelete.isVisible = !item.enabled"))
+
+        val fragment = File("src/main/java/com/qkzc/workerm/ui/invite/InviteCodeManageFragment.kt").readText()
+        assertTrue(fragment.contains("handleBackNavigation"))
+        assertTrue(fragment.contains("parentFragmentManager.backStackEntryCount > 0"))
+        assertTrue(fragment.contains("requireActivity().finish()"))
 
         val home = File("src/main/res/layout/fragment_home.xml").readText()
         assertTrue(home.contains("@+id/invite_code_action"))
@@ -114,6 +135,7 @@ class InviteCodeManageContractTest {
         var lastToken: String? = null
         var lastCreate: ManageInviteCodeCreateReq? = null
         var lastStatus: ManageInviteCodeStatusReq? = null
+        var lastDeleteId: Long? = null
 
         override suspend fun createManageInviteCode(
             token: String,
@@ -148,6 +170,15 @@ class InviteCodeManageContractTest {
             lastStatus = body
             return AjaxResp(code = 200, msg = "ok", data = null)
         }
+
+        override suspend fun deleteManageInviteCode(
+            token: String,
+            id: Long,
+        ): AjaxResp<Any> {
+            lastToken = token
+            lastDeleteId = id
+            return AjaxResp(code = 200, msg = "ok", data = null)
+        }
     }
 
     private fun apiPath(methodName: String, annotationType: Class<out Annotation>): String {
@@ -156,6 +187,7 @@ class InviteCodeManageContractTest {
             is GET -> annotation.value
             is POST -> annotation.value
             is PUT -> annotation.value
+            is DELETE -> annotation.value
             else -> error("unsupported annotation")
         }
     }

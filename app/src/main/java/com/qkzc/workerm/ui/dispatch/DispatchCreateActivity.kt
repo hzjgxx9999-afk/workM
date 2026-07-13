@@ -14,34 +14,32 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.lifecycle.lifecycleScope
 import com.qkzc.workerm.R
+import com.qkzc.workerm.data.dispatch.DispatchCreateReq
+import com.qkzc.workerm.data.dispatch.DispatchProcessNodeInput
+import com.qkzc.workerm.data.dispatch.DispatchRepository
 import com.qkzc.workerm.data.project.ManagerProject
 import com.qkzc.workerm.data.project.ManagerProjectRepository
 import com.qkzc.workerm.data.project.ManagerProjectTeam
 import com.qkzc.workerm.data.project.ProjectTeamRepository
 import com.qkzc.workerm.data.session.SessionStore
-import com.qkzc.workerm.data.worker.ManagerWorker
-import com.qkzc.workerm.data.worker.ManagerWorkerRepository
 import com.qkzc.workerm.databinding.ActivityDispatchCreateBinding
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.async
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 class DispatchCreateActivity : AppCompatActivity() {
     private lateinit var binding: ActivityDispatchCreateBinding
+    private val repository = DispatchRepository()
     private val projectRepository = ManagerProjectRepository()
     private val teamRepository = ProjectTeamRepository()
-    private val workerRepository = ManagerWorkerRepository()
     private val sessionStore by lazy { SessionStore(applicationContext) }
 
     private var projects: List<ManagerProject> = emptyList()
     private var teams: List<ManagerProjectTeam> = emptyList()
-    private var projectWorkers: List<ManagerWorker> = emptyList()
     private var selectedProject: ManagerProject? = null
     private var selectedTeam: ManagerProjectTeam? = null
     private var contextLoadJob: Job? = null
@@ -79,14 +77,17 @@ class DispatchCreateActivity : AppCompatActivity() {
             changeCount(binding.processMinPhotoInput, 1)
         }
         binding.teamSpinner.setOnItemClickListener { _, _, position, _ -> selectTeam(position) }
+        binding.autoFillRequirementButton.setOnClickListener { confirmRequirementTemplateFill() }
 
         listOf(
             binding.drawingAttachmentButton,
             binding.noticeAttachmentButton,
             binding.photoAttachmentButton,
-            binding.saveDraftButton,
-            binding.submitButton,
-        ).forEach { view -> view.setOnClickListener { showUiOnlyMessage() } }
+        ).forEach { view -> view.setOnClickListener { toast("附件上传将在派工单创建后接入") } }
+        binding.saveDraftButton.setOnClickListener {
+            toast("后端暂未提供派工单草稿接口，请确认派工后创建")
+        }
+        binding.submitButton.setOnClickListener { submitDispatch() }
 
         setProcessSectionVisible(binding.processCheckSwitch.isChecked)
         setCompletionCountEnabled(binding.completionPhotoRequiredSwitch.isChecked)
@@ -141,23 +142,15 @@ class DispatchCreateActivity : AppCompatActivity() {
         contextLoadJob = lifecycleScope.launch {
             runCatching {
                 val token = sessionStore.sessionFlow.first().accessToken
-                coroutineScope {
-                    val teamResult = async {
-                        teamRepository.loadTeams(token, projectId)
-                            .filter { it.enabled && it.leaderId > 0L }
-                    }
-                    val workerResult = async { workerRepository.listWorkers(token, projectId) }
-                    teamResult.await() to workerResult.await()
-                }
-            }.onSuccess { (loadedTeams, loadedWorkers) ->
+                teamRepository.loadTeams(token, projectId)
+                    .filter { it.enabled && it.leaderId > 0L }
+            }.onSuccess { loadedTeams ->
                 if (selectedProject?.projectId != projectId) return@onSuccess
                 teams = loadedTeams
-                projectWorkers = loadedWorkers
                 bindTeamOptions()
             }.onFailure {
                 if (selectedProject?.projectId != projectId) return@onFailure
                 teams = emptyList()
-                projectWorkers = emptyList()
                 bindTeamOptions()
                 toast(it.message ?: "班组信息加载失败")
             }
@@ -205,15 +198,9 @@ class DispatchCreateActivity : AppCompatActivity() {
         val team = selectedTeam
         if (team == null) {
             binding.teamLeaderText.text = "班组长：--"
-            binding.teamWorkerCountText.text = "预计：--"
             return
         }
-        val count = projectWorkers.count { worker ->
-            worker.teamId == team.teamId &&
-                worker.bindStatus.uppercase(Locale.ROOT) in ACTIVE_BIND_STATUSES
-        }
         binding.teamLeaderText.text = "班组长：${team.leaderName.ifBlank { "--" }}"
-        binding.teamWorkerCountText.text = "预计：${count}人"
     }
 
     private fun loadProjectCover(projectId: Long) {
@@ -247,7 +234,6 @@ class DispatchCreateActivity : AppCompatActivity() {
     private fun showEmptyProject() {
         selectedProject = null
         teams = emptyList()
-        projectWorkers = emptyList()
         binding.projectNameText.text = "暂无可管理项目"
         binding.projectManagerText.text = "项目经理：--"
         binding.projectStageText.text = "项目阶段：--"
@@ -274,6 +260,42 @@ class DispatchCreateActivity : AppCompatActivity() {
     private fun changeCount(target: TextView, delta: Int) {
         val current = target.text.toString().toIntOrNull() ?: MIN_PHOTO_COUNT
         target.text = (current + delta).coerceIn(MIN_PHOTO_COUNT, MAX_PHOTO_COUNT).toString()
+    }
+
+    private fun confirmRequirementTemplateFill() {
+        val hasExistingText = listOf(
+            binding.contentInput,
+            binding.constructionRequirementInput,
+            binding.safetyNoticeInput,
+        ).any { inputText(it).isNotBlank() }
+        if (!hasExistingText) {
+            applyRequirementTemplate(overwrite = false)
+            return
+        }
+        AlertDialog.Builder(this)
+            .setTitle("生成任务要求")
+            .setMessage("已填写的任务要求是否覆盖？")
+            .setPositiveButton("覆盖重写") { _, _ -> applyRequirementTemplate(overwrite = true) }
+            .setNegativeButton("仅补空白") { _, _ -> applyRequirementTemplate(overwrite = false) }
+            .show()
+    }
+
+    private fun applyRequirementTemplate(overwrite: Boolean) {
+        val template = DispatchRequirementTemplate.build(
+            dispatchType = selectedDispatchType(),
+            title = inputText(binding.titleInput),
+            location = inputText(binding.locationInput),
+        )
+        fillTextIfNeeded(binding.contentInput, template.content, overwrite)
+        fillTextIfNeeded(binding.constructionRequirementInput, template.constructionRequirement, overwrite)
+        fillTextIfNeeded(binding.safetyNoticeInput, template.safetyNotice, overwrite)
+        toast("已生成任务要求，可继续修改")
+    }
+
+    private fun fillTextIfNeeded(target: TextView, text: String, overwrite: Boolean) {
+        if (overwrite || inputText(target).isBlank()) {
+            target.text = text
+        }
     }
 
     private fun showDeadlinePicker() {
@@ -314,15 +336,155 @@ class DispatchCreateActivity : AppCompatActivity() {
         ).show()
     }
 
+    private fun submitDispatch() {
+        val request = buildCreateRequest() ?: return
+        lifecycleScope.launch {
+            binding.saveDraftButton.isEnabled = false
+            binding.submitButton.isEnabled = false
+            runCatching {
+                val token = sessionStore.sessionFlow.first().accessToken
+                repository.create(token, request)
+            }.onSuccess { order ->
+                toast("派工单已创建")
+                if (order.id > 0L) {
+                    startActivity(DispatchDetailActivity.intent(this@DispatchCreateActivity, order.id))
+                }
+                finish()
+            }.onFailure { throwable ->
+                toast(throwable.message ?: "派工失败")
+                binding.saveDraftButton.isEnabled = true
+                binding.submitButton.isEnabled = true
+            }
+        }
+    }
+
+    private fun buildCreateRequest(): DispatchCreateReq? {
+        val project = selectedProject ?: run {
+            toast("请选择项目")
+            return null
+        }
+        val team = selectedTeam ?: run {
+            toast("请选择班组")
+            return null
+        }
+        val title = inputText(binding.titleInput)
+        val location = inputText(binding.locationInput)
+        val deadline = inputText(binding.deadlineInput)
+        val content = inputText(binding.contentInput)
+        if (title.isBlank()) {
+            toast("请输入派工标题")
+            binding.titleInput.requestFocus()
+            return null
+        }
+        if (location.isBlank()) {
+            toast("请输入施工位置")
+            binding.locationInput.requestFocus()
+            return null
+        }
+        if (deadline.isBlank()) {
+            toast("请选择截止时间")
+            return null
+        }
+        if (content.isBlank()) {
+            toast("请输入任务内容")
+            binding.contentInput.requestFocus()
+            return null
+        }
+
+        val processEnabled = binding.processCheckSwitch.isChecked
+        val processNodes = if (processEnabled) buildProcessNodes() ?: return null else emptyList()
+        val completionPhotoRequired = binding.completionPhotoRequiredSwitch.isChecked
+        return DispatchCreateReq(
+            projectId = project.projectId,
+            teamId = team.teamId,
+            leaderId = team.leaderId,
+            title = title,
+            dispatchType = selectedDispatchType(),
+            priority = selectedPriority(),
+            content = content,
+            locationDesc = location,
+            deadlineTime = deadline,
+            constructionRequirement = optionalInputText(binding.constructionRequirementInput),
+            safetyNotice = optionalInputText(binding.safetyNoticeInput),
+            acceptanceStandard = optionalInputText(binding.acceptanceStandardInput),
+            processCheckEnabled = processEnabled,
+            processCheckMode = if (processEnabled) selectedProcessMode() else null,
+            processCheckDescription = if (processEnabled) optionalInputText(binding.processDescriptionInput) else null,
+            processNodes = processNodes,
+            processMinPhotoCount = if (processEnabled) countValue(binding.processMinPhotoInput) else 0,
+            processRequireLocation = processEnabled && binding.processRequireLocationSwitch.isChecked,
+            managerSpotCheckEnabled = processEnabled && binding.managerSpotCheckSwitch.isChecked,
+            beforePhotoRequired = binding.beforePhotoRequiredSwitch.isChecked,
+            completionPhotoRequired = completionPhotoRequired,
+            completionMinPhotoCount = if (completionPhotoRequired) countValue(binding.completionMinPhotoInput) else 0,
+        )
+    }
+
+    private fun buildProcessNodes(): List<DispatchProcessNodeInput>? {
+        val requiredPhotoCount = countValue(binding.processMinPhotoInput).coerceAtLeast(MIN_PHOTO_COUNT)
+        val requiredLocation = if (binding.processRequireLocationSwitch.isChecked) 1 else 0
+        val description = optionalInputText(binding.processDescriptionInput)
+        val nodes = listOf(
+            binding.processNodeOpening to "开工确认",
+            binding.processNodeMiddle to "施工中检查",
+            binding.processNodeHidden to "隐蔽前检查",
+            binding.processNodeFinal to "完工前复核",
+        ).mapIndexedNotNull { index, (checkBox, nodeName) ->
+            if (!checkBox.isChecked) {
+                null
+            } else {
+                DispatchProcessNodeInput(
+                    nodeName = nodeName,
+                    nodeSort = index + 1,
+                    checkType = "NODE",
+                    requiredPhotoCount = requiredPhotoCount,
+                    requiredLocation = requiredLocation,
+                    reviewerRole = "TEAM_LEADER",
+                    description = description,
+                )
+            }
+        }
+        if (nodes.isEmpty()) {
+            toast("请至少选择一个过程检查节点")
+            return null
+        }
+        return nodes
+    }
+
+    private fun selectedDispatchType(): String = when (binding.dispatchTypeGroup.checkedButtonId) {
+        R.id.type_repair_button -> "REPAIR"
+        R.id.type_install_button -> "INSTALL"
+        R.id.type_clean_button -> "CLEAN"
+        R.id.type_rectification_button -> "RECTIFICATION"
+        R.id.type_inspection_button -> "INSPECTION"
+        else -> "CONSTRUCTION"
+    }
+
+    private fun selectedPriority(): String = when (binding.priorityGroup.checkedButtonId) {
+        R.id.priority_urgent_button -> "URGENT"
+        R.id.priority_major_button -> "MAJOR"
+        else -> "NORMAL"
+    }
+
+    private fun selectedProcessMode(): String = when (binding.processModeSpinner.checkedButtonId) {
+        R.id.process_mode_day_button -> "DAY"
+        R.id.process_mode_manual_button -> "MANUAL"
+        else -> "NODE"
+    }
+
+    private fun inputText(view: TextView): String = view.text?.toString().orEmpty().trim()
+
+    private fun optionalInputText(view: TextView): String? = inputText(view).ifBlank { null }
+
+    private fun countValue(view: TextView): Int =
+        view.text?.toString().orEmpty().trim().toIntOrNull()?.coerceIn(MIN_PHOTO_COUNT, MAX_PHOTO_COUNT)
+            ?: MIN_PHOTO_COUNT
+
     private fun projectStageText(status: String): String = when (status.uppercase(Locale.ROOT)) {
         "CONSTRUCTION" -> "施工中"
         "PAUSED" -> "已暂停"
         "COMPLETED" -> "已完成"
         else -> status.ifBlank { "未设置" }
-    }
-
-    private fun showUiOnlyMessage() {
-        toast("页面 UI 已完成，业务功能将在下一阶段接入")
     }
 
     private fun dp(value: Int): Int = (value * resources.displayMetrics.density).toInt()
@@ -336,6 +498,5 @@ class DispatchCreateActivity : AppCompatActivity() {
         private const val DEADLINE_PATTERN = "yyyy-MM-dd HH:mm:ss"
         private const val MIN_PHOTO_COUNT = 1
         private const val MAX_PHOTO_COUNT = 99
-        private val ACTIVE_BIND_STATUSES = setOf("BOUND", "ENTERING", "ACTIVE")
     }
 }

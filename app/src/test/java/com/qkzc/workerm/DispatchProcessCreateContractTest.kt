@@ -25,7 +25,7 @@ class DispatchProcessCreateContractTest {
     }
 
     @Test
-    fun managerCreateScreenShowsProcessCheckControlsWithoutSubmittingBusinessRequest() {
+    fun managerCreateScreenSubmitsProcessCheckControlsWithBusinessRequest() {
         val layout = File("src/main/res/layout/activity_dispatch_create.xml").readText()
         val activity = File("src/main/java/com/qkzc/workerm/ui/dispatch/DispatchCreateActivity.kt").readText()
 
@@ -38,7 +38,8 @@ class DispatchProcessCreateContractTest {
         assertTrue(layout.contains("process_require_location_switch"))
         assertTrue(layout.contains("manager_spot_check_switch"))
         assertTrue(activity.contains("setProcessSectionVisible"))
-        assertTrue(activity.contains("showUiOnlyMessage"))
-        assertTrue(!activity.contains("repository.create("))
+        assertTrue(activity.contains("buildProcessNodes"))
+        assertTrue(activity.contains("repository.create("))
+        assertTrue(!activity.contains("showUiOnlyMessage"))
     }
 }

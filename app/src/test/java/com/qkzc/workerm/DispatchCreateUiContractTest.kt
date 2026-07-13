@@ -14,7 +14,7 @@ class DispatchCreateUiContractTest {
             "project_manager_text", "project_stage_text", "title_input",
             "location_input", "dispatch_type_group", "priority_group",
             "deadline_input", "team_spinner", "team_leader_text",
-            "team_worker_count_text", "content_input",
+            "auto_fill_requirement_button", "content_input",
             "construction_requirement_input", "safety_notice_input",
             "before_photo_required_switch", "completion_photo_required_switch",
             "completion_min_photo_input", "acceptance_standard_input",
@@ -34,12 +34,15 @@ class DispatchCreateUiContractTest {
         assertTrue(layout.contains("SwitchMaterial"))
         assertTrue(layout.contains("@color/dispatch_switch_thumb"))
         assertTrue(layout.contains("@color/dispatch_switch_track"))
+        assertFalse(layout.contains("team_worker_count_text"))
+        assertFalse(layout.contains("预计"))
+        assertTrue(layout.contains("一键生成"))
         assertTrue(layout.contains("保存草稿"))
         assertTrue(layout.contains("确认派工"))
     }
 
     @Test
-    fun createScreenLoadsReadOnlyContextButDoesNotSubmitBusinessRequest() {
+    fun createScreenLoadsContextAndSubmitsBusinessRequest() {
         val source = mainFile(
             "java/com/qkzc/workerm/ui/dispatch/DispatchCreateActivity.kt",
         ).readText()
@@ -47,15 +50,19 @@ class DispatchCreateUiContractTest {
         val manifest = mainFile("AndroidManifest.xml").readText()
 
         assertTrue(source.contains("loadProjectCoverBytes"))
-        assertTrue(source.contains("ManagerWorkerRepository"))
+        assertTrue(source.contains("DispatchRequirementTemplate"))
         assertTrue(source.contains("showProjectSelector"))
-        assertTrue(source.contains("showUiOnlyMessage"))
+        assertTrue(source.contains("DispatchRepository()"))
+        assertTrue(source.contains("buildCreateRequest"))
+        assertTrue(source.contains("submitDispatch"))
+        assertTrue(source.contains("repository.create("))
+        assertTrue(source.contains("applyRequirementTemplate"))
+        assertFalse(source.contains("ManagerWorkerRepository"))
         assertTrue(source.contains("isAppearanceLightStatusBars = false"))
         assertTrue(themes.contains("Theme.WorkerM.DispatchCreate"))
         assertTrue(themes.contains("<item name=\"android:statusBarColor\">@color/dashboard_blue</item>"))
         assertTrue(manifest.contains("android:theme=\"@style/Theme.WorkerM.DispatchCreate\""))
-        assertFalse(source.contains("DispatchRepository()"))
-        assertFalse(source.contains("repository.create("))
+        assertFalse(source.contains("showUiOnlyMessage"))
     }
 
     @Test

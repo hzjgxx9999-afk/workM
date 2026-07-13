@@ -97,6 +97,7 @@ open class EmptySupervisorApi : SupervisorApi {
     override suspend fun manageInviteCodeList(token: String, projectId: Long?, status: String?, inviteCode: String?): AjaxResp<List<ManageInviteCodeVo>> = error("unused")
     override suspend fun createManageInviteCode(token: String, body: ManageInviteCodeCreateReq): AjaxResp<ManageInviteCodeVo> = error("unused")
     override suspend fun updateManageInviteCodeStatus(token: String, id: Long, body: ManageInviteCodeStatusReq): AjaxResp<Any> = error("unused")
+    override suspend fun deleteManageInviteCode(token: String, id: Long): AjaxResp<Any> = error("unused")
     override suspend fun manageHomeOverview(token: String, projectId: Long?): AjaxResp<ManagerHomeOverviewVo> = error("unused")
     override suspend fun manageWorkers(token: String, projectId: Long?, status: String?, keyword: String?): AjaxResp<List<ManagerWorkerVo>> = error("unused")
     override suspend fun manageWorkerDetail(token: String, workerId: Long, projectId: Long): AjaxResp<ManagerWorkerVo> = error("unused")

@@ -108,10 +108,23 @@
                 android:id="@+id/button_status"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
+                android:layout_marginEnd="8dp"
                 android:layout_weight="1"
                 android:textSize="12sp"
                 app:backgroundTint="@color/dashboard_blue"
                 app:cornerRadius="8dp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/button_delete"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="删除"
+                android:textColor="@color/danger"
+                android:textSize="12sp"
+                app:cornerRadius="8dp"
+                app:strokeColor="@color/danger" />
         </LinearLayout>
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>

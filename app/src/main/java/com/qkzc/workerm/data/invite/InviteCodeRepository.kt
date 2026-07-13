@@ -59,6 +59,14 @@ class InviteCodeRepository(
         requireSuccess(response.code, response.msg)
     }
 
+    suspend fun delete(token: String, id: Long) {
+        val response = api.deleteManageInviteCode(
+            bearerToken(token),
+            id,
+        )
+        requireSuccess(response.code, response.msg)
+    }
+
     private fun <T> AjaxResp<List<T>>.requireDataList(): List<T> {
         requireSuccess(code, msg)
         return data.orEmpty()

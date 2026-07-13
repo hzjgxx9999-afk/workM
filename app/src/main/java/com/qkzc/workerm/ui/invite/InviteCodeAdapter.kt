@@ -4,6 +4,7 @@ import android.content.res.ColorStateList
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.qkzc.workerm.R
 import com.qkzc.workerm.data.invite.ManageInviteCode
@@ -13,6 +14,7 @@ class InviteCodeAdapter(
     private val onCopyClick: (ManageInviteCode) -> Unit,
     private val onShareClick: (ManageInviteCode) -> Unit,
     private val onStatusClick: (ManageInviteCode) -> Unit,
+    private val onDeleteClick: (ManageInviteCode) -> Unit,
 ) : RecyclerView.Adapter<InviteCodeAdapter.InviteCodeViewHolder>() {
 
     private val items = mutableListOf<ManageInviteCode>()
@@ -33,7 +35,7 @@ class InviteCodeAdapter(
     }
 
     override fun onBindViewHolder(holder: InviteCodeViewHolder, position: Int) {
-        holder.bind(items[position], onCopyClick, onShareClick, onStatusClick)
+        holder.bind(items[position], onCopyClick, onShareClick, onStatusClick, onDeleteClick)
     }
 
     override fun getItemCount(): Int = items.size
@@ -47,6 +49,7 @@ class InviteCodeAdapter(
             onCopyClick: (ManageInviteCode) -> Unit,
             onShareClick: (ManageInviteCode) -> Unit,
             onStatusClick: (ManageInviteCode) -> Unit,
+            onDeleteClick: (ManageInviteCode) -> Unit,
         ) {
             val context = binding.root.context
             binding.textInviteCode.text = item.inviteCode.ifBlank { "--" }
@@ -57,6 +60,8 @@ class InviteCodeAdapter(
             binding.textQrContent.text = "扫码内容：${item.qrContent.ifBlank { "--" }}"
             binding.buttonStatus.text = if (item.enabled) "停用" else "启用"
 
+            binding.buttonDelete.isVisible = !item.enabled
+
             val statusColor = if (item.enabled) R.color.success else R.color.text_secondary
             val badgeBg = if (item.enabled) R.color.metric_green else R.color.surface_muted
             binding.textStatus.setTextColor(ContextCompat.getColor(context, statusColor))
@@ -66,6 +71,7 @@ class InviteCodeAdapter(
             binding.buttonCopy.setOnClickListener { onCopyClick(item) }
             binding.buttonShare.setOnClickListener { onShareClick(item) }
             binding.buttonStatus.setOnClickListener { onStatusClick(item) }
+            binding.buttonDelete.setOnClickListener { onDeleteClick(item) }
         }
     }
 }

@@ -1,6 +1,7 @@
 package com.qkzc.workerm.ui.project
 
 import android.app.AlertDialog
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -25,6 +26,27 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+
+data class ProjectTeamOptionInputDecision<T>(
+    val selectedOption: T?,
+    val shouldSearch: Boolean,
+    val shouldShowDropdown: Boolean,
+)
+
+fun <T> List<T>.decideProjectTeamOptionInput(
+    text: String?,
+    displayText: (T) -> String,
+): ProjectTeamOptionInputDecision<T> {
+    val normalized = text?.trim().orEmpty()
+    val selected = normalized.takeIf { it.isNotBlank() }?.let { value ->
+        firstOrNull { option -> displayText(option) == value }
+    }
+    return ProjectTeamOptionInputDecision(
+        selectedOption = selected,
+        shouldSearch = selected == null,
+        shouldShowDropdown = selected == null,
+    )
+}
 
 class ProjectTeamManageFragment : Fragment() {
 
@@ -140,7 +162,7 @@ class ProjectTeamManageFragment : Fragment() {
             android.R.layout.simple_dropdown_item_1line,
             currentWorkTypes.map { it.displayText() }.toMutableList(),
         )
-        val leaderInput = AutoCompleteTextView(context).apply {
+        val leaderInput = ProjectTeamOptionAutoCompleteTextView(context).apply {
             hint = "输入姓名或手机号搜索"
             threshold = 0
             setSingleLine(true)
@@ -152,7 +174,7 @@ class ProjectTeamManageFragment : Fragment() {
                 selectedLeader = currentLeaders.getOrNull(position)
             }
         }
-        val workTypeInput = AutoCompleteTextView(context).apply {
+        val workTypeInput = ProjectTeamOptionAutoCompleteTextView(context).apply {
             hint = "输入工种名称搜索"
             threshold = 0
             setSingleLine(true)
@@ -179,21 +201,33 @@ class ProjectTeamManageFragment : Fragment() {
         container.addView(remarkInput)
 
         leaderInput.bindSearch(
-            initialText = selectedLeader?.displayText().orEmpty(),
-            onTextChanged = { selectedLeader = null },
+            onTextChanged = { keyword ->
+                val decision = currentLeaders.decideProjectTeamOptionInput(keyword) { it.displayText() }
+                selectedLeader = decision.selectedOption
+                decision.shouldSearch
+            },
             onSearch = { keyword -> repository.loadLeaderOptions(token, projectId, keyword).withCurrentLeader(team) },
             onResult = { options ->
                 currentLeaders = options
                 leaderAdapter.replaceAll(options.map { it.displayText() })
             },
+            shouldShowDropdown = { keyword, options ->
+                options.decideProjectTeamOptionInput(keyword) { it.displayText() }.shouldShowDropdown
+            },
         )
         workTypeInput.bindSearch(
-            initialText = selectedWorkType?.displayText().orEmpty(),
-            onTextChanged = { selectedWorkType = null },
+            onTextChanged = { keyword ->
+                val decision = currentWorkTypes.decideProjectTeamOptionInput(keyword) { it.displayText() }
+                selectedWorkType = decision.selectedOption
+                decision.shouldSearch
+            },
             onSearch = { keyword -> repository.loadWorkTypeOptions(token, projectId, keyword).withCurrentWorkType(team) },
             onResult = { options ->
                 currentWorkTypes = options
                 workTypeAdapter.replaceAll(options.map { it.displayText() })
+            },
+            shouldShowDropdown = { keyword, options ->
+                options.decideProjectTeamOptionInput(keyword) { it.displayText() }.shouldShowDropdown
             },
         )
 
@@ -237,10 +271,10 @@ class ProjectTeamManageFragment : Fragment() {
     }
 
     private fun <T> AutoCompleteTextView.bindSearch(
-        initialText: String,
-        onTextChanged: () -> Unit,
+        onTextChanged: (String) -> Boolean,
         onSearch: suspend (String) -> List<T>,
         onResult: (List<T>) -> Unit,
+        shouldShowDropdown: (String, List<T>) -> Boolean,
     ) {
         var searchJob: Job? = null
         addTextChangedListener(object : android.text.TextWatcher {
@@ -249,18 +283,21 @@ class ProjectTeamManageFragment : Fragment() {
 
             override fun afterTextChanged(s: android.text.Editable?) {
                 val keyword = s?.toString()?.trim().orEmpty()
-                if (keyword == initialText) {
+                searchJob?.cancel()
+                if (!onTextChanged(keyword)) {
+                    dismissDropDown()
                     return
                 }
-                onTextChanged()
-                searchJob?.cancel()
                 searchJob = viewLifecycleOwner.lifecycleScope.launch {
                     delay(300)
                     runCatching { onSearch(keyword) }
                         .onSuccess { options ->
                             onResult(options)
-                            if (hasFocus()) {
+                            val latestKeyword = text?.toString()?.trim().orEmpty()
+                            if (hasFocus() && shouldShowDropdown(latestKeyword, options)) {
                                 showDropDown()
+                            } else {
+                                dismissDropDown()
                             }
                         }
                 }
@@ -399,4 +436,8 @@ class ProjectTeamManageFragment : Fragment() {
             }
         }
     }
+}
+
+private class ProjectTeamOptionAutoCompleteTextView(context: Context) : AutoCompleteTextView(context) {
+    override fun enoughToFilter(): Boolean = true
 }

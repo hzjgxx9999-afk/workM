@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
@@ -41,6 +42,7 @@ class InviteCodeManageFragment : Fragment() {
         onCopyClick = ::copyInvite,
         onShareClick = ::shareInvite,
         onStatusClick = ::toggleStatus,
+        onDeleteClick = ::confirmDeleteInvite,
     )
 
     private var projects: List<ManagerProject> = emptyList()
@@ -64,7 +66,7 @@ class InviteCodeManageFragment : Fragment() {
         sessionStore = SessionStore(requireContext().applicationContext)
         binding.recyclerInviteCodes.layoutManager = LinearLayoutManager(requireContext())
         binding.recyclerInviteCodes.adapter = inviteAdapter
-        binding.backButton.setOnClickListener { parentFragmentManager.popBackStack() }
+        binding.backButton.setOnClickListener { handleBackNavigation() }
         binding.buttonRefresh.setOnClickListener { reloadCurrentProject() }
         binding.buttonCreateInvite.setOnClickListener { createInviteCode() }
         binding.inputExpireTime.setText(defaultExpireTime())
@@ -88,6 +90,14 @@ class InviteCodeManageFragment : Fragment() {
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) = Unit
+        }
+    }
+
+    private fun handleBackNavigation() {
+        if (parentFragmentManager.backStackEntryCount > 0) {
+            parentFragmentManager.popBackStack()
+        } else {
+            requireActivity().finish()
         }
     }
 
@@ -216,6 +226,32 @@ class InviteCodeManageFragment : Fragment() {
                 loadLeadersAndInvites()
             }.onFailure { throwable ->
                 toast(throwable.message ?: "状态更新失败")
+            }
+        }
+    }
+
+    private fun confirmDeleteInvite(item: ManageInviteCode) {
+        if (item.enabled) {
+            toast("请先停用邀请码")
+            return
+        }
+        AlertDialog.Builder(requireContext())
+            .setTitle("删除邀请码")
+            .setMessage("删除后列表中不再显示，该邀请码不能再用于注册。确认删除？")
+            .setNegativeButton("取消", null)
+            .setPositiveButton("删除") { _, _ -> deleteInvite(item) }
+            .show()
+    }
+
+    private fun deleteInvite(item: ManageInviteCode) {
+        viewLifecycleOwner.lifecycleScope.launch {
+            runCatching {
+                inviteCodeRepository.delete(currentToken(), item.id)
+            }.onSuccess {
+                toast("邀请码已删除")
+                loadLeadersAndInvites()
+            }.onFailure { throwable ->
+                toast(throwable.message ?: "删除失败")
             }
         }
     }
