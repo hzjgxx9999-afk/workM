@@ -1,7 +1,12 @@
 package com.qkzc.workerm.ui.home
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
 import com.qkzc.workerm.R
+import com.qkzc.workerm.data.home.ManagerHomeOverview
+import com.qkzc.workerm.data.home.ManagerHomeRepository
+import com.qkzc.workerm.data.session.SessionStore
 import java.time.Clock
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -9,8 +14,11 @@ import java.util.Locale
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 
 class HomeOverviewViewModel(
+    private val overviewLoader: (suspend () -> HomeOverviewCounts)? = null,
     private val clock: Clock = Clock.systemDefaultZone(),
 ) : ViewModel() {
 
@@ -23,12 +31,19 @@ class HomeOverviewViewModel(
 
     fun loadOverview() {
         _uiState.value = HomeOverviewUiState.Loading
-        runCatching {
-            buildSuccessState(defaultCounts)
-        }.onSuccess { state ->
-            _uiState.value = state
-        }.onFailure {
-            showOverviewError()
+        val loader = overviewLoader
+        if (loader == null) {
+            _uiState.value = buildSuccessState(defaultCounts)
+            return
+        }
+        viewModelScope.launch {
+            runCatching {
+                loader()
+            }.onSuccess { counts ->
+                _uiState.value = buildSuccessState(counts)
+            }.onFailure {
+                showOverviewError()
+            }
         }
     }
 
@@ -90,6 +105,25 @@ class HomeOverviewViewModel(
         return date.format(dateFormatter)
     }
 
+    class Factory(
+        private val repository: ManagerHomeRepository,
+        private val sessionStore: SessionStore,
+        private val clock: Clock = Clock.systemDefaultZone(),
+    ) : ViewModelProvider.Factory {
+        @Suppress("UNCHECKED_CAST")
+        override fun <T : ViewModel> create(modelClass: Class<T>): T {
+            return HomeOverviewViewModel(
+                overviewLoader = {
+                    val session = sessionStore.sessionFlow.first()
+                    val token = session.accessToken.takeIf { it.isNotBlank() }
+                        ?: error("Login required")
+                    repository.overview(token = token).toOverviewCounts()
+                },
+                clock = clock,
+            ) as T
+        }
+    }
+
     private companion object {
         val dateFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd  EEEE", Locale.CHINA)
 
@@ -100,4 +134,13 @@ class HomeOverviewViewModel(
             warningCount = 8,
         )
     }
+}
+
+private fun ManagerHomeOverview.toOverviewCounts(): HomeOverviewCounts {
+    return HomeOverviewCounts(
+        projectCount = projectCount,
+        workerCount = workerCount,
+        approvalCount = pendingApprovalCount,
+        warningCount = unhandledWarningCount,
+    )
 }

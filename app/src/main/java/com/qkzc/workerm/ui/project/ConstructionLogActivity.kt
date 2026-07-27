@@ -1,7 +1,9 @@
 package com.qkzc.workerm.ui.project
 
 import android.content.Intent
+import android.graphics.Typeface
 import android.os.Bundle
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -11,6 +13,7 @@ import androidx.core.view.updatePadding
 import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.qkzc.workerm.R
 import com.qkzc.workerm.data.project.ConstructionLogRepository
 import com.qkzc.workerm.data.session.SessionStore
 import com.qkzc.workerm.databinding.ActivityConstructionLogBinding
@@ -24,7 +27,7 @@ class ConstructionLogActivity : AppCompatActivity() {
     private val repository = ConstructionLogRepository()
     private val adapter = ConstructionLogAdapter(::openDetail)
     private var currentProjectId: Long = 0L
-    private var currentStatus: String? = null
+    private var currentStatus: String? = "SUBMITTED"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,15 +43,16 @@ class ConstructionLogActivity : AppCompatActivity() {
         binding.backButton.setOnClickListener { finish() }
         binding.logRecyclerView.layoutManager = LinearLayoutManager(this)
         binding.logRecyclerView.adapter = adapter
-        binding.addButton.setOnClickListener { openEditor(null) }
-        binding.createBottomButton.setOnClickListener { openEditor(null) }
+        binding.addButton.isVisible = false
+        binding.createBottomButton.isVisible = false
         binding.refreshButton.setOnClickListener { loadData() }
         binding.searchButton.setOnClickListener { loadLogs() }
         binding.filterAllButton.setOnClickListener { updateFilter(null) }
-        binding.filterDraftButton.setOnClickListener { updateFilter("DRAFT") }
         binding.filterPendingButton.setOnClickListener { updateFilter("SUBMITTED") }
         binding.filterApprovedButton.setOnClickListener { updateFilter("APPROVED") }
+        binding.filterRejectedButton.setOnClickListener { updateFilter("REJECTED") }
         currentProjectId = intent.getLongExtra(ProjectDetailActivity.EXTRA_PROJECT_ID, 0L)
+        renderFilterSelection()
     }
 
     override fun onResume() {
@@ -58,11 +62,22 @@ class ConstructionLogActivity : AppCompatActivity() {
 
     private fun updateFilter(status: String?) {
         currentStatus = status
-        binding.filterAllButton.isSelected = status == null
-        binding.filterDraftButton.isSelected = status == "DRAFT"
-        binding.filterPendingButton.isSelected = status == "SUBMITTED"
-        binding.filterApprovedButton.isSelected = status == "APPROVED"
+        renderFilterSelection()
         loadLogs()
+    }
+
+    private fun renderFilterSelection() {
+        styleFilter(binding.filterAllButton, currentStatus == null)
+        styleFilter(binding.filterPendingButton, currentStatus == "SUBMITTED")
+        styleFilter(binding.filterApprovedButton, currentStatus == "APPROVED")
+        styleFilter(binding.filterRejectedButton, currentStatus == "REJECTED")
+    }
+
+    private fun styleFilter(view: TextView, selected: Boolean) {
+        view.isSelected = selected
+        view.setBackgroundResource(if (selected) R.drawable.bg_round_blue else R.drawable.bg_search_pill)
+        view.setTextColor(getColor(if (selected) R.color.white else R.color.text_primary))
+        view.setTypeface(null, if (selected) Typeface.BOLD else Typeface.NORMAL)
     }
 
     private fun loadData() {
@@ -135,18 +150,6 @@ class ConstructionLogActivity : AppCompatActivity() {
             Intent(this, ConstructionLogDetailActivity::class.java)
                 .putExtra(ProjectDetailActivity.EXTRA_PROJECT_ID, currentProjectId)
                 .putExtra(ConstructionLogDetailActivity.EXTRA_LOG_ID, item.id),
-        )
-    }
-
-    private fun openEditor(logId: Long?) {
-        startActivity(
-            Intent(this, ConstructionLogEditActivity::class.java)
-                .putExtra(ProjectDetailActivity.EXTRA_PROJECT_ID, currentProjectId)
-                .apply {
-                    if (logId != null) {
-                        putExtra(ConstructionLogEditActivity.EXTRA_LOG_ID, logId)
-                    }
-                },
         )
     }
 

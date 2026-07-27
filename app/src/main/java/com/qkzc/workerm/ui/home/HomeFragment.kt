@@ -18,6 +18,7 @@ import com.qkzc.workerm.MainActivity
 import com.qkzc.workerm.R
 import com.qkzc.workerm.data.aiwarning.AiWarningRepository
 import com.qkzc.workerm.data.dispatch.DispatchRepository
+import com.qkzc.workerm.data.home.ManagerHomeRepository
 import com.qkzc.workerm.data.session.SessionStore
 import com.qkzc.workerm.databinding.FragmentHomeBinding
 import com.qkzc.workerm.ui.bracelet.BraceletMonitorActivity
@@ -36,12 +37,20 @@ class HomeFragment : Fragment() {
     private var _binding: FragmentHomeBinding? = null
     private val binding: FragmentHomeBinding
         get() = checkNotNull(_binding)
-    private val overviewViewModel: HomeOverviewViewModel by viewModels()
+    private val homeRepository = ManagerHomeRepository()
+    private val overviewViewModel: HomeOverviewViewModel by viewModels {
+        HomeOverviewViewModel.Factory(
+            repository = homeRepository,
+            sessionStore = SessionStore(requireContext().applicationContext),
+        )
+    }
     private val dispatchRepository = DispatchRepository()
     private val aiWarningRepository = AiWarningRepository()
     private val dispatchAdapter = ManagerDispatchAdapter { order ->
         startActivity(DispatchDetailActivity.intent(requireContext(), order.id))
     }
+    private var currentHomeDispatchProjectId: Long = 0L
+    private var currentHomeDispatchProjectName: String = ""
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -59,9 +68,6 @@ class HomeFragment : Fragment() {
         setupHomeOverview()
         renderGreeting()
 
-        binding.notificationButton.setOnClickListener {
-            (activity as? MainActivity)?.navigateToTab(R.id.nav_message)
-        }
         binding.logoutButton.setOnClickListener {
             (activity as? MainActivity)?.logout()
         }
@@ -84,10 +90,15 @@ class HomeFragment : Fragment() {
 //            (activity as? MainActivity)?.openInviteCodeManage()
 //        }
         binding.allTodoBar.setOnClickListener {
-            startActivity(Intent(requireContext(), DispatchListActivity::class.java))
+            startActivity(
+                DispatchListActivity.intent(
+                    context = requireContext(),
+                    projectId = currentHomeDispatchProjectId.takeIf { it > 0L },
+                    projectName = currentHomeDispatchProjectName,
+                ),
+            )
         }
         renderAiWarningCard(HomeAiWarningCardState.loading())
-        loadDispatches()
     }
 
     private fun setupHomeOverview() {
@@ -143,7 +154,9 @@ class HomeFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         if (_binding != null) {
+            overviewViewModel.loadOverview()
             loadAiWarningSummary()
+            loadDispatches()
         }
     }
 
@@ -176,7 +189,12 @@ class HomeFragment : Fragment() {
             runCatching {
                 val session = SessionStore(requireContext().applicationContext).sessionFlow.first()
                 val token = session.accessToken.takeIf { it.isNotBlank() } ?: return@launch
-                dispatchRepository.recent(token)
+                val projectId = session.projectId.toLongOrNull()
+                    ?: homeRepository.overview(token).currentProjectId
+                    ?: error("请先选择项目")
+                currentHomeDispatchProjectId = projectId
+                currentHomeDispatchProjectName = session.projectName
+                dispatchRepository.recent(token = token, projectId = projectId, pageSize = 5)
             }.onSuccess { orders ->
                 dispatchAdapter.submitList(orders)
                 binding.homeDispatchRecycler.isVisible = orders.isNotEmpty()

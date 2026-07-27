@@ -10,9 +10,16 @@ import retrofit2.http.Query
 
 interface DispatchApi {
     @GET("/app/manage/dispatch-orders/page")
-    suspend fun page(@Header("Authorization") token: String, @Query("status") status: String? = null,
-                     @Query("keyword") keyword: String? = null, @Query("pageNum") pageNum: Int = 1,
-                     @Query("pageSize") pageSize: Int = 20): DispatchTableResp<DispatchOrder>
+    suspend fun page(
+        @Header("Authorization") token: String,
+        @Query("projectId") projectId: Long? = null,
+        @Query("status") status: String? = null,
+        @Query("keyword") keyword: String? = null,
+        @Query("pageNum") pageNum: Int = 1,
+        @Query("pageSize") pageSize: Int = 20,
+        @Query("orderByColumn") orderByColumn: String? = null,
+        @Query("isAsc") isAsc: String? = null,
+    ): DispatchTableResp<DispatchOrder>
     @GET("/app/manage/dispatch-orders/{id}")
     suspend fun detail(@Header("Authorization") token: String, @Path("id") id: Long): AjaxResp<DispatchDetail>
     @GET("/app/manage/dispatch-orders/{id}/acceptance-detail")

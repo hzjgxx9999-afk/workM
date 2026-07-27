@@ -17,6 +17,9 @@ class ProjectDetailActionResourceTest {
         assertTrue(ids.contains("@+id/drawing_docs_action"))
         assertTrue(ids.contains("@+id/construction_log_action"))
         assertTrue(ids.contains("@+id/project_report_action"))
+        assertTrue(ids.contains("@+id/project_dispatch_recycler"))
+        assertTrue(ids.contains("@+id/project_dispatch_all_action"))
+        assertTrue(ids.contains("@+id/project_dispatch_create_button"))
     }
 
     @Test

@@ -5,13 +5,31 @@ import com.qkzc.workerm.data.network.bearerToken
 import com.qkzc.workerm.data.network.requireSuccess
 
 class DispatchRepository(private val api: DispatchApi = ApiClient.dispatchApi) {
-    suspend fun page(token: String, status: String? = null, pageSize: Int = 20): List<DispatchOrder> {
-        val response = api.page(bearerToken(token), status, null, 1, pageSize)
+    suspend fun page(
+        token: String,
+        status: String? = null,
+        projectId: Long? = null,
+        keyword: String? = null,
+        pageSize: Int = 20,
+        latestFirst: Boolean = true,
+    ): List<DispatchOrder> {
+        val response = api.page(
+            token = bearerToken(token),
+            projectId = projectId,
+            status = status,
+            keyword = keyword,
+            pageNum = 1,
+            pageSize = pageSize,
+            orderByColumn = if (latestFirst) ORDER_BY_CREATE_TIME else null,
+            isAsc = if (latestFirst) SORT_DESC else null,
+        )
         requireSuccess(response.code, response.msg)
-        return response.rows
+        return response.rows.filter { projectId == null || it.projectId == projectId }
     }
 
-    suspend fun recent(token: String): List<DispatchOrder> = page(token, pageSize = 3)
+    suspend fun recent(token: String, projectId: Long, pageSize: Int = 5): List<DispatchOrder> =
+        page(token = token, projectId = projectId, pageSize = pageSize, latestFirst = true)
+            .take(pageSize)
 
     suspend fun detail(token: String, id: Long): DispatchDetail {
         val response = api.detail(bearerToken(token), id)
@@ -83,5 +101,10 @@ class DispatchRepository(private val api: DispatchApi = ApiClient.dispatchApi) {
         val response = api.reassign(bearerToken(token), id, DispatchReassignReq(teamId, leaderId, version))
         requireSuccess(response.code, response.msg)
         return response.data ?: DispatchOrder()
+    }
+
+    private companion object {
+        const val ORDER_BY_CREATE_TIME = "createTime"
+        const val SORT_DESC = "desc"
     }
 }

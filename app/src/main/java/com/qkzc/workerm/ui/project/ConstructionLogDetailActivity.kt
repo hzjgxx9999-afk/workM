@@ -1,7 +1,9 @@
 package com.qkzc.workerm.ui.project
 
-import android.content.Intent
+import android.app.AlertDialog
 import android.os.Bundle
+import android.text.InputType
+import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
@@ -43,10 +45,8 @@ class ConstructionLogDetailActivity : AppCompatActivity() {
             insets
         }
         binding.backButton.setOnClickListener { finish() }
-        binding.editButton.setOnClickListener { currentDetail?.let { openEditor(it.id) } }
-        binding.submitButton.setOnClickListener { currentDetail?.let { submit(it) } }
-        binding.deleteButton.setOnClickListener { currentDetail?.let { delete(it) } }
-        binding.withdrawButton.setOnClickListener { currentDetail?.let { withdraw(it) } }
+        binding.approveButton.setOnClickListener { currentDetail?.let(::approve) }
+        binding.rejectButton.setOnClickListener { currentDetail?.let(::showRejectDialog) }
         binding.attachmentRecyclerView.layoutManager = LinearLayoutManager(this)
         binding.attachmentRecyclerView.adapter = attachmentAdapter
         currentProjectId = intent.getLongExtra(ProjectDetailActivity.EXTRA_PROJECT_ID, 0L)
@@ -85,7 +85,7 @@ class ConstructionLogDetailActivity : AppCompatActivity() {
     }
 
     private fun render(detail: ConstructionLogDetail) {
-        binding.statusText.text = detail.status
+        binding.statusText.text = detail.statusName.ifBlank { detail.status }
         binding.titleText.text = detail.title.ifBlank { "施工日志详情" }
         binding.baseInfoText.text = buildString {
             append("日志编号：")
@@ -102,6 +102,12 @@ class ConstructionLogDetailActivity : AppCompatActivity() {
             append('\n')
             append("记录人：")
             append(detail.recorderName.ifBlank { "-" })
+            append('\n')
+            append("当前审核人：")
+            append(detail.currentAuditorName.ifBlank { "-" })
+            append('\n')
+            append("提交时间：")
+            append(detail.submittedAt.ifBlank { "-" })
         }
         binding.summaryText.text = buildString {
             append("天气 ${detail.weatherAm.ifBlank { "-" }}/${detail.weatherPm.ifBlank { "-" }}")
@@ -168,62 +174,85 @@ class ConstructionLogDetailActivity : AppCompatActivity() {
 
     private fun renderActions(detail: ConstructionLogDetail) {
         val actionCodes = detail.actionCodes.map { it.uppercase() }.toSet()
-        val status = detail.status.uppercase()
-        binding.editButton.isVisible = actionCodes.contains("EDIT") || status == "DRAFT" || status == "REJECTED"
-        binding.deleteButton.isVisible = actionCodes.contains("DELETE") || status == "DRAFT" || status == "REJECTED"
-        binding.submitButton.isVisible = actionCodes.contains("SUBMIT") || status == "DRAFT" || status == "REJECTED"
-        binding.withdrawButton.isVisible = actionCodes.contains("WITHDRAW") || status == "SUBMITTED"
+        binding.approveButton.isVisible = actionCodes.contains("APPROVE")
+        binding.rejectButton.isVisible = actionCodes.contains("REJECT")
     }
 
-    private fun submit(detail: ConstructionLogDetail) {
+    private fun approve(detail: ConstructionLogDetail) {
+        AlertDialog.Builder(this)
+            .setTitle("审核通过")
+            .setMessage("确认审核通过该施工日志？")
+            .setNegativeButton("取消", null)
+            .setPositiveButton("确认") { _, _ ->
+                lifecycleScope.launch {
+                    runCatching {
+                        val session = sessionStore.sessionFlow.first()
+                        repository.approve(
+                            token = session.accessToken,
+                            projectId = projectIdFor(detail),
+                            logId = detail.id,
+                            version = detail.version,
+                        )
+                    }.onSuccess {
+                        toast("施工日志已审核通过")
+                        loadDetail()
+                    }.onFailure { throwable ->
+                        toast(throwable.message ?: "审核失败")
+                    }
+                }
+            }
+            .show()
+    }
+
+    private fun showRejectDialog(detail: ConstructionLogDetail) {
+        val remarkInput = EditText(this).apply {
+            hint = "请输入驳回原因"
+            inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_MULTI_LINE
+            minLines = 3
+            setPadding(dp(20), dp(12), dp(20), dp(12))
+        }
+        val dialog = AlertDialog.Builder(this)
+            .setTitle("驳回施工日志")
+            .setView(remarkInput)
+            .setNegativeButton("取消", null)
+            .setPositiveButton("确认", null)
+            .create()
+        dialog.setOnShowListener {
+            dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
+                val remark = remarkInput.text?.toString()?.trim().orEmpty()
+                if (remark.isBlank()) {
+                    remarkInput.error = "请填写驳回原因"
+                    return@setOnClickListener
+                }
+                dialog.dismiss()
+                reject(detail, remark)
+            }
+        }
+        dialog.show()
+    }
+
+    private fun reject(detail: ConstructionLogDetail, remark: String) {
         lifecycleScope.launch {
             runCatching {
                 val session = sessionStore.sessionFlow.first()
-                repository.submit(session.accessToken, detail.projectId, detail.id, detail.version)
+                repository.reject(
+                    token = session.accessToken,
+                    projectId = projectIdFor(detail),
+                    logId = detail.id,
+                    version = detail.version,
+                    remark = remark,
+                )
             }.onSuccess {
-                toast("施工日志已提交审核")
+                toast("施工日志已驳回")
                 loadDetail()
             }.onFailure { throwable ->
-                toast(throwable.message ?: "提交失败")
+                toast(throwable.message ?: "驳回失败")
             }
         }
     }
 
-    private fun withdraw(detail: ConstructionLogDetail) {
-        lifecycleScope.launch {
-            runCatching {
-                val session = sessionStore.sessionFlow.first()
-                repository.withdraw(session.accessToken, detail.projectId, detail.id, detail.version)
-            }.onSuccess {
-                toast("施工日志已撤回")
-                loadDetail()
-            }.onFailure { throwable ->
-                toast(throwable.message ?: "撤回失败")
-            }
-        }
-    }
-
-    private fun delete(detail: ConstructionLogDetail) {
-        lifecycleScope.launch {
-            runCatching {
-                val session = sessionStore.sessionFlow.first()
-                repository.delete(session.accessToken, detail.projectId, detail.id, detail.version)
-            }.onSuccess {
-                toast("施工日志已删除")
-                finish()
-            }.onFailure { throwable ->
-                toast(throwable.message ?: "删除失败")
-            }
-        }
-    }
-
-    private fun openEditor(logId: Long) {
-        startActivity(
-            Intent(this, ConstructionLogEditActivity::class.java)
-                .putExtra(ProjectDetailActivity.EXTRA_PROJECT_ID, currentProjectId)
-                .putExtra(ConstructionLogEditActivity.EXTRA_LOG_ID, logId),
-        )
-    }
+    private fun projectIdFor(detail: ConstructionLogDetail): Long =
+        detail.projectId.takeIf { it > 0L } ?: currentProjectId
 
     private fun simpleText(content: String): TextView {
         return TextView(this).apply {

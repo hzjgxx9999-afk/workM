@@ -247,55 +247,27 @@
             android:orientation="horizontal">
 
             <TextView
-                android:id="@+id/edit_button"
+                android:id="@+id/reject_button"
                 android:layout_width="0dp"
                 android:layout_height="44dp"
                 android:layout_weight="1"
                 android:background="@drawable/bg_outline_blue"
                 android:gravity="center"
-                android:text="编辑"
+                android:text="驳回"
                 android:textColor="@color/dashboard_blue"
                 android:textSize="14sp"
                 android:textStyle="bold"
                 android:visibility="gone" />
 
             <TextView
-                android:id="@+id/delete_button"
-                android:layout_width="0dp"
-                android:layout_height="44dp"
-                android:layout_marginStart="8dp"
-                android:layout_weight="1"
-                android:background="@drawable/bg_outline_blue"
-                android:gravity="center"
-                android:text="删除"
-                android:textColor="@color/dashboard_blue"
-                android:textSize="14sp"
-                android:textStyle="bold"
-                android:visibility="gone" />
-
-            <TextView
-                android:id="@+id/withdraw_button"
-                android:layout_width="0dp"
-                android:layout_height="44dp"
-                android:layout_marginStart="8dp"
-                android:layout_weight="1"
-                android:background="@drawable/bg_outline_blue"
-                android:gravity="center"
-                android:text="撤回"
-                android:textColor="@color/dashboard_blue"
-                android:textSize="14sp"
-                android:textStyle="bold"
-                android:visibility="gone" />
-
-            <TextView
-                android:id="@+id/submit_button"
+                android:id="@+id/approve_button"
                 android:layout_width="0dp"
                 android:layout_height="44dp"
                 android:layout_marginStart="8dp"
                 android:layout_weight="1"
                 android:background="@drawable/bg_round_blue"
                 android:gravity="center"
-                android:text="提交审核"
+                android:text="审核通过"
                 android:textColor="@color/white"
                 android:textSize="14sp"
                 android:textStyle="bold"

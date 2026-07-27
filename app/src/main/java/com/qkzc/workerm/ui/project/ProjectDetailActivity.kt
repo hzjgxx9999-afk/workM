@@ -14,13 +14,19 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.qkzc.workerm.BuildConfig
 import com.qkzc.workerm.R
+import com.qkzc.workerm.data.dispatch.DispatchRepository
 import com.qkzc.workerm.data.project.ManagerProject
 import com.qkzc.workerm.data.project.ManagerProjectFile
 import com.qkzc.workerm.data.project.ManagerProjectRepository
 import com.qkzc.workerm.data.session.SessionStore
 import com.qkzc.workerm.databinding.ActivityProjectDetailBinding
+import com.qkzc.workerm.ui.dispatch.DispatchCreateActivity
+import com.qkzc.workerm.ui.dispatch.DispatchDetailActivity
+import com.qkzc.workerm.ui.dispatch.DispatchListActivity
+import com.qkzc.workerm.ui.dispatch.ManagerDispatchAdapter
 import com.qkzc.workerm.ui.invite.InviteCodeManageActivity
 import com.qkzc.workerm.ui.video.DrawingDocsActivity
 import com.qkzc.workerm.ui.worker.ProjectMemberManageActivity
@@ -34,14 +40,21 @@ class ProjectDetailActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityProjectDetailBinding
     private val projectRepository = ManagerProjectRepository()
+    private val dispatchRepository = DispatchRepository()
+    private val dispatchAdapter = ManagerDispatchAdapter { order ->
+        startActivity(DispatchDetailActivity.intent(this, order.id))
+    }
     private var currentProjectId: Long = 0L
     private var currentAccessToken: String = ""
+    private var currentProjectName: String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         binding = ActivityProjectDetailBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        binding.projectDispatchRecycler.layoutManager = LinearLayoutManager(this)
+        binding.projectDispatchRecycler.adapter = dispatchAdapter
         ViewCompat.setOnApplyWindowInsetsListener(binding.detailRoot) { view, insets ->
             val bars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             view.updatePadding(
@@ -74,7 +87,20 @@ class ProjectDetailActivity : AppCompatActivity() {
         binding.qrScanAction.setOnClickListener {
             openProjectScoped(WorkerScanActivity::class.java)
         }
+        binding.projectDispatchAllAction.setOnClickListener {
+            openProjectDispatchList()
+        }
+        binding.projectDispatchCreateButton.setOnClickListener {
+            openProjectDispatchCreate()
+        }
         loadProject()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (::binding.isInitialized && currentProjectId > 0L && currentAccessToken.isNotBlank()) {
+            loadProjectDispatches()
+        }
     }
 
     private fun loadProject() {
@@ -91,6 +117,7 @@ class ProjectDetailActivity : AppCompatActivity() {
             }.onSuccess { project ->
                 renderProject(project)
                 loadWorkerStats()
+                loadProjectDispatches()
             }.onFailure { throwable ->
                 Toast.makeText(
                     this@ProjectDetailActivity,
@@ -103,6 +130,7 @@ class ProjectDetailActivity : AppCompatActivity() {
 
     private fun renderProject(project: ManagerProject) {
         binding.projectNameText.text = project.projectName.ifBlank { "项目详情" }
+        currentProjectName = project.projectName
         binding.projectAddressText.text = project.projectAddress.ifBlank { "暂无项目地址" }
         binding.projectStatusText.text = project.projectStatus.toStatusText()
         binding.projectProgressText.text = "${project.progressPercent}%"
@@ -201,6 +229,55 @@ class ProjectDetailActivity : AppCompatActivity() {
             return
         }
         startActivity(Intent(this, activityClass).putExtra(EXTRA_PROJECT_ID, projectId))
+    }
+
+    private fun openProjectDispatchList() {
+        val projectId = currentProjectId.takeIf { it > 0L }
+        if (projectId == null) {
+            Toast.makeText(this, "缺少项目 ID", Toast.LENGTH_SHORT).show()
+            return
+        }
+        startActivity(
+            DispatchListActivity.intent(
+                context = this,
+                projectId = projectId,
+                projectName = currentProjectName,
+            ),
+        )
+    }
+
+    private fun openProjectDispatchCreate() {
+        val projectId = currentProjectId.takeIf { it > 0L }
+        if (projectId == null) {
+            Toast.makeText(this, "缺少项目 ID", Toast.LENGTH_SHORT).show()
+            return
+        }
+        startActivity(
+            Intent(this, DispatchCreateActivity::class.java)
+                .putExtra(DispatchCreateActivity.EXTRA_PROJECT_ID, projectId),
+        )
+    }
+
+    private fun loadProjectDispatches() {
+        val token = currentAccessToken.takeIf { it.isNotBlank() } ?: return
+        val projectId = currentProjectId.takeIf { it > 0L } ?: return
+        lifecycleScope.launch {
+            runCatching {
+                dispatchRepository.recent(token = token, projectId = projectId, pageSize = 5)
+            }.onSuccess { orders ->
+                dispatchAdapter.submitList(orders)
+                binding.projectDispatchRecycler.isVisible = orders.isNotEmpty()
+                binding.projectDispatchEmptyText.isVisible = orders.isEmpty()
+                binding.projectDispatchEmptyText.text = "暂无派工任务"
+                binding.projectDispatchEmptyText.setOnClickListener(null)
+            }.onFailure {
+                dispatchAdapter.submitList(emptyList())
+                binding.projectDispatchRecycler.isVisible = false
+                binding.projectDispatchEmptyText.isVisible = true
+                binding.projectDispatchEmptyText.text = "派工动态加载失败，点击重试"
+                binding.projectDispatchEmptyText.setOnClickListener { loadProjectDispatches() }
+            }
+        }
     }
 
     private fun Int.dp(): Int = (this * resources.displayMetrics.density).toInt()

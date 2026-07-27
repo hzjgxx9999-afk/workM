@@ -2,6 +2,7 @@ package com.qkzc.workerm.data.project
 
 import com.qkzc.workerm.data.network.AjaxResp
 import com.qkzc.workerm.data.network.ApiClient
+import com.qkzc.workerm.data.network.ConstructionLogAuditReq
 import com.qkzc.workerm.data.network.ConstructionLogAttachmentSaveReq
 import com.qkzc.workerm.data.network.ConstructionLogAttachmentVo
 import com.qkzc.workerm.data.network.ConstructionLogAuditNodeVo
@@ -130,6 +131,28 @@ class ConstructionLogRepository(
         requireSuccess(response.code, response.msg)
     }
 
+    suspend fun approve(token: String, projectId: Long, logId: Long, version: Int, remark: String? = null): ConstructionLogDetail {
+        val response = api.approveConstructionLog(
+            bearerToken(token),
+            projectId,
+            logId,
+            ConstructionLogAuditReq(version, remark?.takeIf { it.isNotBlank() }),
+        )
+        requireSuccess(response.code, response.msg)
+        return response.data?.toDomain() ?: error("审核成功但未返回日志详情")
+    }
+
+    suspend fun reject(token: String, projectId: Long, logId: Long, version: Int, remark: String): ConstructionLogDetail {
+        val response = api.rejectConstructionLog(
+            bearerToken(token),
+            projectId,
+            logId,
+            ConstructionLogAuditReq(version, remark.takeIf { it.isNotBlank() }),
+        )
+        requireSuccess(response.code, response.msg)
+        return response.data?.toDomain() ?: error("驳回成功但未返回日志详情")
+    }
+
     suspend fun uploadFile(
         token: String,
         fileName: String,
@@ -244,9 +267,11 @@ class ConstructionLogRepository(
             rectifySuggestion = rectifySuggestion.orEmpty(),
             extraRemark = extraRemark.orEmpty(),
             status = status.orEmpty(),
+            statusName = statusName.orEmpty(),
             version = version ?: 0,
             recorderName = recorderName.orEmpty(),
             submitterName = submitterName.orEmpty(),
+            currentAuditorName = currentAuditorName.orEmpty(),
             submittedAt = submittedAt.orEmpty(),
             approvedAt = approvedAt.orEmpty(),
             attachments = attachments.orEmpty().map { it.toDomain() },
@@ -376,9 +401,11 @@ data class ConstructionLogDetail(
     val rectifySuggestion: String,
     val extraRemark: String,
     val status: String,
+    val statusName: String,
     val version: Int,
     val recorderName: String,
     val submitterName: String,
+    val currentAuditorName: String,
     val submittedAt: String,
     val approvedAt: String,
     val attachments: List<ConstructionLogAttachment>,

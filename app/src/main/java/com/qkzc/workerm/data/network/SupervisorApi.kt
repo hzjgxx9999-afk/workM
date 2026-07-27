@@ -426,6 +426,22 @@ interface SupervisorApi {
         @Body body: VersionReq,
     ): AjaxResp<Any>
 
+    @POST("/app/manage/projects/{projectId}/construction-logs/{logId}/approve")
+    suspend fun approveConstructionLog(
+        @Header("Authorization") token: String,
+        @Path("projectId") projectId: Long,
+        @Path("logId") logId: Long,
+        @Body body: ConstructionLogAuditReq,
+    ): AjaxResp<ConstructionLogDetailVo>
+
+    @POST("/app/manage/projects/{projectId}/construction-logs/{logId}/reject")
+    suspend fun rejectConstructionLog(
+        @Header("Authorization") token: String,
+        @Path("projectId") projectId: Long,
+        @Path("logId") logId: Long,
+        @Body body: ConstructionLogAuditReq,
+    ): AjaxResp<ConstructionLogDetailVo>
+
     @Multipart
     @POST("/app/manage/projects/{projectId}/drawing-docs/upload")
     suspend fun uploadProjectDrawingDoc(

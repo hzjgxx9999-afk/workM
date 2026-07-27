@@ -151,13 +151,21 @@ data class ManagerHomeOverviewVo(
     val workerCount: Int? = null,
     val currentProjectId: Long? = null,
     val projects: List<ManagerProjectVo>? = null,
+    val approvalSummary: ManagerApprovalSummaryVo? = null,
     val riskSummary: ManagerRiskSummaryVo? = null,
+)
+
+data class ManagerApprovalSummaryVo(
+    val pendingCount: Long? = null,
+    val todaySubmittedCount: Long? = null,
+    val todayProcessedCount: Long? = null,
 )
 
 data class ManagerRiskSummaryVo(
     val unhandledRiskCount: Long? = null,
     val highRiskCount: Long? = null,
     val unreadRiskCount: Long? = null,
+    val currentProjectId: Long? = null,
 )
 
 data class ManagerWorkerVo(
@@ -716,6 +724,11 @@ data class VersionReq(
     val version: Int,
 )
 
+data class ConstructionLogAuditReq(
+    val version: Int,
+    val remark: String? = null,
+)
+
 data class ConstructionLogOverviewVo(
     val todayCount: Int? = null,
     val pendingCount: Int? = null,
@@ -822,9 +835,11 @@ data class ConstructionLogDetailVo(
     val rectifySuggestion: String? = null,
     val extraRemark: String? = null,
     val status: String? = null,
+    val statusName: String? = null,
     val version: Int? = null,
     val recorderName: String? = null,
     val submitterName: String? = null,
+    val currentAuditorName: String? = null,
     val submittedAt: String? = null,
     val approvedAt: String? = null,
     val attachments: List<ConstructionLogAttachmentVo>? = null,
