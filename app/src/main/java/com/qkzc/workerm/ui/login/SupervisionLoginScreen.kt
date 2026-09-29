@@ -28,6 +28,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
@@ -90,17 +92,19 @@ import kotlin.math.roundToInt
 fun SupervisionLoginRoute(
     loading: Boolean,
     onLogin: (String, String) -> Unit,
+    onServiceAgreementClick: () -> Unit,
     onPrivacyClick: () -> Unit,
-    onSecurityPolicyClick: () -> Unit,
 ) {
     var phone by rememberSaveable { mutableStateOf("") }
     var password by rememberSaveable { mutableStateOf("") }
     var passwordVisible by rememberSaveable { mutableStateOf(false) }
+    var agreementAccepted by rememberSaveable { mutableStateOf(false) }
 
     SupervisionLoginScreen(
         phone = phone,
         password = password,
         passwordVisible = passwordVisible,
+        agreementAccepted = agreementAccepted,
         loading = loading,
         onPhoneChange = { value ->
             phone = value.filter(Char::isDigit).take(11)
@@ -111,9 +115,10 @@ fun SupervisionLoginRoute(
         onPasswordVisibilityChange = {
             passwordVisible = !passwordVisible
         },
+        onAgreementAcceptedChange = { agreementAccepted = it },
         onLogin = onLogin,
+        onServiceAgreementClick = onServiceAgreementClick,
         onPrivacyClick = onPrivacyClick,
-        onSecurityPolicyClick = onSecurityPolicyClick,
     )
 }
 
@@ -122,12 +127,14 @@ fun SupervisionLoginScreen(
     phone: String,
     password: String,
     passwordVisible: Boolean,
+    agreementAccepted: Boolean,
     onPhoneChange: (String) -> Unit,
     onPasswordChange: (String) -> Unit,
     onPasswordVisibilityChange: () -> Unit,
+    onAgreementAcceptedChange: (Boolean) -> Unit,
     onLogin: (String, String) -> Unit,
+    onServiceAgreementClick: () -> Unit,
     onPrivacyClick: () -> Unit,
-    onSecurityPolicyClick: () -> Unit,
     modifier: Modifier = Modifier,
     loading: Boolean = false,
 ) {
@@ -228,12 +235,20 @@ fun SupervisionLoginScreen(
                     phone = phone,
                     password = password,
                     passwordVisible = passwordVisible,
+                    agreementAccepted = agreementAccepted,
                     loading = loading,
                     onPhoneChange = onPhoneChange,
                     onPasswordChange = onPasswordChange,
                     onPasswordVisibilityChange = onPasswordVisibilityChange,
+                    onAgreementAcceptedChange = onAgreementAcceptedChange,
+                    onServiceAgreementClick = onServiceAgreementClick,
+                    onPrivacyClick = onPrivacyClick,
                     onSubmit = {
-                        val error = validateSupervisorLoginInput(phone, password)
+                        val error = validateSupervisorLoginInput(
+                            phone = phone,
+                            password = password,
+                            agreementAccepted = agreementAccepted,
+                        )
                         if (error == null) {
                             focusManager.clearFocus()
                             onLogin(phone.trim(), password)
@@ -247,9 +262,7 @@ fun SupervisionLoginScreen(
 
                 Spacer(modifier = Modifier.height(bottomTop))
 
-                BottomAgreementSection(
-                    onPrivacyClick = onPrivacyClick,
-                    onSecurityPolicyClick = onSecurityPolicyClick,
+                AccountAssignmentSection(
                     modifier = Modifier
                         .widthIn(max = 520.dp)
                         .fillMaxWidth()
@@ -280,10 +293,14 @@ private fun LoginCard(
     phone: String,
     password: String,
     passwordVisible: Boolean,
+    agreementAccepted: Boolean,
     loading: Boolean,
     onPhoneChange: (String) -> Unit,
     onPasswordChange: (String) -> Unit,
     onPasswordVisibilityChange: () -> Unit,
+    onAgreementAcceptedChange: (Boolean) -> Unit,
+    onServiceAgreementClick: () -> Unit,
+    onPrivacyClick: () -> Unit,
     onSubmit: () -> Unit,
     focusManager: FocusManager,
     modifier: Modifier = Modifier,
@@ -351,7 +368,16 @@ private fun LoginCard(
                 },
             )
 
-            Spacer(modifier = Modifier.height(28.dp))
+            Spacer(modifier = Modifier.height(18.dp))
+
+            AgreementConsentRow(
+                agreementAccepted = agreementAccepted,
+                onAgreementAcceptedChange = onAgreementAcceptedChange,
+                onServiceAgreementClick = onServiceAgreementClick,
+                onPrivacyClick = onPrivacyClick,
+            )
+
+            Spacer(modifier = Modifier.height(22.dp))
 
             GradientLoginButton(
                 text = if (loading) "正在登录..." else "登录并进入监管端",
@@ -562,75 +588,91 @@ private fun GradientLoginButton(
     }
 }
 
-@OptIn(ExperimentalLayoutApi::class)
 @Composable
-private fun BottomAgreementSection(
-    onPrivacyClick: () -> Unit,
-    onSecurityPolicyClick: () -> Unit,
+private fun AccountAssignmentSection(
     modifier: Modifier = Modifier,
 ) {
-    Column(
+    Row(
         modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(20.dp),
+        verticalAlignment = Alignment.CenterVertically,
     ) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            AccountShieldIcon(
-                modifier = Modifier.size(25.dp),
-                color = Color(0xFF657080),
-            )
-            Spacer(modifier = Modifier.width(14.dp))
+        AccountShieldIcon(
+            modifier = Modifier.size(25.dp),
+            color = Color(0xFF657080),
+        )
+        Spacer(modifier = Modifier.width(14.dp))
+        Text(
+            text = "账号由系统管理员统一分配",
+            color = LoginMuted,
+            fontSize = 14.sp,
+            lineHeight = 20.sp,
+            letterSpacing = 0.sp,
+        )
+    }
+}
+
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+private fun AgreementConsentRow(
+    agreementAccepted: Boolean,
+    onAgreementAcceptedChange: (Boolean) -> Unit,
+    onServiceAgreementClick: () -> Unit,
+    onPrivacyClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        modifier = modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.Top,
+    ) {
+        Checkbox(
+            checked = agreementAccepted,
+            onCheckedChange = onAgreementAcceptedChange,
+            modifier = Modifier
+                .size(28.dp)
+                .semantics {
+                    contentDescription = "同意服务协议和隐私政策"
+                },
+            colors = CheckboxDefaults.colors(
+                checkedColor = LoginPrimaryBlue,
+                uncheckedColor = Color(0xFF657080),
+                checkmarkColor = Color.White,
+            ),
+        )
+
+        Spacer(modifier = Modifier.width(10.dp))
+
+        FlowRow(
+            modifier = Modifier.weight(1f),
+            horizontalArrangement = Arrangement.Start,
+            verticalArrangement = Arrangement.spacedBy(0.dp),
+        ) {
             Text(
-                text = "账号由系统管理员统一分配",
+                text = "我已阅读并同意",
                 color = LoginMuted,
-                fontSize = 14.sp,
+                fontSize = 13.5.sp,
                 lineHeight = 20.sp,
                 letterSpacing = 0.sp,
             )
-        }
 
-        Row(verticalAlignment = Alignment.Top) {
-            DocumentLineIcon(
-                modifier = Modifier
-                    .padding(top = 1.dp)
-                    .size(25.dp),
-                color = Color(0xFF657080),
+            LinkText(
+                text = "《服务协议》",
+                contentDescription = "查看服务协议",
+                onClick = onServiceAgreementClick,
             )
 
-            Spacer(modifier = Modifier.width(14.dp))
+            Text(
+                text = "和",
+                color = LoginMuted,
+                fontSize = 13.5.sp,
+                lineHeight = 20.sp,
+                letterSpacing = 0.sp,
+            )
 
-            FlowRow(
-                modifier = Modifier.weight(1f),
-                horizontalArrangement = Arrangement.Start,
-                verticalArrangement = Arrangement.spacedBy(0.dp),
-            ) {
-                Text(
-                    text = "登录即表示你已阅读并同意",
-                    color = LoginMuted,
-                    fontSize = 13.5.sp,
-                    lineHeight = 20.sp,
-                    letterSpacing = 0.sp,
-                )
-
-                LinkText(
-                    text = "《隐私说明》",
-                    contentDescription = "查看隐私说明",
-                    onClick = onPrivacyClick,
-                )
-
-                Text(
-                    text = " 与 ",
-                    color = LoginMuted,
-                    fontSize = 13.5.sp,
-                    lineHeight = 20.sp,
-                    letterSpacing = 0.sp,
-                )
-
-                LinkText(
-                    text = "《数据安全规范》",
-                    contentDescription = "查看数据安全规范",
-                    onClick = onSecurityPolicyClick,
-                )
-            }
+            LinkText(
+                text = "《隐私政策》",
+                contentDescription = "查看隐私政策",
+                onClick = onPrivacyClick,
+            )
         }
     }
 }
@@ -1059,12 +1101,14 @@ private fun SupervisionLoginScreenPreview() {
             phone = "",
             password = "",
             passwordVisible = false,
+            agreementAccepted = false,
             onPhoneChange = {},
             onPasswordChange = {},
             onPasswordVisibilityChange = {},
+            onAgreementAcceptedChange = {},
             onLogin = { _, _ -> },
+            onServiceAgreementClick = {},
             onPrivacyClick = {},
-            onSecurityPolicyClick = {},
         )
     }
 }
@@ -1082,12 +1126,14 @@ private fun SupervisionLoginScreenSmallPreview() {
             phone = "13800138000",
             password = "123456",
             passwordVisible = false,
+            agreementAccepted = true,
             onPhoneChange = {},
             onPasswordChange = {},
             onPasswordVisibilityChange = {},
+            onAgreementAcceptedChange = {},
             onLogin = { _, _ -> },
+            onServiceAgreementClick = {},
             onPrivacyClick = {},
-            onSecurityPolicyClick = {},
         )
     }
 }

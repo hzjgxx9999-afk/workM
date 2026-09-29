@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center_vertical" android:orientation="horizontal" android:paddingVertical="9dp">
-    <TextView android:id="@+id/index_text" android:layout_width="30dp" android:layout_height="30dp" android:background="@drawable/bg_round_blue" android:gravity="center" android:textColor="@android:color/white" android:textStyle="bold" />
+    <FrameLayout android:layout_width="30dp" android:layout_height="match_parent">
+        <View android:layout_width="2dp" android:layout_height="match_parent" android:layout_gravity="center_horizontal" android:background="#B7E4C7" />
+        <TextView android:id="@+id/index_text" android:layout_width="30dp" android:layout_height="30dp" android:background="@drawable/bg_round_blue" android:gravity="center" android:textColor="@android:color/white" android:textStyle="bold" />
+    </FrameLayout>
     <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginStart="10dp" android:layout_weight="1" android:orientation="vertical">
         <TextView android:id="@+id/node_text" android:layout_width="match_parent" android:layout_height="wrap_content" android:textColor="#101828" android:textSize="14sp" android:textStyle="bold" />
         <TextView android:id="@+id/reviewer_text" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="3dp" android:textColor="#667085" android:textSize="12sp" />

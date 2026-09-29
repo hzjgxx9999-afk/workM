@@ -28,6 +28,7 @@ import com.qkzc.workerm.ui.dispatch.DispatchDetailActivity
 import com.qkzc.workerm.ui.dispatch.DispatchListActivity
 import com.qkzc.workerm.ui.dispatch.ManagerDispatchAdapter
 import com.qkzc.workerm.ui.invite.InviteCodeManageActivity
+import com.qkzc.workerm.ui.location.ProjectGeofenceActivity
 import com.qkzc.workerm.ui.video.DrawingDocsActivity
 import com.qkzc.workerm.ui.worker.ProjectMemberManageActivity
 import com.qkzc.workerm.ui.worker.WorkerScanActivity
@@ -77,6 +78,9 @@ class ProjectDetailActivity : AppCompatActivity() {
         }
         binding.projectReportAction.setOnClickListener {
             openProjectScoped(ProjectReportActivity::class.java)
+        }
+        binding.projectGeofenceAction.setOnClickListener {
+            openProjectScoped(ProjectGeofenceActivity::class.java)
         }
         binding.projectMembersAction.setOnClickListener {
             openProjectScoped(ProjectMemberManageActivity::class.java)

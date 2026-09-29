@@ -3,8 +3,10 @@ package com.qkzc.workerm.ui.auth
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.qkzc.workerm.data.privacy.PrivacyConsentStore
 import com.qkzc.workerm.data.session.AuthRepository
 import com.qkzc.workerm.data.session.LoginPayload
+import com.qkzc.workerm.data.session.SessionReplacementLogoutCoordinator
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -19,6 +21,7 @@ data class LoginUiState(
 
 class LoginViewModel(
     private val authRepository: AuthRepository,
+    private val privacyConsentStore: PrivacyConsentStore,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(LoginUiState())
@@ -28,6 +31,7 @@ class LoginViewModel(
         _uiState.update { it.copy(loading = true, errorMessage = null, loggedIn = false) }
         viewModelScope.launch {
             runCatching {
+                privacyConsentStore.recordCurrentPolicyConsent()
                 authRepository.login(
                     LoginPayload(
                         mobile = mobile,
@@ -35,6 +39,7 @@ class LoginViewModel(
                     ),
                 )
             }.onSuccess {
+                SessionReplacementLogoutCoordinator.onSuccessfulLogin()
                 _uiState.update { it.copy(loading = false, loggedIn = true) }
             }.onFailure { throwable ->
                 _uiState.update {
@@ -57,10 +62,11 @@ class LoginViewModel(
 
     class Factory(
         private val authRepository: AuthRepository,
+        private val privacyConsentStore: PrivacyConsentStore,
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
-            return LoginViewModel(authRepository) as T
+            return LoginViewModel(authRepository, privacyConsentStore) as T
         }
     }
 }

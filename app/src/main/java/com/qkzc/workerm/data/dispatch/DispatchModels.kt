@@ -36,11 +36,33 @@ data class DispatchOrder(
 
 data class DispatchDetail(
     val order: DispatchOrder = DispatchOrder(),
+    val location: DispatchWorkOrderLocation? = null,
     val assignees: List<DispatchAssignee> = emptyList(),
     val attachments: List<DispatchAttachment> = emptyList(),
     val logs: List<DispatchLog> = emptyList(),
     val processNodes: List<DispatchProcessNode> = emptyList(),
     val processRecords: List<DispatchProcessRecord> = emptyList(),
+)
+
+/** 新版派工施工位置；经纬度统一为高德 GCJ-02。 */
+data class DispatchWorkOrderLocation(
+    val locationName: String = "",
+    val longitude: Double? = null,
+    val latitude: Double? = null,
+    val building: String? = null,
+    val floor: String? = null,
+    val area: String? = null,
+    val locationDescription: String? = null,
+)
+
+data class DispatchWorkOrderLocationInput(
+    val locationName: String,
+    val longitude: Double,
+    val latitude: Double,
+    val building: String? = null,
+    val floor: String? = null,
+    val area: String? = null,
+    val locationDescription: String? = null,
 )
 
 data class DispatchAssignee(
@@ -244,6 +266,7 @@ data class DispatchCreateReq(
     val priority: String,
     val content: String,
     val locationDesc: String?,
+    val location: DispatchWorkOrderLocationInput? = null,
     val deadlineTime: String,
     val constructionRequirement: String? = null,
     val safetyNotice: String? = null,

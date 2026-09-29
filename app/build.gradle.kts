@@ -1,7 +1,36 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.compose.compiler)
 }
+
+val amapPropertiesFile = rootProject.file("amap.properties")
+val amapProperties = Properties().apply {
+    if (amapPropertiesFile.exists()) amapPropertiesFile.inputStream().use(::load)
+}
+
+/**
+ * `AMAP_API_KEY` is retained as the compatible local-development key name.
+ * New environments should provide independent debug/release keys where possible.
+ */
+fun Properties.requireAmapKey(vararg propertyNames: String): String =
+    propertyNames.asSequence()
+        .map { propertyName -> getProperty(propertyName).orEmpty().trim() }
+        .firstOrNull { key -> key.isNotEmpty() }
+        ?: error(
+            "Missing AMap API key. Configure one of: ${propertyNames.joinToString()} in amap.properties.",
+        )
+
+val amapDebugApiKey = amapProperties.requireAmapKey(
+    "amap.debug.api.key",
+    "AMAP_API_KEY",
+)
+val amapReleaseApiKey = amapProperties.requireAmapKey(
+    "amap.release.api.key",
+    "amap.debug.api.key",
+    "AMAP_API_KEY",
+)
 
 android {
     namespace = "com.qkzc.workerm"
@@ -35,10 +64,15 @@ android {
         buildConfigField("String", "SUPERVISOR_BASE_URL", "\"$supervisorBaseUrl\"")
         buildConfigField("String", "CAD_PREVIEW_BASE_URL", "\"$cadPreviewBaseUrl\"")
         buildConfigField("long", "DEFAULT_PROJECT_ID", "${defaultProjectId}L")
+        manifestPlaceholders["AMAP_LOCATION_API_KEY"] = amapDebugApiKey
     }
 
     buildTypes {
+        debug {
+            manifestPlaceholders["AMAP_LOCATION_API_KEY"] = amapDebugApiKey
+        }
         release {
+            manifestPlaceholders["AMAP_LOCATION_API_KEY"] = amapReleaseApiKey
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
@@ -90,6 +124,7 @@ dependencies {
     implementation(libs.androidx.camera.view)
     implementation(libs.google.mlkit.barcode)
     implementation(libs.coil)
+    implementation("com.amap.api:3dmap-location-search:11.2.000_loc11.2.000_sea9.8.0")
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

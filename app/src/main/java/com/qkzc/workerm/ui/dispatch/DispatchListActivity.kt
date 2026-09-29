@@ -4,27 +4,24 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
-import android.view.ViewGroup
-import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.updateLayoutParams
+import androidx.appcompat.widget.PopupMenu
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.qkzc.workerm.R
 import com.qkzc.workerm.data.dispatch.DispatchRepository
 import com.qkzc.workerm.data.project.ManagerProject
 import com.qkzc.workerm.data.project.ManagerProjectRepository
 import com.qkzc.workerm.data.session.SessionStore
 import com.qkzc.workerm.databinding.ActivityDispatchListBinding
+import com.qkzc.workerm.ui.common.EdgeToEdgeActivity
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
-class DispatchListActivity : AppCompatActivity() {
+class DispatchListActivity : EdgeToEdgeActivity() {
     private lateinit var binding: ActivityDispatchListBinding
     private val repository = DispatchRepository()
     private val projectRepository = ManagerProjectRepository()
@@ -39,18 +36,25 @@ class DispatchListActivity : AppCompatActivity() {
         "PENDING_MANAGER_ACCEPTANCE",
         "COMPLETED",
     )
+    private val statusLabels = listOf("全部", "待分派", "处理中", "待验收", "已完成")
 
     private var projects: List<ManagerProject> = emptyList()
     private var selectedProjectId: Long? = null
     private var selectedProjectName: String = ""
     private var projectReady: Boolean = false
     private var loadJob: Job? = null
+    private var selectedStatusIndex = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityDispatchListBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        applyInsets()
+        applyEdgeToEdge(
+            root = binding.root,
+            topBarId = R.id.dispatch_list_top_bar,
+            floatingActionButtonId = R.id.create_fab,
+            scrollContentId = R.id.dispatch_recycler,
+        )
 
         selectedProjectId = intent.getLongExtra(EXTRA_PROJECT_ID, 0L).takeIf { it > 0L }
         selectedProjectName = intent.getStringExtra(EXTRA_PROJECT_NAME).orEmpty()
@@ -58,17 +62,10 @@ class DispatchListActivity : AppCompatActivity() {
         binding.backButton.setOnClickListener { finish() }
         binding.createFab.setOnClickListener { openCreateDispatch() }
         binding.projectFilterButton.setOnClickListener { showProjectSelector() }
+        binding.statusFilterButton.setOnClickListener { showStatusSelector() }
         binding.dispatchRecycler.layoutManager = LinearLayoutManager(this)
         binding.dispatchRecycler.adapter = adapter
-        binding.statusSpinner.adapter = ArrayAdapter(
-            this,
-            android.R.layout.simple_spinner_dropdown_item,
-            listOf("全部", "待分派", "处理中", "待验收", "已完成"),
-        )
-        binding.statusSpinner.setSelection(0, false)
-        binding.statusSpinner.onItemSelectedListener = SimpleItemSelectedListener {
-            if (projectReady) load(currentStatus())
-        }
+        binding.statusFilterButton.text = statusLabels[selectedStatusIndex]
         updateProjectHeader()
         loadProjectOptions()
     }
@@ -76,22 +73,6 @@ class DispatchListActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         if (::binding.isInitialized && projectReady) load(currentStatus())
-    }
-
-    private fun applyInsets() {
-        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { _, insets ->
-            val bars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            binding.createFab.updateLayoutParams<ViewGroup.MarginLayoutParams> {
-                bottomMargin = dp(24) + bars.bottom
-            }
-            binding.dispatchRecycler.setPadding(
-                binding.dispatchRecycler.paddingLeft,
-                binding.dispatchRecycler.paddingTop,
-                binding.dispatchRecycler.paddingRight,
-                dp(96) + bars.bottom,
-            )
-            insets
-        }
     }
 
     private fun loadProjectOptions() {
@@ -153,6 +134,22 @@ class DispatchListActivity : AppCompatActivity() {
             .show()
     }
 
+    private fun showStatusSelector() {
+        PopupMenu(this, binding.statusFilterButton).apply {
+            statusLabels.forEachIndexed { index, label ->
+                menu.add(0, index, index, label).isCheckable = true
+            }
+            menu.findItem(selectedStatusIndex)?.isChecked = true
+            setOnMenuItemClickListener { item ->
+                selectedStatusIndex = item.itemId
+                binding.statusFilterButton.text = statusLabels[selectedStatusIndex]
+                if (projectReady) load(currentStatus())
+                true
+            }
+            show()
+        }
+    }
+
     private fun selectProject(project: ManagerProject, reload: Boolean) {
         selectedProjectId = project.projectId.takeIf { it > 0L }
         selectedProjectName = project.projectName
@@ -181,7 +178,7 @@ class DispatchListActivity : AppCompatActivity() {
     }
 
     private fun currentStatus(): String? {
-        return statuses.getOrNull(binding.statusSpinner.selectedItemPosition)
+        return statuses.getOrNull(selectedStatusIndex)
     }
 
     private fun load(status: String?): Unit {
@@ -227,8 +224,6 @@ class DispatchListActivity : AppCompatActivity() {
     }
 
     private fun toast(message: String) = Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
-
-    private fun dp(value: Int): Int = (value * resources.displayMetrics.density).toInt()
 
     private data class ProjectOptions(
         val preferredProjectId: Long?,

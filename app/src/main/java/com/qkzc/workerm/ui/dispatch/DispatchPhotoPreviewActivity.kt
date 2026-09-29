@@ -3,11 +3,12 @@ package com.qkzc.workerm.ui.dispatch
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
 import coil.load
+import com.qkzc.workerm.R
 import com.qkzc.workerm.databinding.ActivityDispatchPhotoPreviewBinding
+import com.qkzc.workerm.ui.common.EdgeToEdgeActivity
 
-class DispatchPhotoPreviewActivity : AppCompatActivity() {
+class DispatchPhotoPreviewActivity : EdgeToEdgeActivity() {
     private lateinit var binding: ActivityDispatchPhotoPreviewBinding
     private var urls = emptyList<String>()
     private var index = 0
@@ -16,6 +17,14 @@ class DispatchPhotoPreviewActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityDispatchPhotoPreviewBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        configureSystemBarIconAppearance(
+            lightStatusBars = false,
+            lightNavigationBars = false,
+        )
+        applyEdgeToEdge(
+            root = binding.root,
+            topBarId = R.id.photo_top_overlay,
+        )
         urls = intent.getStringArrayListExtra(EXTRA_URLS).orEmpty()
         index = intent.getIntExtra(EXTRA_INDEX, 0).coerceIn(0, (urls.size - 1).coerceAtLeast(0))
         binding.closeButton.setOnClickListener { finish() }

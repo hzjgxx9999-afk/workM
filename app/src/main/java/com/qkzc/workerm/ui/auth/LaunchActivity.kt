@@ -2,19 +2,24 @@ package com.qkzc.workerm.ui.auth
 
 import android.content.Intent
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.qkzc.workerm.MainActivity
 import com.qkzc.workerm.R
 import com.qkzc.workerm.data.session.AuthRepository
 import com.qkzc.workerm.data.session.SessionStore
+import com.qkzc.workerm.ui.common.EdgeToEdgeActivity
 import kotlinx.coroutines.launch
 
-class LaunchActivity : AppCompatActivity() {
+class LaunchActivity : EdgeToEdgeActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_launch)
+        configureSystemBarIconAppearance(
+            lightStatusBars = true,
+            lightNavigationBars = true,
+        )
+        applyContentInsets(findViewById(R.id.launch_root))
         lifecycleScope.launch {
             val sessionStore = SessionStore(applicationContext)
             val restoredSession = AuthRepository(sessionStore).restoreValidSession()

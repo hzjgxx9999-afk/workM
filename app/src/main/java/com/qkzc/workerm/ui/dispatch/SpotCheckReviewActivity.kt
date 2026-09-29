@@ -6,18 +6,19 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.qkzc.workerm.R
 import com.qkzc.workerm.data.dispatch.DispatchRepository
 import com.qkzc.workerm.data.dispatch.DispatchSpotCheckDetail
 import com.qkzc.workerm.data.dispatch.DispatchStatusPresentation
 import com.qkzc.workerm.data.session.SessionStore
 import com.qkzc.workerm.databinding.ActivitySpotCheckReviewBinding
+import com.qkzc.workerm.ui.common.EdgeToEdgeActivity
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
-class SpotCheckReviewActivity : AppCompatActivity() {
+class SpotCheckReviewActivity : EdgeToEdgeActivity() {
     private lateinit var binding: ActivitySpotCheckReviewBinding
     private val repository = DispatchRepository()
     private val sessionStore by lazy { SessionStore(applicationContext) }
@@ -31,6 +32,11 @@ class SpotCheckReviewActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivitySpotCheckReviewBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        applyEdgeToEdge(
+            root = binding.root,
+            topBarId = R.id.spot_check_top_bar,
+            bottomBarId = R.id.review_action_bar,
+        )
         binding.photoList.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
         binding.photoList.adapter = photoAdapter
         binding.linkedProcessList.layoutManager = LinearLayoutManager(this)

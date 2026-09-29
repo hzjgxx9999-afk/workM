@@ -11,9 +11,9 @@ import android.widget.LinearLayout
 import android.widget.PopupMenu
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.qkzc.workerm.R
 import com.qkzc.workerm.data.dispatch.DispatchAcceptanceDetail
 import com.qkzc.workerm.data.dispatch.DispatchManualProcessNodeReq
 import com.qkzc.workerm.data.dispatch.DispatchRepository
@@ -23,13 +23,14 @@ import com.qkzc.workerm.data.project.ManagerProjectTeam
 import com.qkzc.workerm.data.project.ProjectTeamRepository
 import com.qkzc.workerm.data.session.SessionStore
 import com.qkzc.workerm.databinding.ActivityDispatchDetailBinding
+import com.qkzc.workerm.ui.common.EdgeToEdgeActivity
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
-class DispatchDetailActivity : AppCompatActivity() {
+class DispatchDetailActivity : EdgeToEdgeActivity() {
     private lateinit var binding: ActivityDispatchDetailBinding
     private val repository = DispatchRepository()
     private val teamRepository = ProjectTeamRepository()
@@ -44,6 +45,15 @@ class DispatchDetailActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityDispatchDetailBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        applyEdgeToEdge(
+            root = binding.root,
+            topBarId = R.id.dispatch_detail_top_bar,
+            bottomBarId = R.id.action_bar,
+        )
+        configureSystemBarIconAppearance(
+            lightStatusBars = true,
+            lightNavigationBars = true,
+        )
         binding.workerList.layoutManager = LinearLayoutManager(this)
         binding.workerList.adapter = workerAdapter
         binding.processList.layoutManager = LinearLayoutManager(this)
@@ -75,12 +85,16 @@ class DispatchDetailActivity : AppCompatActivity() {
         statusText.text = DispatchStatusPresentation.label(order.status, order.overdue)
         titleText.text = order.title.ifBlank { "未命名派工单" }
         phaseText.text = phaseDescription(order.status)
-        dispatchNoText.text = "▣  派工单号：${order.dispatchNo.ifBlank { "-" }}"
-        projectText.text = "▥  所属项目：${order.projectName.ifBlank { "-" }}"
-        teamText.text = "♧  班组：${order.teamName.ifBlank { "-" }}"
-        leaderText.text = "♙  班组长：${order.leaderName.ifBlank { "-" }}"
-        locationText.text = "⌖  施工位置：${order.locationDesc.ifBlank { "-" }}"
-        deadlineText.text = "□  截止时间：${order.deadlineTime.ifBlank { "-" }}"
+        dispatchNoText.text = "派工单编号：${order.dispatchNo.ifBlank { "-" }}"
+        projectText.text = "所属项目：${order.projectName.ifBlank { "-" }}"
+        locationText.text = "施工位置：${order.locationDesc.ifBlank { "-" }}"
+        deadlineText.text = "截止时间：${order.deadlineTime.ifBlank { "-" }}"
+        teamText.text = "派工班组：${order.teamName.ifBlank { "-" }}"
+        leaderText.text = "班组长：${order.leaderName.ifBlank { "-" }}"
+        requirementContentText.text = order.content.ifBlank { "暂无任务说明" }
+        requirementConstructionText.text = "施工要求：${order.constructionRequirement.orEmpty().ifBlank { "未设置" }}"
+        requirementSafetyText.text = "安全注意：${order.safetyNotice.orEmpty().ifBlank { "未设置" }}"
+        requirementStandardText.text = "验收标准：${order.acceptanceStandard.orEmpty().ifBlank { "未设置" }}"
         summaryTimeText.text = "提交时间：${detail.summaryTime.orEmpty().ifBlank { "尚未提交" }}"
         summaryContentText.text = detail.leaderSummary.orEmpty().ifBlank { "班组暂未提交汇总" }
         workerAdapter.submit(detail.workers)

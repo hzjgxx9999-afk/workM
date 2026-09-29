@@ -9,14 +9,15 @@ import android.widget.ArrayAdapter
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.WindowInsetsControllerCompat
+import com.qkzc.workerm.ui.common.EdgeToEdgeActivity
 import androidx.lifecycle.lifecycleScope
 import com.qkzc.workerm.R
 import com.qkzc.workerm.data.dispatch.DispatchCreateReq
 import com.qkzc.workerm.data.dispatch.DispatchProcessNodeInput
 import com.qkzc.workerm.data.dispatch.DispatchRepository
+import com.qkzc.workerm.data.dispatch.DispatchWorkOrderLocationInput
 import com.qkzc.workerm.data.project.ManagerProject
 import com.qkzc.workerm.data.project.ManagerProjectRepository
 import com.qkzc.workerm.data.project.ManagerProjectTeam
@@ -31,7 +32,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
-class DispatchCreateActivity : AppCompatActivity() {
+class DispatchCreateActivity : EdgeToEdgeActivity() {
     private lateinit var binding: ActivityDispatchCreateBinding
     private val repository = DispatchRepository()
     private val projectRepository = ManagerProjectRepository()
@@ -44,20 +45,43 @@ class DispatchCreateActivity : AppCompatActivity() {
     private var selectedTeam: ManagerProjectTeam? = null
     private var contextLoadJob: Job? = null
     private var coverLoadJob: Job? = null
+    private var selectedLocationCoordinates: Pair<Double, Double>? = null
     private val preselectedProjectId: Long by lazy { intent.getLongExtra(EXTRA_PROJECT_ID, 0L) }
     private val preselectedTeamId: Long by lazy { intent.getLongExtra(EXTRA_TEAM_ID, 0L) }
     private val preselectedLeaderId: Long by lazy { intent.getLongExtra(EXTRA_LEADER_ID, 0L) }
+    private val locationPickerLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        if (result.resultCode != RESULT_OK) return@registerForActivityResult
+        val latitude = result.data?.getDoubleExtra(DispatchLocationPickerActivity.EXTRA_LATITUDE, Double.NaN) ?: Double.NaN
+        val longitude = result.data?.getDoubleExtra(DispatchLocationPickerActivity.EXTRA_LONGITUDE, Double.NaN) ?: Double.NaN
+        if (!latitude.isFinite() || !longitude.isFinite()) return@registerForActivityResult
+        selectedLocationCoordinates = longitude to latitude
+        if (inputText(binding.locationInput).isBlank()) {
+            binding.locationInput.setText("施工点 %.6f, %.6f".format(Locale.CHINA, latitude, longitude))
+        }
+        toast("已选取施工坐标，可继续补充位置名称")
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        WindowInsetsControllerCompat(window, window.decorView).isAppearanceLightStatusBars = false
         binding = ActivityDispatchCreateBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        applyEdgeToEdge(
+            root = binding.root,
+            topBarId = R.id.dispatch_create_top_bar,
+            bottomBarId = R.id.dispatch_create_action_bar,
+        )
+        configureSystemBarIconAppearance(
+            lightStatusBars = true,
+            lightNavigationBars = true,
+        )
 
         binding.backButton.setOnClickListener { finish() }
         binding.switchProjectButton.setOnClickListener { showProjectSelector() }
         binding.deadlineInput.setOnClickListener { showDeadlinePicker() }
         binding.deadlineInput.setOnLongClickListener { true }
+        binding.pickLocationButton.setOnClickListener {
+            locationPickerLauncher.launch(DispatchLocationPickerActivity.intent(this))
+        }
         binding.processCheckSwitch.setOnCheckedChangeListener { _, checked ->
             setProcessSectionVisible(checked)
         }
@@ -394,6 +418,7 @@ class DispatchCreateActivity : AppCompatActivity() {
         val processEnabled = binding.processCheckSwitch.isChecked
         val processNodes = if (processEnabled) buildProcessNodes() ?: return null else emptyList()
         val completionPhotoRequired = binding.completionPhotoRequiredSwitch.isChecked
+        val locationCoordinates = selectedLocationCoordinates
         return DispatchCreateReq(
             projectId = project.projectId,
             teamId = team.teamId,
@@ -403,6 +428,14 @@ class DispatchCreateActivity : AppCompatActivity() {
             priority = selectedPriority(),
             content = content,
             locationDesc = location,
+            location = locationCoordinates?.let { (longitude, latitude) ->
+                DispatchWorkOrderLocationInput(
+                    locationName = location,
+                    longitude = longitude,
+                    latitude = latitude,
+                    locationDescription = location,
+                )
+            },
             deadlineTime = deadline,
             constructionRequirement = optionalInputText(binding.constructionRequirementInput),
             safetyNotice = optionalInputText(binding.safetyNoticeInput),

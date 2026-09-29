@@ -33,6 +33,25 @@ interface SupervisorApi {
         @Path("projectId") projectId: Long,
     ): AjaxResp<ManagerProjectVo>
 
+    @GET("/app/manage/projects/{projectId}/geofence")
+    suspend fun manageProjectGeofence(
+        @Header("Authorization") token: String,
+        @Path("projectId") projectId: Long,
+    ): AjaxResp<com.qkzc.workerm.data.location.ProjectGeofence>
+
+    @PUT("/app/manage/projects/{projectId}/geofence")
+    suspend fun saveManageProjectGeofence(
+        @Header("Authorization") token: String,
+        @Path("projectId") projectId: Long,
+        @Body body: com.qkzc.workerm.data.location.ProjectGeofenceSaveRequest,
+    ): AjaxResp<com.qkzc.workerm.data.location.ProjectGeofence>
+
+    @DELETE("/app/manage/projects/{projectId}/geofence")
+    suspend fun disableManageProjectGeofence(
+        @Header("Authorization") token: String,
+        @Path("projectId") projectId: Long,
+    ): AjaxResp<Any>
+
     @GET("/app/manage/projects/{projectId}/drawing-docs")
     suspend fun manageProjectDrawingDocs(
         @Header("Authorization") token: String,

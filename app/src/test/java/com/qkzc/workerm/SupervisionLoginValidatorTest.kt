@@ -9,21 +9,32 @@ class SupervisionLoginValidatorTest {
 
     @Test
     fun emptyPhoneRequiresPhoneMessage() {
-        assertEquals("请输入手机号", validateSupervisorLoginInput("", "123456"))
+        assertEquals("请输入手机号", validateSupervisorLoginInput("", "123456", true))
     }
 
     @Test
     fun invalidPhoneRequiresCorrectPhoneMessage() {
-        assertEquals("请输入正确的手机号", validateSupervisorLoginInput("12345", "123456"))
+        assertEquals(
+            "请输入正确的手机号",
+            validateSupervisorLoginInput("12345", "123456", true),
+        )
     }
 
     @Test
     fun emptyPasswordRequiresPasswordMessage() {
-        assertEquals("请输入密码", validateSupervisorLoginInput("13800138000", ""))
+        assertEquals("请输入密码", validateSupervisorLoginInput("13800138000", "", true))
+    }
+
+    @Test
+    fun uncheckedAgreementBlocksLogin() {
+        assertEquals(
+            "请先阅读并勾选同意《服务协议》和《隐私政策》",
+            validateSupervisorLoginInput("13800138000", "123456", false),
+        )
     }
 
     @Test
     fun validPhoneAndPasswordPassValidation() {
-        assertNull(validateSupervisorLoginInput("13800138000", "123456"))
+        assertNull(validateSupervisorLoginInput("13800138000", "123456", true))
     }
 }

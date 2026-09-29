@@ -15,3 +15,6 @@
 .externalNativeBuild
 .cxx
 local.properties
+
+# 本地第三方服务密钥
+amap.properties

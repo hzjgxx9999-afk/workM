@@ -16,6 +16,7 @@ import com.qkzc.workerm.data.network.AjaxTokenResp
 import com.qkzc.workerm.data.network.AttendanceExceptionVo
 import com.qkzc.workerm.data.network.AuditListReq
 import com.qkzc.workerm.data.network.BindChangeAuditReq
+import com.qkzc.workerm.data.network.ConstructionLogAuditReq
 import com.qkzc.workerm.data.network.ConstructionLogDetailVo
 import com.qkzc.workerm.data.network.ConstructionLogItemVo
 import com.qkzc.workerm.data.network.ConstructionLogOverviewVo
@@ -74,6 +75,9 @@ open class EmptySupervisorApi : SupervisorApi {
     override suspend fun profile(token: String): AjaxProfileResp = error("unused")
     override suspend fun manageProjects(token: String): AjaxResp<List<ManagerProjectVo>> = error("unused")
     override suspend fun manageProjectDetail(token: String, projectId: Long): AjaxResp<ManagerProjectVo> = error("unused")
+    override suspend fun manageProjectGeofence(token: String, projectId: Long): AjaxResp<com.qkzc.workerm.data.location.ProjectGeofence> = error("unused")
+    override suspend fun saveManageProjectGeofence(token: String, projectId: Long, body: com.qkzc.workerm.data.location.ProjectGeofenceSaveRequest): AjaxResp<com.qkzc.workerm.data.location.ProjectGeofence> = error("unused")
+    override suspend fun disableManageProjectGeofence(token: String, projectId: Long): AjaxResp<Any> = error("unused")
     override suspend fun manageProjectDrawingDocs(token: String, projectId: Long, limit: Int?): AjaxResp<List<ManagerProjectFileVo>> = error("unused")
     override suspend fun manageProjectCoverPreview(token: String, projectId: Long): ResponseBody = error("unused")
     override suspend fun manageProjectTeamLeaders(token: String, projectId: Long): AjaxResp<List<ManagerTeamLeaderVo>> = error("unused")
@@ -134,6 +138,8 @@ open class EmptySupervisorApi : SupervisorApi {
     override suspend fun deleteConstructionLog(token: String, projectId: Long, logId: Long, body: VersionReq): AjaxResp<Any> = error("unused")
     override suspend fun submitConstructionLog(token: String, projectId: Long, logId: Long, body: VersionReq): AjaxResp<Any> = error("unused")
     override suspend fun withdrawConstructionLog(token: String, projectId: Long, logId: Long, body: VersionReq): AjaxResp<Any> = error("unused")
+    override suspend fun approveConstructionLog(token: String, projectId: Long, logId: Long, body: ConstructionLogAuditReq): AjaxResp<ConstructionLogDetailVo> = error("unused")
+    override suspend fun rejectConstructionLog(token: String, projectId: Long, logId: Long, body: ConstructionLogAuditReq): AjaxResp<ConstructionLogDetailVo> = error("unused")
     override suspend fun uploadProjectDrawingDoc(token: String, projectId: Long, file: MultipartBody.Part, category: RequestBody, remark: RequestBody): AjaxResp<ManagerProjectFileVo> = error("unused")
     override suspend fun uploadCommonFile(token: String, file: MultipartBody.Part): AjaxResp<FileUploadVo> = error("unused")
 }

@@ -7,28 +7,31 @@
     android:orientation="vertical">
 
     <LinearLayout
+        android:id="@+id/dispatch_create_top_bar"
         android:layout_width="match_parent"
         android:layout_height="56dp"
-        android:background="@color/dashboard_blue"
+        android:background="@color/white"
+        android:elevation="2dp"
         android:gravity="center_vertical"
         android:paddingHorizontal="12dp">
 
-        <ImageButton
+        <androidx.appcompat.widget.AppCompatImageButton
             android:id="@+id/back_button"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:background="@android:color/transparent"
+            android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="返回"
             android:padding="10dp"
             android:src="@drawable/ic_back"
-            app:tint="@color/white" />
+            app:tint="@color/text_primary" />
 
         <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="创建派工单"
-            android:textColor="@color/white"
+            android:gravity="center"
+            android:text="新建派工"
+            android:textColor="@color/text_primary"
             android:textSize="19sp"
             android:textStyle="bold" />
     </LinearLayout>
@@ -74,7 +77,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginStart="7dp"
                             android:layout_weight="1"
-                            android:text="当前项目"
+                            android:text="所属项目"
                             android:textColor="@color/text_primary"
                             android:textSize="16sp"
                             android:textStyle="bold" />
@@ -170,7 +173,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="7dp"
-                            android:text="基础信息"
+                            android:text="1  基础信息"
                             android:textColor="@color/text_primary"
                             android:textSize="16sp"
                             android:textStyle="bold" />
@@ -216,6 +219,14 @@
                                 android:textSize="13sp" />
                         </com.google.android.material.textfield.TextInputLayout>
                     </LinearLayout>
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/pick_location_button"
+                        style="@style/Widget.Material3.Button.OutlinedButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:text="地图选点（推荐）" />
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -276,7 +287,6 @@
                             android:clickable="true"
                             android:cursorVisible="false"
                             android:focusable="false"
-                            android:hint="请选择日期和时间"
                             android:inputType="none"
                             android:textSize="12sp" />
                     </com.google.android.material.textfield.TextInputLayout>
@@ -295,7 +305,7 @@
                         android:gravity="center_vertical"
                         android:orientation="horizontal">
                         <View android:layout_width="4dp" android:layout_height="19dp" android:background="@color/dashboard_blue" />
-                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="7dp" android:text="派工对象" android:textColor="@color/text_primary" android:textSize="16sp" android:textStyle="bold" />
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="7dp" android:text="2  派工对象" android:textColor="@color/text_primary" android:textSize="16sp" android:textStyle="bold" />
                     </LinearLayout>
 
                     <LinearLayout
@@ -311,7 +321,7 @@
                             <com.google.android.material.textfield.MaterialAutoCompleteTextView
                                 android:id="@+id/team_spinner"
                                 android:layout_width="match_parent"
-                                android:layout_height="48dp"
+                                android:layout_height="58dp"
                                 android:inputType="none"
                                 android:textSize="13sp" />
                         </com.google.android.material.textfield.TextInputLayout>
@@ -349,7 +359,7 @@
                     android:padding="12dp">
                     <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center_vertical" android:orientation="horizontal">
                         <View android:layout_width="4dp" android:layout_height="19dp" android:background="@color/dashboard_blue" />
-                        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginStart="7dp" android:layout_weight="1" android:text="任务要求" android:textColor="@color/text_primary" android:textSize="16sp" android:textStyle="bold" />
+                        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginStart="7dp" android:layout_weight="1" android:text="3  任务要求" android:textColor="@color/text_primary" android:textSize="16sp" android:textStyle="bold" />
                         <com.google.android.material.button.MaterialButton
                             android:id="@+id/auto_fill_requirement_button"
                             style="@style/Widget.MaterialComponents.Button.OutlinedButton"
@@ -431,7 +441,7 @@
                     android:padding="12dp">
                     <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center_vertical" android:orientation="horizontal">
                         <View android:layout_width="4dp" android:layout_height="19dp" android:background="@color/dashboard_blue" />
-                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="7dp" android:text="验收标准" android:textColor="@color/text_primary" android:textSize="16sp" android:textStyle="bold" />
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="7dp" android:text="4  验收标准" android:textColor="@color/text_primary" android:textSize="16sp" android:textStyle="bold" />
                     </LinearLayout>
 
                     <LinearLayout
@@ -520,7 +530,7 @@
                         android:gravity="center_vertical"
                         android:orientation="horizontal">
                         <View android:layout_width="4dp" android:layout_height="19dp" android:background="@color/dashboard_blue" />
-                        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginStart="7dp" android:layout_weight="1" android:text="过程检查要求" android:textColor="@color/text_primary" android:textSize="16sp" android:textStyle="bold" />
+                        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginStart="7dp" android:layout_weight="1" android:text="5  过程检查要求" android:textColor="@color/text_primary" android:textSize="16sp" android:textStyle="bold" />
                         <com.google.android.material.switchmaterial.SwitchMaterial
                             android:id="@+id/process_check_switch"
                             android:layout_width="wrap_content"
@@ -630,7 +640,7 @@
                     android:padding="12dp">
                     <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center_vertical" android:orientation="horizontal">
                         <View android:layout_width="4dp" android:layout_height="19dp" android:background="@color/dashboard_blue" />
-                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="7dp" android:text="附件" android:textColor="@color/text_primary" android:textSize="16sp" android:textStyle="bold" />
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="7dp" android:text="6  附件" android:textColor="@color/text_primary" android:textSize="16sp" android:textStyle="bold" />
                     </LinearLayout>
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -689,6 +699,7 @@
     </androidx.core.widget.NestedScrollView>
 
     <LinearLayout
+        android:id="@+id/dispatch_create_action_bar"
         android:layout_width="match_parent"
         android:layout_height="70dp"
         android:background="@color/white"

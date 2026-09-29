@@ -1,0 +1,435 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>派工单全流程操作图</title>
+  <style>
+    :root {
+      --blue: #1262c9;
+      --blue-soft: #eaf3ff;
+      --navy: #06142f;
+      --green: #078a49;
+      --green-soft: #eefaf4;
+      --orange: #e97800;
+      --orange-soft: #fff4e7;
+      --red: #c51618;
+      --yellow: #e9aa00;
+      --line: #cfe0f5;
+      --text: #172033;
+      --muted: #5c6b80;
+      font-family: "Microsoft YaHei", "Noto Sans CJK SC", "Source Han Sans SC", Arial, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: #edf3fb;
+      color: var(--text);
+    }
+
+    .canvas {
+      position: relative;
+      width: 1920px;
+      height: 1320px;
+      margin: 0 auto;
+      padding: 42px 48px 36px;
+      background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+      overflow: hidden;
+    }
+
+    .title {
+      margin: 0;
+      text-align: center;
+      color: var(--navy);
+      font-size: 64px;
+      line-height: 1.08;
+      font-weight: 900;
+      letter-spacing: 0;
+    }
+
+    .subtitle {
+      margin-top: 10px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 24px;
+      font-weight: 600;
+    }
+
+    .top-line {
+      position: relative;
+      height: 42px;
+      margin-top: 2px;
+    }
+
+    .top-line::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 21px;
+      height: 4px;
+      background: var(--blue);
+      border-radius: 8px;
+    }
+
+    .top-line::after {
+      content: "角色职责";
+      position: absolute;
+      left: 50%;
+      top: 0;
+      transform: translateX(-50%);
+      min-width: 210px;
+      padding: 5px 30px 8px;
+      border-radius: 14px;
+      text-align: center;
+      background: var(--blue);
+      color: #ffffff;
+      font-size: 32px;
+      line-height: 1;
+      font-weight: 900;
+    }
+
+    .roles {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 26px;
+      margin-top: 6px;
+    }
+
+    .role-card {
+      display: grid;
+      grid-template-columns: 96px 1fr;
+      align-items: center;
+      min-height: 132px;
+      padding: 18px 22px;
+      border: 2px solid var(--role-color);
+      border-radius: 18px;
+      background: linear-gradient(180deg, #ffffff 0%, var(--role-soft) 100%);
+    }
+
+    .role-icon {
+      display: grid;
+      place-items: center;
+      width: 82px;
+      height: 82px;
+      border-radius: 50%;
+      color: #ffffff;
+      background: var(--role-color);
+      font-size: 44px;
+      font-weight: 900;
+    }
+
+    .role-name {
+      color: var(--role-color);
+      font-size: 30px;
+      font-weight: 900;
+      line-height: 1.1;
+    }
+
+    .role-desc {
+      margin-top: 8px;
+      color: var(--text);
+      font-size: 22px;
+      line-height: 1.35;
+      font-weight: 600;
+    }
+
+    .role-manager { --role-color: var(--blue); --role-soft: var(--blue-soft); }
+    .role-system { --role-color: #3861a8; --role-soft: #eef4ff; }
+    .role-leader { --role-color: var(--orange); --role-soft: var(--orange-soft); }
+    .role-worker { --role-color: var(--green); --role-soft: var(--green-soft); }
+
+    .flow {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      grid-template-rows: repeat(3, 218px);
+      gap: 42px 60px;
+      margin-top: 32px;
+      position: relative;
+    }
+
+    .step {
+      position: relative;
+      padding: 22px 22px 18px 98px;
+      border: 2px solid #9bc5f5;
+      border-radius: 16px;
+      background: #ffffff;
+      min-width: 0;
+    }
+
+    .step::before {
+      content: attr(data-no);
+      position: absolute;
+      left: 24px;
+      top: 22px;
+      display: grid;
+      place-items: center;
+      width: 54px;
+      height: 54px;
+      border-radius: 50%;
+      background: var(--blue);
+      color: #ffffff;
+      font-size: 31px;
+      font-weight: 900;
+    }
+
+    .step::after {
+      position: absolute;
+      color: var(--blue);
+      font-size: 54px;
+      font-weight: 900;
+      line-height: 1;
+      z-index: 2;
+    }
+
+    .arrow-right::after {
+      content: "›";
+      right: -44px;
+      top: 72px;
+    }
+
+    .arrow-left::after {
+      content: "‹";
+      left: -44px;
+      top: 72px;
+    }
+
+    .arrow-down::after {
+      content: "⌄";
+      left: 50%;
+      bottom: -50px;
+      transform: translateX(-50%);
+    }
+
+    .step-manager { border-color: #8abaf1; }
+    .step-system { border-color: #a8bbdf; }
+    .step-leader { border-color: #f4b36b; }
+    .step-worker { border-color: #8bcfae; }
+
+    .step-title {
+      color: var(--navy);
+      font-size: 28px;
+      line-height: 1.22;
+      font-weight: 900;
+    }
+
+    .step-meta {
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 20px;
+      line-height: 1.28;
+      font-weight: 600;
+    }
+
+    .step-status {
+      display: inline-block;
+      margin-top: 12px;
+      padding: 6px 13px;
+      border-radius: 999px;
+      background: #f2f7ff;
+      color: var(--blue);
+      font-size: 17px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .status-small {
+      font-size: 15px;
+      padding-left: 9px;
+      padding-right: 9px;
+    }
+
+    .branch {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 10px;
+    }
+
+    .branch span {
+      padding: 4px 9px;
+      border-radius: 999px;
+      border: 1px solid #f1c37b;
+      background: #fff8ea;
+      color: #8a4a00;
+      font-size: 16px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .s1 { grid-column: 1; grid-row: 1; }
+    .s2 { grid-column: 2; grid-row: 1; }
+    .s3 { grid-column: 3; grid-row: 1; }
+    .s4 { grid-column: 4; grid-row: 1; }
+    .s5 { grid-column: 4; grid-row: 2; }
+    .s6 { grid-column: 3; grid-row: 2; }
+    .s7 { grid-column: 2; grid-row: 2; }
+    .s8 { grid-column: 1; grid-row: 2; }
+    .s9 { grid-column: 1; grid-row: 3; }
+    .s10 { grid-column: 2; grid-row: 3; }
+    .s11 { grid-column: 3; grid-row: 3; }
+    .s12 { grid-column: 4; grid-row: 3; }
+
+    .rules {
+      display: grid;
+      grid-template-columns: 120px 1fr;
+      align-items: center;
+      gap: 12px;
+      margin-top: 30px;
+      padding: 20px 28px;
+      border: 3px dashed var(--yellow);
+      border-radius: 22px;
+      background: #fff9e8;
+    }
+
+    .shield {
+      display: grid;
+      place-items: center;
+      width: 92px;
+      height: 92px;
+      border-radius: 24px;
+      background: var(--yellow);
+      color: #ffffff;
+      font-size: 54px;
+      font-weight: 900;
+    }
+
+    .rule-text {
+      color: #202638;
+      font-size: 28px;
+      line-height: 1.45;
+      font-weight: 800;
+    }
+
+    .rule-text strong {
+      color: var(--red);
+      font-weight: 900;
+    }
+
+    .source-note {
+      position: absolute;
+      right: 52px;
+      bottom: 12px;
+      color: #718099;
+      font-size: 16px;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+  <main class="canvas" aria-label="派工单全流程操作图">
+    <h1 class="title">派工单全流程操作图</h1>
+    <div class="subtitle">项目经理创建派工单 → 班组长接收并分派 → 工人处理提交 → 班组汇总 → 项目经理验收闭环</div>
+    <div class="top-line"></div>
+
+    <section class="roles" aria-label="角色职责">
+      <article class="role-card role-manager">
+        <div class="role-icon">PM</div>
+        <div>
+          <div class="role-name">项目经理</div>
+          <div class="role-desc">创建派工单、指定项目班组、抽查过程、最终验收或驳回重派。</div>
+        </div>
+      </article>
+      <article class="role-card role-system">
+        <div class="role-icon">SYS</div>
+        <div>
+          <div class="role-name">系统</div>
+          <div class="role-desc">校验项目/班组绑定、记录轮次状态、通知相关人员、保存凭证。</div>
+        </div>
+      </article>
+      <article class="role-card role-leader">
+        <div class="role-icon">TL</div>
+        <div>
+          <div class="role-name">班组长</div>
+          <div class="role-desc">接收派工、选择本班组工人、审核过程和完工、提交班组汇总。</div>
+        </div>
+      </article>
+      <article class="role-card role-worker">
+        <div class="role-icon">WK</div>
+        <div>
+          <div class="role-name">工人</div>
+          <div class="role-desc">接收任务、开始处理、上传过程/完工照片定位、提交处理结果。</div>
+        </div>
+      </article>
+    </section>
+
+    <section class="flow" aria-label="派工单顺序流程">
+      <article class="step step-manager s1 arrow-right" data-no="1">
+        <div class="step-title">创建派工单</div>
+        <div class="step-meta">填写项目、班组、班组长、内容、位置、期限、验收要求和照片/定位规则。</div>
+        <div class="step-status">PENDING_DELEGATION</div>
+      </article>
+      <article class="step step-system s2 arrow-right" data-no="2">
+        <div class="step-title">校验并通知</div>
+        <div class="step-meta">校验项目可管、班组启用、班组长匹配；生成单号、创建首轮班组长记录。</div>
+        <div class="step-status">通知班组长</div>
+      </article>
+      <article class="step step-leader s3 arrow-right" data-no="3">
+        <div class="step-title">班组长接收</div>
+        <div class="step-meta">班组长进入派工详情，确认任务要求，将本人派工记录由已分配改为已接收。</div>
+        <div class="step-status">ASSIGNED → ACCEPTED</div>
+      </article>
+      <article class="step step-leader s4 arrow-down" data-no="4">
+        <div class="step-title">分派本组工人</div>
+        <div class="step-meta">从本项目、本班组成员中选择执行工人；系统创建工人派工记录并发送通知。</div>
+        <div class="step-status">IN_PROGRESS</div>
+      </article>
+
+      <article class="step step-worker s5 arrow-left" data-no="5">
+        <div class="step-title">工人接收任务</div>
+        <div class="step-meta">工人从首页或消息进入详情，确认作业内容、位置、期限和安全要求。</div>
+        <div class="step-status">ASSIGNED → ACCEPTED</div>
+      </article>
+      <article class="step step-worker s6 arrow-left" data-no="6">
+        <div class="step-title">开始现场处理</div>
+        <div class="step-meta">到达现场后开始处理；需要施工前照片时先上传 BEFORE 凭证。</div>
+        <div class="step-status">ACCEPTED → PROCESSING</div>
+      </article>
+      <article class="step step-worker s7 arrow-left" data-no="7">
+        <div class="step-title">提交过程检查</div>
+        <div class="step-meta">按节点上传过程照片、描述和定位；系统生成待审核过程记录。</div>
+        <div class="step-status">PENDING_PROCESS_CHECK</div>
+      </article>
+      <article class="step step-leader s8 arrow-down" data-no="8">
+        <div class="step-title">审核过程资料</div>
+        <div class="step-meta">班组长或项目经理按节点审核。通过回到施工，驳回要求工人整改重提。</div>
+        <div class="branch"><span>通过 → IN_PROGRESS</span><span>驳回 → PROCESS_REWORK</span></div>
+      </article>
+
+      <article class="step step-worker s9 arrow-right" data-no="9">
+        <div class="step-title">提交完工结果</div>
+        <div class="step-meta">过程检查全部通过后，上传完工照片和结果说明；所有工人提交后进入结果审核。</div>
+        <div class="step-status status-small">PENDING_WORKER_RESULT_REVIEW</div>
+      </article>
+      <article class="step step-leader s10 arrow-right" data-no="10">
+        <div class="step-title">审核工人结果</div>
+        <div class="step-meta">逐个审核工人完工凭证。全部通过后，班组长可填写本轮汇总。</div>
+        <div class="branch"><span>通过 → 待汇总</span><span>驳回 → 工人整改</span></div>
+      </article>
+      <article class="step step-leader s11 arrow-right" data-no="11">
+        <div class="step-title">提交班组汇总</div>
+        <div class="step-meta">填写班组整体处理说明，可补充汇总附件；系统通知项目经理验收。</div>
+        <div class="step-status">PENDING_MANAGER_ACCEPTANCE</div>
+      </article>
+      <article class="step step-manager s12" data-no="12">
+        <div class="step-title">项目经理验收</div>
+        <div class="step-meta">验收前可发起抽查；通过则完成，驳回进入新轮次重分派或整改。</div>
+        <div class="branch"><span>通过 → COMPLETED</span><span>驳回 → PENDING_REASSIGNMENT</span></div>
+      </article>
+    </section>
+
+    <section class="rules" aria-label="关键规则">
+      <div class="shield">!</div>
+      <div class="rule-text">
+        <strong>关键规则：</strong>派工必须绑定 <strong>项目 → 班组 → 班组长 → 本班组工人</strong>；班组长必须先接收再分派。
+        过程/完工照片、定位、版本号必须满足后端校验；验收驳回会进入<strong>新轮次</strong>，已完成或已取消不可继续操作。
+      </div>
+    </section>
+    <div class="source-note">依据 workerM 管理端、worker 工人端、workerback 派工接口与状态机整理</div>
+  </main>
+</body>
+</html>

@@ -112,4 +112,7 @@
     <string name="login_required_password">请输入密码</string>
     <string name="login_success">登录成功</string>
     <string name="logout_success">已退出登录</string>
+    <string name="session_replaced_title">账号已下线</string>
+    <string name="session_replaced_message">您的账号已在其他设备登录，请重新登录。</string>
+    <string name="session_replaced_confirm">重新登录</string>
 </resources>

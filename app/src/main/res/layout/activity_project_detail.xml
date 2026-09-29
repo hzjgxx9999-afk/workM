@@ -208,6 +208,11 @@
                 android:drawableTop="@drawable/ic_export"
                 android:text="导出报表\n数据统计/导出" />
             <TextView
+                android:id="@+id/project_geofence_action"
+                style="@style/DetailActionCard"
+                android:drawableTop="@drawable/ic_project"
+                android:text="电子围栏\n现场范围配置" />
+            <TextView
                 android:id="@+id/qr_scan_action"
                 style="@style/DetailActionCard"
                 android:drawableTop="@drawable/ic_scan"

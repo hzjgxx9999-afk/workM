@@ -2,6 +2,8 @@ package com.qkzc.workerm.ui.auth
 
 import android.graphics.Color
 import android.content.Intent
+import android.app.AlertDialog
+import android.os.Build
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.compose.setContent
@@ -13,8 +15,12 @@ import androidx.compose.runtime.getValue
 import androidx.core.view.WindowCompat
 import com.qkzc.workerm.MainActivity
 import com.qkzc.workerm.R
+import com.qkzc.workerm.data.privacy.PrivacyConsentStore
 import com.qkzc.workerm.data.session.AuthRepository
 import com.qkzc.workerm.data.session.SessionStore
+import com.qkzc.workerm.data.session.SessionReplacementLogoutCoordinator
+import com.qkzc.workerm.ui.legal.LegalDocumentActivity
+import com.qkzc.workerm.ui.legal.LegalDocumentType
 import com.qkzc.workerm.ui.login.SupervisionLoginRoute
 import com.qkzc.workerm.ui.theme.WorkerMTheme
 
@@ -23,12 +29,24 @@ class LoginActivity : AppCompatActivity() {
     private val viewModel: LoginViewModel by viewModels {
         LoginViewModel.Factory(
             AuthRepository(SessionStore(applicationContext)),
+            PrivacyConsentStore(applicationContext),
         )
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         configureSystemBars()
+
+        if (intent.getBooleanExtra(SessionReplacementLogoutCoordinator.EXTRA_SESSION_REPLACED, false)) {
+            window.decorView.post {
+                AlertDialog.Builder(this)
+                    .setTitle(R.string.session_replaced_title)
+                    .setMessage(R.string.session_replaced_message)
+                    .setPositiveButton(R.string.session_replaced_confirm, null)
+                    .setCancelable(false)
+                    .show()
+            }
+        }
 
         setContent {
             WorkerMTheme {
@@ -62,11 +80,21 @@ class LoginActivity : AppCompatActivity() {
                     onLogin = { mobile, password ->
                         viewModel.login(mobile, password)
                     },
-                    onPrivacyClick = {
-                        Toast.makeText(this, "隐私说明待接入", Toast.LENGTH_SHORT).show()
+                    onServiceAgreementClick = {
+                        startActivity(
+                            LegalDocumentActivity.createIntent(
+                                this,
+                                LegalDocumentType.SERVICE_AGREEMENT,
+                            ),
+                        )
                     },
-                    onSecurityPolicyClick = {
-                        Toast.makeText(this, "数据安全规范待接入", Toast.LENGTH_SHORT).show()
+                    onPrivacyClick = {
+                        startActivity(
+                            LegalDocumentActivity.createIntent(
+                                this,
+                                LegalDocumentType.PRIVACY_POLICY,
+                            ),
+                        )
                     },
                 )
             }
@@ -77,7 +105,9 @@ class LoginActivity : AppCompatActivity() {
         WindowCompat.setDecorFitsSystemWindows(window, false)
         window.statusBarColor = Color.TRANSPARENT
         window.navigationBarColor = Color.rgb(245, 249, 255)
-        window.isNavigationBarContrastEnforced = false
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            window.isNavigationBarContrastEnforced = false
+        }
 
         WindowCompat.getInsetsController(window, window.decorView).apply {
             isAppearanceLightStatusBars = true
