@@ -94,11 +94,18 @@ fun SupervisionLoginRoute(
     onLogin: (String, String) -> Unit,
     onServiceAgreementClick: () -> Unit,
     onPrivacyClick: () -> Unit,
+    initialPhone: String = "",
 ) {
-    var phone by rememberSaveable { mutableStateOf("") }
+    var phone by rememberSaveable { mutableStateOf(initialPhone) }
     var password by rememberSaveable { mutableStateOf("") }
     var passwordVisible by rememberSaveable { mutableStateOf(false) }
     var agreementAccepted by rememberSaveable { mutableStateOf(false) }
+
+    LaunchedEffect(initialPhone) {
+        if (phone.isBlank() && initialPhone.isNotBlank()) {
+            phone = initialPhone
+        }
+    }
 
     SupervisionLoginScreen(
         phone = phone,

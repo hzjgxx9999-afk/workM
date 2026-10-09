@@ -36,7 +36,34 @@
             android:textStyle="bold" />
     </LinearLayout>
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:orientation="vertical"
+        android:paddingHorizontal="20dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="10dp">
+        <TextView
+            android:id="@+id/step_title_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="第 1 步 · 填写任务"
+            android:textColor="@color/text_primary"
+            android:textSize="15sp"
+            android:textStyle="bold" />
+        <TextView
+            android:id="@+id/step_subtitle_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="3dp"
+            android:text="写清楚做什么、在哪里做，再选好施工班组。"
+            android:textColor="@color/text_secondary"
+            android:textSize="12sp" />
+    </LinearLayout>
+
     <androidx.core.widget.NestedScrollView
+        android:id="@+id/dispatch_create_scroll_view"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
@@ -52,6 +79,7 @@
             android:paddingBottom="8dp">
 
             <com.google.android.material.card.MaterialCardView
+                android:id="@+id/project_card"
                 style="@style/DispatchSectionCard"
                 android:layout_marginTop="10dp">
 
@@ -155,7 +183,7 @@
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <com.google.android.material.card.MaterialCardView style="@style/DispatchSectionCard">
+            <com.google.android.material.card.MaterialCardView android:id="@+id/task_card" style="@style/DispatchSectionCard">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -173,7 +201,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="7dp"
-                            android:text="1  基础信息"
+                            android:text="这次要做什么"
                             android:textColor="@color/text_primary"
                             android:textSize="16sp"
                             android:textStyle="bold" />
@@ -191,7 +219,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginEnd="5dp"
                             android:layout_weight="1"
-                            android:hint="派工标题 *"
+                            android:hint="任务名称 *"
                             app:counterEnabled="true"
                             app:counterMaxLength="128">
                             <com.google.android.material.textfield.TextInputEditText
@@ -209,7 +237,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginStart="5dp"
                             android:layout_weight="1"
-                            android:hint="施工位置 *">
+                            android:hint="施工地点 *">
                             <com.google.android.material.textfield.TextInputEditText
                                 android:id="@+id/location_input"
                                 android:layout_width="match_parent"
@@ -277,7 +305,7 @@
                         android:layout_width="220dp"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
-                        android:hint="截止时间 *"
+                        android:hint="选择截止时间 *"
                         app:endIconDrawable="@drawable/ic_calendar"
                         app:endIconMode="custom">
                         <com.google.android.material.textfield.TextInputEditText
@@ -293,7 +321,7 @@
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <com.google.android.material.card.MaterialCardView style="@style/DispatchSectionCard">
+            <com.google.android.material.card.MaterialCardView android:id="@+id/team_card" style="@style/DispatchSectionCard">
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -305,7 +333,7 @@
                         android:gravity="center_vertical"
                         android:orientation="horizontal">
                         <View android:layout_width="4dp" android:layout_height="19dp" android:background="@color/dashboard_blue" />
-                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="7dp" android:text="2  派工对象" android:textColor="@color/text_primary" android:textSize="16sp" android:textStyle="bold" />
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="7dp" android:text="派给哪个班组" android:textColor="@color/text_primary" android:textSize="16sp" android:textStyle="bold" />
                     </LinearLayout>
 
                     <LinearLayout
@@ -317,7 +345,7 @@
                             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:hint="班组 *">
+                            android:hint="选择施工班组 *">
                             <com.google.android.material.textfield.MaterialAutoCompleteTextView
                                 android:id="@+id/team_spinner"
                                 android:layout_width="match_parent"
@@ -351,7 +379,7 @@
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <com.google.android.material.card.MaterialCardView style="@style/DispatchSectionCard">
+            <com.google.android.material.card.MaterialCardView android:id="@+id/requirements_card" style="@style/DispatchSectionCard">
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -359,7 +387,7 @@
                     android:padding="12dp">
                     <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center_vertical" android:orientation="horizontal">
                         <View android:layout_width="4dp" android:layout_height="19dp" android:background="@color/dashboard_blue" />
-                        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginStart="7dp" android:layout_weight="1" android:text="3  任务要求" android:textColor="@color/text_primary" android:textSize="16sp" android:textStyle="bold" />
+                        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginStart="7dp" android:layout_weight="1" android:text="告诉施工人员怎么做" android:textColor="@color/text_primary" android:textSize="16sp" android:textStyle="bold" />
                         <com.google.android.material.button.MaterialButton
                             android:id="@+id/auto_fill_requirement_button"
                             style="@style/Widget.MaterialComponents.Button.OutlinedButton"
@@ -370,7 +398,8 @@
                             android:minWidth="0dp"
                             android:minHeight="0dp"
                             android:paddingHorizontal="12dp"
-                            android:text="一键生成"
+                            android:text="帮我生成要求"
+                            android:contentDescription="一键生成施工要求"
                             android:textAllCaps="false"
                             android:textColor="@color/dashboard_blue"
                             android:textSize="12sp"
@@ -386,7 +415,7 @@
                             style="@style/DispatchCompactInput"
                             android:layout_width="match_parent"
                             android:layout_height="118dp"
-                            android:hint="任务内容 *"
+                            android:hint="需要处理什么问题？ *"
                             app:counterEnabled="true"
                             app:counterMaxLength="500">
                             <com.google.android.material.textfield.TextInputEditText
@@ -402,7 +431,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="96dp"
                             android:layout_marginTop="8dp"
-                            android:hint="施工要求"
+                            android:hint="施工时要注意什么（选填）"
                             app:counterEnabled="true"
                             app:counterMaxLength="500">
                             <com.google.android.material.textfield.TextInputEditText
@@ -418,7 +447,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="96dp"
                             android:layout_marginTop="8dp"
-                            android:hint="安全注意事项"
+                            android:hint="安全提醒（选填）"
                             app:counterEnabled="true"
                             app:counterMaxLength="500">
                             <com.google.android.material.textfield.TextInputEditText
@@ -433,7 +462,7 @@
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <com.google.android.material.card.MaterialCardView style="@style/DispatchSectionCard">
+            <com.google.android.material.card.MaterialCardView android:id="@+id/acceptance_card" style="@style/DispatchSectionCard">
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -441,21 +470,36 @@
                     android:padding="12dp">
                     <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center_vertical" android:orientation="horizontal">
                         <View android:layout_width="4dp" android:layout_height="19dp" android:background="@color/dashboard_blue" />
-                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="7dp" android:text="4  验收标准" android:textColor="@color/text_primary" android:textSize="16sp" android:textStyle="bold" />
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="7dp" android:text="拍照和完工验收" android:textColor="@color/text_primary" android:textSize="16sp" android:textStyle="bold" />
                     </LinearLayout>
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="7dp"
-                        android:gravity="center_vertical"
-                        android:orientation="horizontal">
+                        android:orientation="vertical">
+                        <TextView
+                            android:id="@+id/before_photo_required_text"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:paddingVertical="5dp"
+                            android:text="开工前拍摄现场照片 · 必做"
+                            android:textColor="@color/text_primary"
+                            android:textSize="13sp" />
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:paddingVertical="5dp"
+                            android:text="完工后上传照片 · 必做"
+                            android:textColor="@color/text_primary"
+                            android:textSize="13sp" />
                         <com.google.android.material.switchmaterial.SwitchMaterial
                             android:id="@+id/completion_photo_required_switch"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:checked="true"
+                            android:visibility="gone"
                             android:text="必须上传完工照片"
                             android:textColor="@color/text_primary"
                             android:textSize="11sp"
@@ -467,6 +511,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginStart="5dp"
                             android:layout_weight="1"
+                            android:visibility="gone"
                             android:text="需要施工前照片"
                             android:textColor="@color/text_primary"
                             android:textSize="11sp"
@@ -484,7 +529,7 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:text="最少完工照片数量"
+                            android:text="完工后至少上传"
                             android:textColor="@color/text_primary"
                             android:textSize="12sp" />
                         <LinearLayout
@@ -497,6 +542,13 @@
                             <TextView android:id="@+id/completion_min_photo_input" android:layout_width="52dp" android:layout_height="match_parent" android:gravity="center" android:text="3" android:textColor="@color/text_primary" android:textSize="14sp" />
                             <TextView android:id="@+id/completion_plus_button" android:layout_width="40dp" android:layout_height="match_parent" android:gravity="center" android:text="＋" android:textColor="@color/text_primary" android:textSize="18sp" />
                         </LinearLayout>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="6dp"
+                            android:text="张"
+                            android:textColor="@color/text_primary"
+                            android:textSize="13sp" />
                     </LinearLayout>
 
                     <com.google.android.material.textfield.TextInputLayout
@@ -504,7 +556,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="90dp"
                         android:layout_marginTop="7dp"
-                        android:hint="验收说明"
+                        android:hint="验收时重点检查什么（选填）"
                         app:counterEnabled="true"
                         app:counterMaxLength="300">
                         <com.google.android.material.textfield.TextInputEditText
@@ -518,7 +570,7 @@
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <com.google.android.material.card.MaterialCardView style="@style/DispatchSectionCard">
+            <com.google.android.material.card.MaterialCardView android:id="@+id/process_card" style="@style/DispatchSectionCard">
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -530,12 +582,13 @@
                         android:gravity="center_vertical"
                         android:orientation="horizontal">
                         <View android:layout_width="4dp" android:layout_height="19dp" android:background="@color/dashboard_blue" />
-                        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginStart="7dp" android:layout_weight="1" android:text="5  过程检查要求" android:textColor="@color/text_primary" android:textSize="16sp" android:textStyle="bold" />
+                        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginStart="7dp" android:layout_weight="1" android:text="施工中按节点拍照记录" android:textColor="@color/text_primary" android:textSize="16sp" android:textStyle="bold" />
                         <com.google.android.material.switchmaterial.SwitchMaterial
                             android:id="@+id/process_check_switch"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:checked="true"
+                            android:visibility="gone"
                             android:text="启用"
                             android:textColor="@color/text_primary"
                             android:textSize="12sp"
@@ -548,26 +601,46 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="vertical">
-                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="6dp" android:text="检查方式" android:textColor="@color/text_primary" android:textSize="12sp" />
+                        <TextView
+                            android:id="@+id/process_nodes_summary"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:background="@drawable/bg_dispatch_count"
+                            android:padding="12dp"
+                            android:text="开工确认  ›  施工中检查  ›  隐蔽前检查  ›  完工前复核"
+                            android:textColor="@color/text_primary"
+                            android:textSize="13sp" />
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="6dp"
+                            android:text="每个检查节点至少拍 2 张照片，系统记录现场位置。"
+                            android:textColor="@color/text_secondary"
+                            android:textSize="12sp" />
+                        <TextView android:id="@+id/process_mode_label" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="6dp" android:text="检查方式" android:textColor="@color/text_primary" android:textSize="12sp" android:visibility="gone" />
                         <com.google.android.material.button.MaterialButtonToggleGroup
                             android:id="@+id/process_mode_spinner"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="4dp"
+                            android:visibility="gone"
                             app:checkedButton="@id/process_mode_node_button"
                             app:selectionRequired="true"
                             app:singleSelection="true">
                             <com.google.android.material.button.MaterialButton android:id="@+id/process_mode_node_button" style="@style/DispatchToggleButton" android:text="按节点检查" />
-                            <com.google.android.material.button.MaterialButton android:id="@+id/process_mode_day_button" style="@style/DispatchToggleButton" android:text="按天检查" />
-                            <com.google.android.material.button.MaterialButton android:id="@+id/process_mode_manual_button" style="@style/DispatchToggleButton" android:text="手动抽查" />
+                            <com.google.android.material.button.MaterialButton android:id="@+id/process_mode_day_button" style="@style/DispatchToggleButton" android:text="按天检查" android:visibility="gone" />
+                            <com.google.android.material.button.MaterialButton android:id="@+id/process_mode_manual_button" style="@style/DispatchToggleButton" android:text="手动抽查" android:visibility="gone" />
                         </com.google.android.material.button.MaterialButtonToggleGroup>
 
-                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="7dp" android:text="检查节点" android:textColor="@color/text_primary" android:textSize="12sp" />
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="7dp" android:text="检查节点" android:textColor="@color/text_primary" android:textSize="12sp" android:visibility="gone" />
                         <LinearLayout
+                            android:id="@+id/process_node_selection"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:gravity="center_vertical"
-                            android:orientation="horizontal">
+                            android:orientation="horizontal"
+                            android:visibility="gone">
                             <com.google.android.material.checkbox.MaterialCheckBox android:id="@+id/process_node_opening" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:checked="true" android:padding="0dp" android:text="开工确认" android:textSize="11sp" />
                             <com.google.android.material.checkbox.MaterialCheckBox android:id="@+id/process_node_middle" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:checked="true" android:padding="0dp" android:text="施工中检查" android:textSize="11sp" />
                             <com.google.android.material.checkbox.MaterialCheckBox android:id="@+id/process_node_hidden" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:checked="true" android:padding="0dp" android:text="隐蔽前检查" android:textSize="11sp" />
@@ -575,11 +648,13 @@
                         </LinearLayout>
 
                         <LinearLayout
+                            android:id="@+id/process_photo_count_container"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="4dp"
                             android:gravity="center_vertical"
-                            android:orientation="horizontal">
+                            android:orientation="horizontal"
+                            android:visibility="gone">
                             <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="过程照片要求：每次至少上传" android:textColor="@color/text_primary" android:textSize="12sp" />
                             <LinearLayout android:layout_width="112dp" android:layout_height="36dp" android:background="@drawable/bg_dispatch_count" android:gravity="center" android:orientation="horizontal">
                                 <TextView android:id="@+id/process_minus_button" android:layout_width="34dp" android:layout_height="match_parent" android:gravity="center" android:text="−" android:textSize="19sp" />
@@ -594,6 +669,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="3dp"
                             android:checked="true"
+                            android:visibility="gone"
                             android:text="过程上报必须带定位"
                             android:textColor="@color/text_primary"
                             android:textSize="12sp"
@@ -604,6 +680,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:checked="true"
+                            android:visibility="gone"
                             android:text="允许项目经理抽查"
                             android:textColor="@color/text_primary"
                             android:textSize="12sp"
@@ -631,6 +708,41 @@
             </com.google.android.material.card.MaterialCardView>
 
             <com.google.android.material.card.MaterialCardView
+                android:id="@+id/review_card"
+                style="@style/DispatchSectionCard"
+                android:visibility="gone">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="确认这次派工"
+                        android:textColor="@color/text_primary"
+                        android:textSize="18sp"
+                        android:textStyle="bold" />
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="5dp"
+                        android:text="核对任务和施工要求，确认后将发送给施工班组。"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="13sp" />
+                    <TextView
+                        android:id="@+id/review_summary_text"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="14dp"
+                        android:lineSpacingExtra="5dp"
+                        android:textColor="@color/text_primary"
+                        android:textSize="14sp" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/attachment_card"
                 style="@style/DispatchSectionCard"
                 android:layout_marginBottom="2dp">
                 <LinearLayout
@@ -722,10 +834,23 @@
             app:cornerRadius="8dp"
             app:strokeColor="@color/dashboard_blue" />
         <com.google.android.material.button.MaterialButton
+            android:id="@+id/previous_button"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_marginEnd="6dp"
+            android:layout_weight="1"
+            android:text="上一步"
+            android:textAllCaps="false"
+            android:textColor="@color/dashboard_blue"
+            android:visibility="gone"
+            app:cornerRadius="8dp"
+            app:strokeColor="@color/dashboard_blue" />
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/submit_button"
             android:layout_width="0dp"
             android:layout_height="48dp"
-            android:layout_marginStart="7dp"
+            android:layout_marginStart="0dp"
             android:layout_weight="1"
             android:text="确认派工"
             android:textAllCaps="false"

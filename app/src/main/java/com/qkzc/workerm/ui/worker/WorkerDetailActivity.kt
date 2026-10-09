@@ -16,6 +16,7 @@ import com.qkzc.workerm.data.worker.ManagerWorkerRepository
 import com.qkzc.workerm.data.worker.entryProgressText
 import com.qkzc.workerm.data.worker.entrySteps
 import com.qkzc.workerm.databinding.ActivityWorkerDetailBinding
+import coil.load
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import java.util.Locale
@@ -138,6 +139,12 @@ class WorkerDetailActivity : AppCompatActivity() {
 
     private fun bindWorker(worker: ManagerWorker) {
         val status = worker.bindStatus.ifBlank { worker.entryStatus }
+        binding.workerAvatarImage.load(worker.avatarUrl) {
+            crossfade(true)
+            placeholder(com.qkzc.workerm.R.drawable.ic_user)
+            error(com.qkzc.workerm.R.drawable.ic_user)
+            fallback(com.qkzc.workerm.R.drawable.ic_user)
+        }
         binding.workerNameText.text = worker.realName.ifBlank { "未命名工人" }
         binding.workerTypeText.text = worker.workTypeName.ifBlank { "未配置工种" }
         binding.workerStatusText.text = statusLabel(status)

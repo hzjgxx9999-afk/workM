@@ -127,6 +127,7 @@ data class DispatchAcceptanceDetail(
     val processChecks: List<DispatchAcceptanceProcessCheck> = emptyList(),
     val evidenceGroups: List<DispatchEvidenceGroup> = emptyList(),
     val spotChecks: List<DispatchSpotCheckSummary> = emptyList(),
+    val timeline: List<DispatchLog> = emptyList(),
     val permissions: DispatchAcceptancePermissions = DispatchAcceptancePermissions(),
 )
 
@@ -235,7 +236,10 @@ data class DispatchSpotCheckOperation(
 data class DispatchLog(
     val id: Long = 0,
     val operatorName: String = "",
+    val operatorRole: String = "",
     val action: String = "",
+    val fromStatus: String? = null,
+    val toStatus: String? = null,
     val remark: String? = null,
     val createTime: String? = null,
 )
@@ -271,16 +275,16 @@ data class DispatchCreateReq(
     val constructionRequirement: String? = null,
     val safetyNotice: String? = null,
     val acceptanceStandard: String? = null,
-    val processCheckEnabled: Boolean = false,
-    val processCheckMode: String? = null,
+    val processCheckEnabled: Boolean = true,
+    val processCheckMode: String? = "NODE",
     val processCheckDescription: String? = null,
     val processNodes: List<DispatchProcessNodeInput> = emptyList(),
-    val processMinPhotoCount: Int = 0,
-    val processRequireLocation: Boolean = false,
-    val managerSpotCheckEnabled: Boolean = false,
-    val beforePhotoRequired: Boolean = false,
+    val processMinPhotoCount: Int = 2,
+    val processRequireLocation: Boolean = true,
+    val managerSpotCheckEnabled: Boolean = true,
+    val beforePhotoRequired: Boolean = true,
     val completionPhotoRequired: Boolean = true,
-    val completionMinPhotoCount: Int = 1,
+    val completionMinPhotoCount: Int = 3,
 )
 
 data class DispatchActionReq(val version: Int, val remark: String? = null)
@@ -304,7 +308,9 @@ object DispatchStatusPresentation {
     fun label(status: String?, overdue: Boolean = false): String {
         if (overdue) return "已超时"
         return when (status) {
-            "PENDING_DELEGATION", "PENDING_REASSIGNMENT" -> "待分派"
+            "PENDING_DELEGATION" -> "待班组长接收"
+            "PENDING_REASSIGNMENT" -> "待重新指派"
+            "PENDING_TEAM_REWORK" -> "待原班组整改"
             "IN_PROGRESS" -> "处理中"
             "PENDING_PROCESS_CHECK" -> "待过程检查"
             "PROCESS_REWORK" -> "过程整改"
@@ -313,6 +319,10 @@ object DispatchStatusPresentation {
             "PENDING_MANAGER_ACCEPTANCE" -> "待验收"
             "COMPLETED" -> "已完成"
             "CANCELLED" -> "已取消"
+            "ASSIGNED" -> "待接收"
+            "ACCEPTED" -> "已接收"
+            "ARRIVED" -> "已到达现场"
+            "PROCESSING" -> "施工中"
             "WAIT_SUBMIT" -> "待提交"
             "WAIT_CHECK" -> "待审核"
             "PASSED" -> "已通过"

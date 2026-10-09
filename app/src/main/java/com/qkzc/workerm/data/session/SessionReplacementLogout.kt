@@ -11,7 +11,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import java.util.concurrent.atomic.AtomicBoolean
 
 /** Matches the server response that means a newer device has replaced this login session. */
@@ -19,37 +18,85 @@ object SessionReplacementResponsePolicy {
     const val HTTP_UNAUTHORIZED = 401
     const val SESSION_REPLACED_CODE = 4601
 
-    fun isSessionReplaced(httpCode: Int, rawBody: String?): Boolean {
-        if (httpCode != HTTP_UNAUTHORIZED || rawBody.isNullOrBlank()) return false
-        val body = runCatching { JsonParser.parseString(rawBody).asJsonObject }.getOrNull() ?: return false
-        return body.get("code")?.asInt == SESSION_REPLACED_CODE ||
-            body.get("reason")?.asString == "SESSION_REPLACED"
+    fun invalidationReason(httpCode: Int, rawBody: String?): SessionInvalidationReason? {
+        val body = rawBody?.takeIf { it.isNotBlank() }?.let {
+            runCatching { JsonParser.parseString(it).asJsonObject }.getOrNull()
+        }
+        val code = runCatching { body?.get("code")?.asInt }.getOrNull()
+        val reason = runCatching { body?.get("reason")?.asString }.getOrNull()
+        if (code == SESSION_REPLACED_CODE || reason == "SESSION_REPLACED") {
+            return SessionInvalidationReason.REPLACED
+        }
+        if (httpCode == HTTP_UNAUTHORIZED || code == HTTP_UNAUTHORIZED) {
+            return SessionInvalidationReason.EXPIRED
+        }
+        return null
     }
+
+    fun isSessionReplaced(httpCode: Int, rawBody: String?): Boolean =
+        invalidationReason(httpCode, rawBody) == SessionInvalidationReason.REPLACED
+}
+
+enum class SessionInvalidationReason {
+    EXPIRED,
+    REPLACED,
 }
 
 /** Clears only the session whose token was rejected, then shows the replacement notice on login. */
 object SessionReplacementLogoutCoordinator {
     const val EXTRA_SESSION_REPLACED = "com.qkzc.workerm.extra.SESSION_REPLACED"
+    const val EXTRA_SESSION_EXPIRED = "com.qkzc.workerm.extra.SESSION_EXPIRED"
 
     private val logoutStarted = AtomicBoolean(false)
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
     private val mainHandler = Handler(Looper.getMainLooper())
+    @Volatile
+    private var startupValidationInProgress = false
 
-    fun logoutIfCurrentSessionWasReplaced(context: Context, failedAuthorization: String?): Boolean {
+    fun setStartupValidationInProgress(inProgress: Boolean) {
+        startupValidationInProgress = inProgress
+    }
+
+    fun logoutIfCurrentSessionWasReplaced(context: Context, failedAuthorization: String?): Boolean =
+        invalidateCurrentSession(context, failedAuthorization, SessionInvalidationReason.REPLACED)
+
+    fun logoutIfCurrentSessionExpired(context: Context, failedAuthorization: String?): Boolean =
+        invalidateCurrentSession(context, failedAuthorization, SessionInvalidationReason.EXPIRED)
+
+    private fun invalidateCurrentSession(
+        context: Context,
+        failedAuthorization: String?,
+        reason: SessionInvalidationReason,
+    ): Boolean {
+        if (startupValidationInProgress) return false
         val appContext = context.applicationContext
         val failedToken = normalizeToken(failedAuthorization)
-        val currentToken = runBlocking { SessionStore(appContext).sessionFlow.first().accessToken }
-        if (failedToken.isNullOrBlank() || failedToken != normalizeToken(currentToken)) return false
+        if (failedToken.isNullOrBlank()) return false
         if (!logoutStarted.compareAndSet(false, true)) return true
 
         scope.launch {
-            AuthRepository(SessionStore(appContext)).logout()
-            mainHandler.post {
-                appContext.startActivity(
-                    Intent(appContext, LoginActivity::class.java)
-                        .putExtra(EXTRA_SESSION_REPLACED, true)
-                        .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK),
-                )
+            try {
+                val sessionStore = SessionStore(appContext)
+                val currentToken = sessionStore.sessionFlow.first().accessToken
+                if (failedToken != normalizeToken(currentToken)) {
+                    logoutStarted.set(false)
+                    return@launch
+                }
+                if (!sessionStore.clearSessionIfAccessTokenMatches(currentToken)) {
+                    logoutStarted.set(false)
+                    return@launch
+                }
+                mainHandler.post {
+                    if (!logoutStarted.get()) return@post
+                    appContext.startActivity(
+                        Intent(appContext, LoginActivity::class.java)
+                            .putExtra(EXTRA_SESSION_REPLACED, reason == SessionInvalidationReason.REPLACED)
+                            .putExtra(EXTRA_SESSION_EXPIRED, reason == SessionInvalidationReason.EXPIRED)
+                            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK),
+                    )
+                }
+            } catch (_: Exception) {
+                logoutStarted.set(false)
             }
         }
         return true

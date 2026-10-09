@@ -177,6 +177,7 @@ data class ManagerWorkerVo(
     val idCardNo: String? = null,
     val userStatus: Long? = null,
     val workTypeName: String? = null,
+    val avatarUrl: String? = null,
     val workTypeId: Long? = null,
     val projectId: Long? = null,
     val projectName: String? = null,

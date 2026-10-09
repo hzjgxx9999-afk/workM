@@ -8,9 +8,11 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.PopupMenu
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.Lifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.qkzc.workerm.R
 import com.qkzc.workerm.data.dispatch.DispatchRepository
+import com.qkzc.workerm.data.dispatch.DispatchRealtimeClient
 import com.qkzc.workerm.data.project.ManagerProject
 import com.qkzc.workerm.data.project.ManagerProjectRepository
 import com.qkzc.workerm.data.session.SessionStore
@@ -18,6 +20,8 @@ import com.qkzc.workerm.databinding.ActivityDispatchListBinding
 import com.qkzc.workerm.ui.common.EdgeToEdgeActivity
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
@@ -33,16 +37,30 @@ class DispatchListActivity : EdgeToEdgeActivity() {
         null,
         "PENDING_DELEGATION",
         "IN_PROGRESS",
+        "PENDING_PROCESS_CHECK",
+        "PROCESS_REWORK",
+        "PENDING_WORKER_RESULT_REVIEW",
+        "PENDING_LEADER_SUMMARY",
         "PENDING_MANAGER_ACCEPTANCE",
+        "PENDING_REASSIGNMENT",
+        "PENDING_TEAM_REWORK",
         "COMPLETED",
+        "CANCELLED",
     )
-    private val statusLabels = listOf("全部", "待分派", "处理中", "待验收", "已完成")
+    private val statusLabels = listOf(
+        "全部", "待班组长接收", "施工中", "待过程审核", "过程整改",
+        "待班组审核", "待班组汇总", "待项目验收", "待重新指派", "待原班组整改", "已完成", "已取消",
+    )
 
     private var projects: List<ManagerProject> = emptyList()
     private var selectedProjectId: Long? = null
     private var selectedProjectName: String = ""
     private var projectReady: Boolean = false
     private var loadJob: Job? = null
+    private var pollingJob: Job? = null
+    private val realtimeClient = DispatchRealtimeClient {
+        if (projectReady) load(currentStatus())
+    }
     private var selectedStatusIndex = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -73,6 +91,28 @@ class DispatchListActivity : EdgeToEdgeActivity() {
     override fun onResume() {
         super.onResume()
         if (::binding.isInitialized && projectReady) load(currentStatus())
+    }
+
+    override fun onStart() {
+        super.onStart()
+        lifecycleScope.launch {
+            val token = sessionStore.sessionFlow.first().accessToken
+            if (lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)) realtimeClient.start(token)
+        }
+        pollingJob?.cancel()
+        pollingJob = lifecycleScope.launch {
+            while (isActive) {
+                delay(15_000L)
+                if (projectReady) load(currentStatus())
+            }
+        }
+    }
+
+    override fun onStop() {
+        realtimeClient.stop()
+        pollingJob?.cancel()
+        pollingJob = null
+        super.onStop()
     }
 
     private fun loadProjectOptions() {

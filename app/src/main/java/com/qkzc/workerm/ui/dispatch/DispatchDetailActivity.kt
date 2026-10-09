@@ -12,11 +12,14 @@ import android.widget.PopupMenu
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.Lifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.qkzc.workerm.R
 import com.qkzc.workerm.data.dispatch.DispatchAcceptanceDetail
+import com.qkzc.workerm.data.dispatch.DispatchLog
 import com.qkzc.workerm.data.dispatch.DispatchManualProcessNodeReq
 import com.qkzc.workerm.data.dispatch.DispatchRepository
+import com.qkzc.workerm.data.dispatch.DispatchRealtimeClient
 import com.qkzc.workerm.data.dispatch.DispatchSpotCheckSummary
 import com.qkzc.workerm.data.dispatch.DispatchStatusPresentation
 import com.qkzc.workerm.data.project.ManagerProjectTeam
@@ -27,7 +30,11 @@ import com.qkzc.workerm.ui.common.EdgeToEdgeActivity
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 
 class DispatchDetailActivity : EdgeToEdgeActivity() {
@@ -40,6 +47,9 @@ class DispatchDetailActivity : EdgeToEdgeActivity() {
     private val processAdapter = DispatchProcessCheckAdapter(::openPhotos)
     private val evidenceAdapter = DispatchEvidenceGroupAdapter(::openPhotos)
     private val reviewLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { loadDetail() }
+    private var detailLoadJob: Job? = null
+    private var pollingJob: Job? = null
+    private val realtimeClient = DispatchRealtimeClient(::loadDetail)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -65,26 +75,57 @@ class DispatchDetailActivity : EdgeToEdgeActivity() {
         binding.approveButton.setOnClickListener { approve() }
         binding.rejectButton.setOnClickListener { reject() }
         binding.spotCheckAction.setOnClickListener { handleSpotCheckAction() }
-        loadDetail()
+    }
+
+    override fun onStart() {
+        super.onStart()
+        lifecycleScope.launch {
+            val token = sessionStore.sessionFlow.first().accessToken
+            if (lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)) realtimeClient.start(token)
+        }
+        pollingJob?.cancel()
+        pollingJob = lifecycleScope.launch {
+            while (isActive) {
+                delay(10_000L)
+                loadDetail()
+            }
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (::binding.isInitialized) loadDetail()
+    }
+
+    override fun onStop() {
+        realtimeClient.stop()
+        pollingJob?.cancel()
+        pollingJob = null
+        super.onStop()
     }
 
     private fun loadDetail() {
         val id = intent.getLongExtra(EXTRA_ID, 0L)
         if (id <= 0L) { toast("派工单参数错误"); finish(); return }
-        lifecycleScope.launch {
+        detailLoadJob?.cancel()
+        detailLoadJob = lifecycleScope.launch {
             runCatching {
                 val token = sessionStore.sessionFlow.first().accessToken
                 repository.acceptanceDetail(token, id)
             }.onSuccess { detail = it; render() }
-                .onFailure { toast(it.message ?: "派工验收详情加载失败") }
+                .onFailure {
+                    if (it is CancellationException) throw it
+                    toast(it.message ?: "派工验收详情加载失败")
+                }
         }
     }
 
     private fun render() = with(binding) {
         val order = detail.order
-        statusText.text = DispatchStatusPresentation.label(order.status, order.overdue)
+        val managerRejectedSummary = order.status == "PENDING_TEAM_REWORK"
+        statusText.text = if (managerRejectedSummary) "待原班组整改" else DispatchStatusPresentation.label(order.status, order.overdue)
         titleText.text = order.title.ifBlank { "未命名派工单" }
-        phaseText.text = phaseDescription(order.status)
+        phaseText.text = if (managerRejectedSummary) "项目经理已驳回，等待原班组整改后重新提交" else phaseDescription(order.status)
         dispatchNoText.text = "派工单编号：${order.dispatchNo.ifBlank { "-" }}"
         projectText.text = "所属项目：${order.projectName.ifBlank { "-" }}"
         locationText.text = "施工位置：${order.locationDesc.ifBlank { "-" }}"
@@ -96,7 +137,20 @@ class DispatchDetailActivity : EdgeToEdgeActivity() {
         requirementSafetyText.text = "安全注意：${order.safetyNotice.orEmpty().ifBlank { "未设置" }}"
         requirementStandardText.text = "验收标准：${order.acceptanceStandard.orEmpty().ifBlank { "未设置" }}"
         summaryTimeText.text = "提交时间：${detail.summaryTime.orEmpty().ifBlank { "尚未提交" }}"
-        summaryContentText.text = detail.leaderSummary.orEmpty().ifBlank { "班组暂未提交汇总" }
+        summaryContentText.text = detail.leaderSummary.orEmpty().ifBlank {
+            if (managerRejectedSummary) "原班组汇总已驳回，请查看整改意见和历史照片后重新施工并提交。"
+            else "班组暂未提交汇总"
+        }
+        timelineText.text = detail.timeline
+            .sortedBy { it.id }
+            .filterNot(::isPhotoUploadTimelineLog)
+            .joinToString("\n\n") { log ->
+                val actor = log.operatorName.ifBlank { "系统" }
+                val time = log.createTime.orEmpty().ifBlank { "时间待同步" }
+                val remark = timelineRemark(log)?.let { "\n   $it" }.orEmpty()
+                "● $time  $actor · ${timelineActionLabel(log.action)}$remark"
+            }
+            .ifBlank { "暂无操作记录" }
         workerAdapter.submit(detail.workers)
         processAdapter.submit(detail.processChecks)
         evidenceAdapter.submit(detail.evidenceGroups)
@@ -122,9 +176,56 @@ class DispatchDetailActivity : EdgeToEdgeActivity() {
         "PENDING_PROCESS_CHECK" -> "施工资料已提交，等待过程检查"
         "PENDING_WORKER_RESULT_REVIEW" -> "工人已提交，等待班组长审核"
         "PENDING_LEADER_SUMMARY" -> "等待班组长汇总"
+        "PENDING_TEAM_REWORK" -> "项目经理已驳回，等待原班组整改并重新施工"
         "COMPLETED" -> "派工验收已完成"
         else -> "派工任务执行中"
     }
+
+    private fun timelineActionLabel(action: String) = when (action) {
+        "CREATE" -> "创建并派工"
+        "LEADER_ACCEPT", "LEADER_ACCEPT_SYNC" -> "班组长接收"
+        "LEADER_DECLINE" -> "班组长退回"
+        "ASSIGN_WORKERS" -> "分派工人"
+        "CREATE_SPOT_CHECK" -> "发起项目经理抽查"
+        "SUBMIT_SPOT_CHECK" -> "提交抽查资料"
+        "CANCEL_SPOT_CHECK" -> "取消项目经理抽查"
+        "ACCEPT" -> "工人接收"
+        "WORKER_DECLINE" -> "工人拒绝"
+        "WORKER_UPLOAD_BEFORE_LATE" -> "工人开工后补录施工前照片"
+        "START" -> "开始施工"
+        "PROCESS_SUBMIT" -> "提交过程资料"
+        "PROCESS_REVIEW_PASS" -> "过程审核通过"
+        "PROCESS_REVIEW_REJECT" -> "过程资料驳回"
+        "WORKER_SUBMIT" -> "提交完工结果"
+        "LEADER_SELF_SUBMIT" -> "班组长本人提交完工结果"
+        "WORKER_RESULT_PASS" -> "工人结果通过"
+        "WORKER_RESULT_REJECT" -> "工人结果驳回"
+        "LEADER_SUMMARY" -> "提交班组汇总"
+        "APPROVE" -> "项目验收通过"
+        "REJECT" -> "项目验收驳回"
+        "REASSIGN_LEADER" -> "重新指派班组"
+        "CANCEL" -> "取消派工单"
+        else -> action.replace('_', ' ').ifBlank { "状态更新" }
+    }
+
+    private fun isPhotoUploadTimelineLog(log: DispatchLog): Boolean {
+        val action = log.action.trim().uppercase(Locale.ROOT)
+        val photoUploadAction = action.contains("UPLOAD") && listOf(
+            "PHOTO",
+            "IMAGE",
+            "PICTURE",
+            "CHECK_NODE",
+            "BEFORE_LATE",
+        ).any(action::contains)
+        return photoUploadAction || IMAGE_FILE_NAME_REGEX.containsMatchIn(log.remark.orEmpty())
+    }
+
+    private fun timelineRemark(log: DispatchLog): String? =
+        FILE_NAME_REGEX.replace(log.remark.orEmpty(), "")
+            .replace(Regex("[ \\t]{2,}"), " ")
+            .trim()
+            .trimEnd(';', '；', ',', '，', '、', ':', '：')
+            .takeIf(String::isNotBlank)
 
     private fun handleSpotCheckAction() {
         val spot = detail.spotChecks.firstOrNull()
@@ -251,6 +352,12 @@ class DispatchDetailActivity : EdgeToEdgeActivity() {
 
     companion object {
         private const val EXTRA_ID = "dispatch_id"
+        private val IMAGE_FILE_NAME_REGEX = Regex(
+            """(?i)[\p{L}\p{N}_-][\p{L}\p{N}_.-]*\.(?:jpe?g|png|webp|gif|heic|bmp)\b""",
+        )
+        private val FILE_NAME_REGEX = Regex(
+            """(?i)[\p{L}\p{N}_-][\p{L}\p{N}_.-]*\.(?:jpe?g|png|webp|gif|heic|bmp|pdf|docx?|xlsx?|zip|mp4|mov)\b""",
+        )
         fun intent(context: Context, id: Long) = Intent(context, DispatchDetailActivity::class.java).putExtra(EXTRA_ID, id)
     }
 }

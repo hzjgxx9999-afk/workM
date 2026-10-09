@@ -37,11 +37,19 @@ class LoginActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         configureSystemBars()
 
-        if (intent.getBooleanExtra(SessionReplacementLogoutCoordinator.EXTRA_SESSION_REPLACED, false)) {
+        val sessionReplaced = intent.getBooleanExtra(
+            SessionReplacementLogoutCoordinator.EXTRA_SESSION_REPLACED,
+            false,
+        )
+        val sessionExpired = intent.getBooleanExtra(
+            SessionReplacementLogoutCoordinator.EXTRA_SESSION_EXPIRED,
+            false,
+        )
+        if (sessionReplaced || sessionExpired) {
             window.decorView.post {
                 AlertDialog.Builder(this)
-                    .setTitle(R.string.session_replaced_title)
-                    .setMessage(R.string.session_replaced_message)
+                    .setTitle(if (sessionReplaced) R.string.session_replaced_title else R.string.session_expired_title)
+                    .setMessage(if (sessionReplaced) R.string.session_replaced_message else R.string.session_expired_message)
                     .setPositiveButton(R.string.session_replaced_confirm, null)
                     .setCancelable(false)
                     .show()
@@ -77,6 +85,7 @@ class LoginActivity : AppCompatActivity() {
 
                 SupervisionLoginRoute(
                     loading = uiState.loading,
+                    initialPhone = uiState.accountMobile,
                     onLogin = { mobile, password ->
                         viewModel.login(mobile, password)
                     },

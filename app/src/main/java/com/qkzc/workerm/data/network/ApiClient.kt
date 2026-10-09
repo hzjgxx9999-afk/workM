@@ -46,7 +46,14 @@ object ApiClient {
                 },
             ),
         )
-        .addInterceptor(loggingInterceptor)
+        .addInterceptor { chain ->
+            // BODY logging buffers the complete response, which never completes for SSE.
+            if (chain.request().url.encodedPath == "/app/dispatch/events") {
+                chain.proceed(chain.request())
+            } else {
+                loggingInterceptor.intercept(chain)
+            }
+        }
         .build()
     }
 

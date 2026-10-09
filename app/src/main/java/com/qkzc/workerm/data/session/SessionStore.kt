@@ -9,6 +9,7 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import java.io.IOException
 
@@ -24,6 +25,13 @@ interface SessionDataSource {
     suspend fun saveSession(session: LoginSession)
 
     suspend fun clearSession()
+
+    suspend fun clearSessionIfAccessTokenMatches(expectedToken: String): Boolean {
+        val current = sessionFlow.first()
+        if (current.accessToken != expectedToken) return false
+        clearSession()
+        return true
+    }
 }
 
 class SessionStore(context: Context) : SessionDataSource {
@@ -45,7 +53,9 @@ class SessionStore(context: Context) : SessionDataSource {
                 userId = preferences[Keys.userId].orEmpty(),
                 userName = preferences[Keys.userName].orEmpty(),
                 realName = preferences[Keys.realName].orEmpty(),
-                mobile = preferences[Keys.mobile].orEmpty(),
+                mobile = preferences[Keys.lastLoginMobile]
+                    ?.takeIf { it.isNotBlank() }
+                    ?: preferences[Keys.mobile].orEmpty(),
                 userType = preferences[Keys.userType].orEmpty(),
                 clientType = preferences[Keys.clientType].orEmpty(),
                 roleName = preferences[Keys.roleName].orEmpty(),
@@ -63,6 +73,9 @@ class SessionStore(context: Context) : SessionDataSource {
             preferences[Keys.userName] = session.userName
             preferences[Keys.realName] = session.realName
             preferences[Keys.mobile] = session.mobile
+            if (session.mobile.isNotBlank()) {
+                preferences[Keys.lastLoginMobile] = session.mobile
+            }
             preferences[Keys.userType] = session.userType
             preferences[Keys.clientType] = session.clientType
             preferences[Keys.roleName] = session.roleName
@@ -74,8 +87,31 @@ class SessionStore(context: Context) : SessionDataSource {
 
     override suspend fun clearSession() {
         appContext.sessionDataStore.edit { preferences ->
+            val lastLoginMobile = preferences[Keys.lastLoginMobile]
+                ?.takeIf { it.isNotBlank() }
+                ?: preferences[Keys.mobile]
             preferences.clear()
+            if (!lastLoginMobile.isNullOrBlank()) {
+                preferences[Keys.lastLoginMobile] = lastLoginMobile
+            }
         }
+    }
+
+    override suspend fun clearSessionIfAccessTokenMatches(expectedToken: String): Boolean {
+        var cleared = false
+        appContext.sessionDataStore.edit { preferences ->
+            if (preferences[Keys.accessToken] == expectedToken) {
+                val lastLoginMobile = preferences[Keys.lastLoginMobile]
+                    ?.takeIf { it.isNotBlank() }
+                    ?: preferences[Keys.mobile]
+                preferences.clear()
+                if (!lastLoginMobile.isNullOrBlank()) {
+                    preferences[Keys.lastLoginMobile] = lastLoginMobile
+                }
+                cleared = true
+            }
+        }
+        return cleared
     }
 
     private object Keys {
@@ -85,6 +121,7 @@ class SessionStore(context: Context) : SessionDataSource {
         val userName = stringPreferencesKey("user_name")
         val realName = stringPreferencesKey("real_name")
         val mobile = stringPreferencesKey("mobile")
+        val lastLoginMobile = stringPreferencesKey("last_login_mobile")
         val userType = stringPreferencesKey("user_type")
         val clientType = stringPreferencesKey("client_type")
         val roleName = stringPreferencesKey("role_name")

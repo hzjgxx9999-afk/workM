@@ -10,6 +10,7 @@ import com.qkzc.workerm.data.network.requireSuccess
 import com.qkzc.workerm.data.project.ManagerProjectRepository
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.first
+import retrofit2.HttpException
 
 class AuthRepository(
     private val sessionStore: SessionDataSource,
@@ -18,6 +19,8 @@ class AuthRepository(
 ) {
 
     val sessionFlow = sessionStore.sessionFlow
+    var lastSessionInvalidationReason: SessionInvalidationReason? = null
+        private set
 
     suspend fun login(payload: LoginPayload): LoginSession {
         val tokenResp = api.login(
@@ -41,9 +44,9 @@ class AuthRepository(
         val session = LoginSession(
             accessToken = token,
             userId = profile.appUserId?.toString().orEmpty(),
-            userName = profile.mobile.orEmpty(),
+            userName = profile.mobile.orEmpty().ifBlank { payload.mobile.trim() },
             realName = profile.realName.orEmpty(),
-            mobile = profile.mobile.orEmpty(),
+            mobile = profile.mobile.orEmpty().ifBlank { payload.mobile.trim() },
             userType = profile.userType.orEmpty(),
             clientType = profile.clientType.orEmpty(),
             roleName = "项目经理",
@@ -56,6 +59,7 @@ class AuthRepository(
     }
 
     suspend fun restoreValidSession(): LoginSession? {
+        lastSessionInvalidationReason = null
         val cached = sessionStore.sessionFlow.first()
         if (!cached.isLoggedIn) return null
 
@@ -63,7 +67,8 @@ class AuthRepository(
             val profile = api.profile(bearerToken(cached.accessToken))
             requireSuccess(profile.code, profile.msg)
             if (profile.userType != ApprovalApiConstants.USER_TYPE_PROJECT_MANAGER) {
-                throw ApiException("当前账号不是项目经理，不能登录监管端")
+                sessionStore.clearSessionIfAccessTokenMatches(cached.accessToken)
+                return null
             }
             val firstProject = projectRepository.loadProjects(cached.accessToken).firstOrNull()
             val refreshed = cached.copy(
@@ -82,8 +87,26 @@ class AuthRepository(
             refreshed
         } catch (exception: Exception) {
             if (exception is CancellationException) throw exception
-            sessionStore.clearSession()
-            null
+            val httpException = exception as? HttpException
+            val apiException = exception as? ApiException
+            val responseBody = runCatching {
+                httpException?.response()?.errorBody()?.string()
+            }.getOrNull()
+            val responseCode = httpException?.code()
+                ?: apiException?.responseCode
+                ?: apiException?.message?.toIntOrNull()
+                ?: 0
+            val invalidationReason = SessionReplacementResponsePolicy.invalidationReason(
+                responseCode,
+                responseBody,
+            )
+            if (invalidationReason != null) {
+                lastSessionInvalidationReason = invalidationReason
+                sessionStore.clearSessionIfAccessTokenMatches(cached.accessToken)
+                null
+            } else {
+                cached
+            }
         }
     }
 

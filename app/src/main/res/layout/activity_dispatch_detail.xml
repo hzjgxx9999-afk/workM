@@ -264,7 +264,23 @@
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-
+            <com.google.android.material.card.MaterialCardView style="@style/DispatchDetailCard">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="14dp">
+                    <TextView style="@style/DispatchSectionTitle" android:text="执行时间线" />
+                    <TextView
+                        android:id="@+id/timeline_text"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:lineSpacingExtra="4dp"
+                        android:textColor="#344054"
+                        android:textSize="13sp" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
 
             <com.google.android.material.card.MaterialCardView style="@style/DispatchDetailCard">
                 <LinearLayout

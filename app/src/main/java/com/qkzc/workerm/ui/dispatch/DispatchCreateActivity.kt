@@ -10,6 +10,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AlertDialog
 import com.qkzc.workerm.ui.common.EdgeToEdgeActivity
 import androidx.lifecycle.lifecycleScope
@@ -46,6 +47,7 @@ class DispatchCreateActivity : EdgeToEdgeActivity() {
     private var contextLoadJob: Job? = null
     private var coverLoadJob: Job? = null
     private var selectedLocationCoordinates: Pair<Double, Double>? = null
+    private var currentStep = STEP_TASK
     private val preselectedProjectId: Long by lazy { intent.getLongExtra(EXTRA_PROJECT_ID, 0L) }
     private val preselectedTeamId: Long by lazy { intent.getLongExtra(EXTRA_TEAM_ID, 0L) }
     private val preselectedLeaderId: Long by lazy { intent.getLongExtra(EXTRA_LEADER_ID, 0L) }
@@ -75,7 +77,15 @@ class DispatchCreateActivity : EdgeToEdgeActivity() {
             lightNavigationBars = true,
         )
 
-        binding.backButton.setOnClickListener { finish() }
+        binding.backButton.setOnClickListener {
+            if (currentStep == STEP_TASK) finish() else moveToStep(currentStep - 1)
+        }
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                if (currentStep == STEP_TASK) finish() else moveToStep(currentStep - 1)
+            }
+        })
+        binding.previousButton.setOnClickListener { moveToStep(currentStep - 1) }
         binding.switchProjectButton.setOnClickListener { showProjectSelector() }
         binding.deadlineInput.setOnClickListener { showDeadlinePicker() }
         binding.deadlineInput.setOnLongClickListener { true }
@@ -103,19 +113,130 @@ class DispatchCreateActivity : EdgeToEdgeActivity() {
         binding.teamSpinner.setOnItemClickListener { _, _, position, _ -> selectTeam(position) }
         binding.autoFillRequirementButton.setOnClickListener { confirmRequirementTemplateFill() }
 
-        listOf(
-            binding.drawingAttachmentButton,
-            binding.noticeAttachmentButton,
-            binding.photoAttachmentButton,
-        ).forEach { view -> view.setOnClickListener { toast("附件上传将在派工单创建后接入") } }
-        binding.saveDraftButton.setOnClickListener {
-            toast("后端暂未提供派工单草稿接口，请确认派工后创建")
+        binding.attachmentCard.visibility = View.GONE
+        binding.saveDraftButton.visibility = View.GONE
+        binding.submitButton.setOnClickListener {
+            when (currentStep) {
+                STEP_TASK -> if (validateTaskStep()) moveToStep(STEP_REQUIREMENTS)
+                STEP_REQUIREMENTS -> if (validateRequirementsStep()) {
+                    updateReviewSummary()
+                    moveToStep(STEP_REVIEW)
+                }
+                STEP_REVIEW -> submitDispatch()
+            }
         }
-        binding.submitButton.setOnClickListener { submitDispatch() }
 
-        setProcessSectionVisible(binding.processCheckSwitch.isChecked)
-        setCompletionCountEnabled(binding.completionPhotoRequiredSwitch.isChecked)
+        applyFixedRequirements()
+        moveToStep(STEP_TASK)
         loadProjects()
+    }
+
+    private fun applyFixedRequirements() {
+        binding.processCheckSwitch.isChecked = true
+        binding.processCheckSwitch.isEnabled = false
+        binding.completionPhotoRequiredSwitch.isChecked = true
+        binding.completionPhotoRequiredSwitch.isEnabled = false
+        binding.beforePhotoRequiredSwitch.isChecked = true
+        binding.beforePhotoRequiredSwitch.isEnabled = false
+        binding.processRequireLocationSwitch.isChecked = true
+        binding.managerSpotCheckSwitch.isChecked = true
+        listOf(
+            binding.processNodeOpening,
+            binding.processNodeMiddle,
+            binding.processNodeHidden,
+            binding.processNodeFinal,
+        ).forEach {
+            it.isChecked = true
+            it.isEnabled = false
+        }
+        setProcessSectionVisible(true)
+        setCompletionCountEnabled(true)
+    }
+
+    private fun moveToStep(step: Int) {
+        currentStep = step.coerceIn(STEP_TASK, STEP_REVIEW)
+        val isTaskStep = currentStep == STEP_TASK
+        val isRequirementsStep = currentStep == STEP_REQUIREMENTS
+        binding.projectCard.visibility = if (isTaskStep) View.VISIBLE else View.GONE
+        binding.taskCard.visibility = if (isTaskStep) View.VISIBLE else View.GONE
+        binding.teamCard.visibility = if (isTaskStep) View.VISIBLE else View.GONE
+        binding.requirementsCard.visibility = if (isRequirementsStep) View.VISIBLE else View.GONE
+        binding.acceptanceCard.visibility = if (isRequirementsStep) View.VISIBLE else View.GONE
+        binding.processCard.visibility = if (isRequirementsStep) View.VISIBLE else View.GONE
+        binding.reviewCard.visibility = if (currentStep == STEP_REVIEW) View.VISIBLE else View.GONE
+        binding.previousButton.visibility = if (isTaskStep) View.GONE else View.VISIBLE
+        binding.submitButton.text = if (currentStep == STEP_REVIEW) "确认派工" else "下一步"
+        binding.stepTitleText.text = when (currentStep) {
+            STEP_TASK -> "第 1 步 · 填写任务"
+            STEP_REQUIREMENTS -> "第 2 步 · 确认施工要求"
+            else -> "第 3 步 · 检查并派工"
+        }
+        binding.stepSubtitleText.text = when (currentStep) {
+            STEP_TASK -> "写清楚做什么、在哪里做，再选好施工班组。"
+            STEP_REQUIREMENTS -> "照片和过程检查由系统安排，补充现场要求即可。"
+            else -> "核对任务内容和施工安排，确认后发送给施工班组。"
+        }
+        binding.root.findViewById<androidx.core.widget.NestedScrollView>(R.id.dispatch_create_scroll_view)
+            ?.smoothScrollTo(0, 0)
+    }
+
+    private fun validateTaskStep(): Boolean {
+        if (selectedProject == null) {
+            toast("请先选择项目")
+            return false
+        }
+        if (inputText(binding.titleInput).isBlank()) {
+            toast("请填写任务名称")
+            binding.titleInput.requestFocus()
+            return false
+        }
+        if (inputText(binding.locationInput).isBlank()) {
+            toast("请填写施工地点")
+            binding.locationInput.requestFocus()
+            return false
+        }
+        if (inputText(binding.deadlineInput).isBlank()) {
+            toast("请选择完成时间")
+            return false
+        }
+        if (selectedTeam == null) {
+            toast("请选择施工班组")
+            return false
+        }
+        return true
+    }
+
+    private fun validateRequirementsStep(): Boolean {
+        if (inputText(binding.contentInput).isBlank()) {
+            toast("请填写需要处理的问题")
+            binding.contentInput.requestFocus()
+            return false
+        }
+        return true
+    }
+
+    private fun updateReviewSummary() {
+        val projectName = selectedProject?.projectName.orEmpty().ifBlank { "--" }
+        val teamName = selectedTeam?.teamName.orEmpty().ifBlank { "--" }
+        val processDescription = optionalInputText(binding.processDescriptionInput)
+        val acceptanceDescription = optionalInputText(binding.acceptanceStandardInput)
+        val lines = mutableListOf(
+            "项目：$projectName",
+            "施工班组：$teamName（班组长：${selectedTeam?.leaderName.orEmpty().ifBlank { "--" }}）",
+            "任务：${inputText(binding.titleInput)}",
+            "类型：${dispatchTypeLabel()} · 优先级：${priorityLabel()}",
+            "地点：${inputText(binding.locationInput)}",
+            "完成时间：${inputText(binding.deadlineInput)}",
+            "\n需要处理：${inputText(binding.contentInput)}",
+            "施工要求：${optionalInputText(binding.constructionRequirementInput) ?: "无补充要求"}",
+            "安全提醒：${optionalInputText(binding.safetyNoticeInput) ?: "无补充提醒"}",
+            "\n开工前：必须拍摄现场照片",
+            "完工后：至少上传 ${countValue(binding.completionMinPhotoInput)} 张照片",
+            "施工中：按开工、施工中、隐蔽前、完工前 4 个节点检查；每个节点拍 2 张照片并记录位置",
+        )
+        if (processDescription != null) lines += "过程检查补充：$processDescription"
+        if (acceptanceDescription != null) lines += "验收重点：$acceptanceDescription"
+        binding.reviewSummaryText.text = lines.joinToString("\n")
     }
 
     private fun loadProjects() {
@@ -363,8 +484,7 @@ class DispatchCreateActivity : EdgeToEdgeActivity() {
     private fun submitDispatch() {
         val request = buildCreateRequest() ?: return
         lifecycleScope.launch {
-            binding.saveDraftButton.isEnabled = false
-            binding.submitButton.isEnabled = false
+                binding.submitButton.isEnabled = false
             runCatching {
                 val token = sessionStore.sessionFlow.first().accessToken
                 repository.create(token, request)
@@ -376,7 +496,6 @@ class DispatchCreateActivity : EdgeToEdgeActivity() {
                 finish()
             }.onFailure { throwable ->
                 toast(throwable.message ?: "派工失败")
-                binding.saveDraftButton.isEnabled = true
                 binding.submitButton.isEnabled = true
             }
         }
@@ -415,9 +534,8 @@ class DispatchCreateActivity : EdgeToEdgeActivity() {
             return null
         }
 
-        val processEnabled = binding.processCheckSwitch.isChecked
-        val processNodes = if (processEnabled) buildProcessNodes() ?: return null else emptyList()
-        val completionPhotoRequired = binding.completionPhotoRequiredSwitch.isChecked
+        val processNodes = buildProcessNodes()
+        val completionPhotoRequired = true
         val locationCoordinates = selectedLocationCoordinates
         return DispatchCreateReq(
             projectId = project.projectId,
@@ -440,32 +558,25 @@ class DispatchCreateActivity : EdgeToEdgeActivity() {
             constructionRequirement = optionalInputText(binding.constructionRequirementInput),
             safetyNotice = optionalInputText(binding.safetyNoticeInput),
             acceptanceStandard = optionalInputText(binding.acceptanceStandardInput),
-            processCheckEnabled = processEnabled,
-            processCheckMode = if (processEnabled) selectedProcessMode() else null,
-            processCheckDescription = if (processEnabled) optionalInputText(binding.processDescriptionInput) else null,
+            processCheckEnabled = true,
+            processCheckMode = "NODE",
+            processCheckDescription = optionalInputText(binding.processDescriptionInput),
             processNodes = processNodes,
-            processMinPhotoCount = if (processEnabled) countValue(binding.processMinPhotoInput) else 0,
-            processRequireLocation = processEnabled && binding.processRequireLocationSwitch.isChecked,
-            managerSpotCheckEnabled = processEnabled && binding.managerSpotCheckSwitch.isChecked,
-            beforePhotoRequired = binding.beforePhotoRequiredSwitch.isChecked,
+            processMinPhotoCount = DEFAULT_PROCESS_PHOTO_COUNT,
+            processRequireLocation = true,
+            managerSpotCheckEnabled = true,
+            beforePhotoRequired = true,
             completionPhotoRequired = completionPhotoRequired,
-            completionMinPhotoCount = if (completionPhotoRequired) countValue(binding.completionMinPhotoInput) else 0,
+            completionMinPhotoCount = countValue(binding.completionMinPhotoInput),
         )
     }
 
-    private fun buildProcessNodes(): List<DispatchProcessNodeInput>? {
-        val requiredPhotoCount = countValue(binding.processMinPhotoInput).coerceAtLeast(MIN_PHOTO_COUNT)
-        val requiredLocation = if (binding.processRequireLocationSwitch.isChecked) 1 else 0
+    private fun buildProcessNodes(): List<DispatchProcessNodeInput> {
+        val requiredPhotoCount = DEFAULT_PROCESS_PHOTO_COUNT
+        val requiredLocation = 1
         val description = optionalInputText(binding.processDescriptionInput)
-        val nodes = listOf(
-            binding.processNodeOpening to "开工确认",
-            binding.processNodeMiddle to "施工中检查",
-            binding.processNodeHidden to "隐蔽前检查",
-            binding.processNodeFinal to "完工前复核",
-        ).mapIndexedNotNull { index, (checkBox, nodeName) ->
-            if (!checkBox.isChecked) {
-                null
-            } else {
+        return listOf("开工确认", "施工中检查", "隐蔽前检查", "完工前复核")
+            .mapIndexed { index, nodeName ->
                 DispatchProcessNodeInput(
                     nodeName = nodeName,
                     nodeSort = index + 1,
@@ -476,12 +587,6 @@ class DispatchCreateActivity : EdgeToEdgeActivity() {
                     description = description,
                 )
             }
-        }
-        if (nodes.isEmpty()) {
-            toast("请至少选择一个过程检查节点")
-            return null
-        }
-        return nodes
     }
 
     private fun selectedDispatchType(): String = when (binding.dispatchTypeGroup.checkedButtonId) {
@@ -497,6 +602,21 @@ class DispatchCreateActivity : EdgeToEdgeActivity() {
         R.id.priority_urgent_button -> "URGENT"
         R.id.priority_major_button -> "MAJOR"
         else -> "NORMAL"
+    }
+
+    private fun dispatchTypeLabel(): String = when (selectedDispatchType()) {
+        "REPAIR" -> "维修"
+        "INSTALL" -> "安装"
+        "CLEAN" -> "清理"
+        "RECTIFICATION" -> "整改"
+        "INSPECTION" -> "巡检"
+        else -> "施工"
+    }
+
+    private fun priorityLabel(): String = when (selectedPriority()) {
+        "URGENT" -> "紧急"
+        "MAJOR" -> "重大"
+        else -> "普通"
     }
 
     private fun selectedProcessMode(): String = when (binding.processModeSpinner.checkedButtonId) {
@@ -531,5 +651,9 @@ class DispatchCreateActivity : EdgeToEdgeActivity() {
         private const val DEADLINE_PATTERN = "yyyy-MM-dd HH:mm:ss"
         private const val MIN_PHOTO_COUNT = 1
         private const val MAX_PHOTO_COUNT = 99
+        private const val STEP_TASK = 1
+        private const val STEP_REQUIREMENTS = 2
+        private const val STEP_REVIEW = 3
+        private const val DEFAULT_PROCESS_PHOTO_COUNT = 2
     }
 }
